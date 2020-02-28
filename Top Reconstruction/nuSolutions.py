@@ -1,3 +1,6 @@
+# Algorithms presented in arXiv:1305.1878.
+# https://github.com/betchart/analytic-nu
+
 import numpy as np
 import ROOT as r
 import math
