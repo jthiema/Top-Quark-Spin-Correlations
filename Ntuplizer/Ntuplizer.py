@@ -1,3 +1,7 @@
+# This script is a modified version of the Delphes Ntuplizer found at :
+# https://github.com/recotoolsbenchmarks/DelphesNtuplizer/blob/master/bin/Ntuplizer.py
+# 		    Author : Amandeep Singh Bakshi
+
 #!/usr/bin/env python
 import sys
 import ROOT
