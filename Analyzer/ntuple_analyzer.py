@@ -1,3 +1,7 @@
+# This script works with ntuples produced using the Delphes Ntuplizer found at :
+# https://github.com/recotoolsbenchmarks/DelphesNtuplizer/blob/master/bin/Ntuplizer.py
+# 		    Author : Amandeep Singh Bakshi
+
 import math
 import ROOT
 from   ROOT    import kRed
