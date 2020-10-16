@@ -163,7 +163,7 @@ class TreeProducer:
          #Generator level information
          
          self.t.Branch( "genpart_size"   , self.genpart_size   , "genpart_size/I")
-         self.t.Branch( "genpart_pid"    , self. genpart_pid   , "genpart_pid[genpart_size]/I")
+         self.t.Branch( "genpart_pid"    , self.genpart_pid    , "genpart_pid[genpart_size]/I")
          self.t.Branch( "genpart_status" , self.genpart_status , "genpart_status[genpart_size]/I")
          self.t.Branch( "genpart_m1"     , self.genpart_m1     , "genpart_m1[genpart_size]/I")
          self.t.Branch( "genpart_m2"     , self.genpart_m2     , "genpart_m2[genpart_size]/I")
@@ -232,7 +232,6 @@ class TreeProducer:
     def processGenParticles(self, particles):
         i = 0
         for item in particles:
-            if (abs(item.PID) == 1000006 and item.Mass != 235) : continue
             self.genpart_pid    [i] = item.PID
             self.genpart_status [i] = item.Status
             self.genpart_pt     [i] = item.PT
