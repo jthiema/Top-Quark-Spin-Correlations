@@ -19,8 +19,8 @@ def setTDRStyle():
     # For the canvas:
     tdrStyle.SetCanvasBorderMode(0)
     tdrStyle.SetCanvasColor(kWhite)
-    tdrStyle.SetCanvasDefH(600)  # Height of canvas
-    tdrStyle.SetCanvasDefW(600)  # Width of canvas
+    tdrStyle.SetCanvasDefH(800)  # Height of canvas
+    tdrStyle.SetCanvasDefW(800)  # Width of canvas
     tdrStyle.SetCanvasDefX(0)  # POsition on screen
     tdrStyle.SetCanvasDefY(0)
 
@@ -153,7 +153,7 @@ def setTDRStyle():
     # tdrStyle->SetTimeOffset(Double_t toffset);
     # tdrStyle->SetHistMinimumZero(kTRUE);
 
-    ROOT.gROOT.ForceStyle()
+    #ROOT.gROOT.ForceStyle()
 
     tdrStyle.cd()
     return tdrStyle
@@ -162,34 +162,31 @@ def setTDRStyle():
 def main():
    
     nbins = 15
-    xlow  = 0.4
-    xhigh = 5.4
-
+    
+    xlow  = 0
+    ylow  = 0
+    
+    yhigh = 0.22
+    xhigh = 4.2
+    
+    ratio_min = 0
+    ratio_max = 1.5
+    
     hist1 = ROOT.TH1F('Run 2 FS 13 TeV' , 'Run 2 FS 13 TeV', nbins, xlow, xhigh)
     hist2 = ROOT.TH1F('Delphes 14 TeV'  , 'Delphes 14 TeV' , nbins, xlow, xhigh)
 
-    gen0_llbar_deta = np.loadtxt('../txt_files/Delphes_gen0_dR.txt')
-    rec7_llbar_deta = np.loadtxt('../txt_files/Delphes_dR_iso.txt')
+    dR    = np.loadtxt('../txt_files/Delphes_dR_iso.txt')
+    tt_dR = np.loadtxt('../txt_files/Run2_FS_dR_iso.txt')
 
-    tt_gen0_llbar_deta = np.loadtxt('../txt_files/Run2_FS_gen0_dR.txt')
-    tt_rec7_llbar_deta = np.loadtxt('../txt_files/Run2_FS_dR_iso.txt')
-
-    binning   = np.linspace(xlow, xhigh, nbins + 1)
-    ns1, bins = np.histogram(gen0_llbar_deta, bins=binning)
-    ns2, bins = np.histogram(rec7_llbar_deta, bins=binning)
-
-    ns3, bins = np.histogram(tt_gen0_llbar_deta, bins=binning)
-    ns4, bins = np.histogram(tt_rec7_llbar_deta, bins=binning)
- 
-    Delphes = ns2/ns1
-    Run2    = ns4/ns3
+    Delphes = np.histogram(dR   , bins=nbins)[0]
+    Run2    = np.histogram(tt_dR, bins=nbins)[0]
 
     for i, j, k in zip(Run2, Delphes, range(1, nbins + 1)):
         hist1.SetBinContent(k, i)
         hist2.SetBinContent(k, j)
 
-    canv    = ROOT.TCanvas("c1", "c1", 1000, 1000)
-    plotPad = ROOT.TPad("plotPad", "plotPad", 0, 0, 1, 1)  # Notthisone
+    canv    = ROOT.TCanvas("c1", "c1", 1100, 1100)
+    plotPad = ROOT.TPad("plotPad", "plotPad", 0.0, 0.25, 1, 1)  # Notthisone
     style   = setTDRStyle()
 
     ROOT.gStyle.SetOptStat(0)
@@ -198,54 +195,102 @@ def main():
     plotPad.cd()
 
     hist1.SetLineColor(ROOT.kBlue)
-    #hist1.Scale(1./hist1.Integral())
+    hist1.Scale(1./hist1.Integral())
     hist2.SetLineColor(ROOT.kRed)
-    #hist2.Scale(1./hist2.Integral())
+    hist2.Scale(1./hist2.Integral())
     
     hist1.SetLineWidth(2)
     hist2.SetLineWidth(2)
     
-    plotPad.DrawFrame(xlow, 0, xhigh, 0.40, ";dR(lepton, jet); Acceptance * Efficiency")
-
+    plotPad.DrawFrame(xlow, ylow, xhigh, yhigh, ";dR(lepton, jet); Arbitrary Units")
+ 
     ROOT.gStyle.SetOptFit(110)
     hist1.Draw('samehist')
     hist2.Draw('histsame')
-
+    
+    # Lumi and COM energy label
     latex = ROOT.TLatex()
     latex.SetTextFont(42)
     latex.SetTextAlign(31)
-    latex.SetTextSize(0.04)
+    latex.SetTextSize(0.041)
     latex.SetNDC(True)
-
+    latex.DrawLatex(0.95, 0.96, "3000 fb^{-1} (14 TeV) ")
+    
+    # CMS
     latexCMS = ROOT.TLatex()
     latexCMS.SetTextFont(61)
     latexCMS.SetTextSize(0.055)
     latexCMS.SetNDC(True)
     latexCMS.DrawLatex(0.19, 0.88, "CMS")
 
+    # Projection
     latexCMSExtra = ROOT.TLatex()
     latexCMSExtra.SetTextFont(42)
-    latexCMSExtra.SetTextSize(0.03)
+    latexCMSExtra.SetTextSize(0.035)
     latexCMSExtra.SetNDC(True)
-    latex.DrawLatex(0.95, 0.96, "3000 fb^{-1} (14 TeV) ")
+    cmsExtra      = "Projection"
+    latexCMSExtra.DrawLatex(0.19, 0.84, "%s" % (cmsExtra))
 
-    cmsExtra  = "Projection"
-    yLabelPos = 0.84
-    latexCMSExtra.DrawLatex(0.19, yLabelPos, "%s" % (cmsExtra))
-
+    # Legend
     leg = ROOT.TLegend(0.45, 0.72, 0.80, 0.92, "", "brNDC")
     leg.SetFillColor(10)
     leg.SetFillStyle(0)
     leg.SetLineColor(10)
     leg.SetShadowColor(0)
     leg.SetBorderSize(1)
-    #leg.SetTextFont(42)
+    leg.SetTextFont(62)
     leg.AddEntry(hist1, "Run2 FS 13 TeV", "l")
     leg.AddEntry(hist2, "Delphes 14 TeV", "l")
 
     leg.Draw()
+
+    canv.cd()  # returns to main canvas before defining pad2
+    
+    # Create ratio histogram
+    h_ratio = hist1.Clone("h_ratio")
+    h_ratio.SetLineColor(ROOT.kBlack)
+    h_ratio.SetMarkerStyle(21)
+    h_ratio.SetTitle("")
+    h_ratio.SetMinimum(ratio_min)
+    h_ratio.SetMaximum(ratio_max)
+    
+    # Set up plot for markers and errors
+    h_ratio.Sumw2()
+    h_ratio.SetStats(0)
+    h_ratio.Divide(hist2)
+    
+    h_ratio.GetYaxis().SetTitle("Run2/Delphes")
+
+    h_ratio.GetXaxis().SetTitleFont(43)
+    h_ratio.GetYaxis().SetTitleFont(43)
+    h_ratio.GetXaxis().SetLabelFont(43)
+    h_ratio.GetYaxis().SetLabelFont(43)
+    h_ratio.GetXaxis().SetTitleSize(24)
+    h_ratio.GetYaxis().SetTitleSize(36)
+    h_ratio.GetXaxis().SetLabelSize(40)
+    h_ratio.GetYaxis().SetLabelSize(40)
+
+    h_ratio.GetXaxis().SetTitleOffset( 3.2 )
+    h_ratio.GetYaxis().SetTitleOffset( 2.2 )
+
+    h_ratio.GetXaxis().SetTickLength( 0.03*3 )
+    h_ratio.GetYaxis().SetTickLength( 0.01*1 )
+
+    h_ratio.GetYaxis().SetNdivisions(305)
+
+    hline = ROOT.TLine(xlow, 1, xhigh, 1)
+    hline.SetLineColor(ROOT.kBlue)
+    
+    pad2  = ROOT.TPad("pad2", "pad2", 0, 0.02, 1, 0.25)
+    pad2.UseCurrentStyle()
+    pad2.Draw()
+    pad2.cd()
+    h_ratio.Draw("e0p")
+    hline.Draw()
     canv.Draw()
-    canv.SaveAs('AN_acc_eff_dR.pdf')
+
+    #canv.SaveAs('test.pdf')
+    canv.SaveAs('AN_dR_post_selection.pdf')
 
 
 main()
