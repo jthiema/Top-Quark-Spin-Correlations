@@ -155,8 +155,7 @@ def try_smear(jet1, jet2, lep1, lep2, metx, mety, evt_idx) :
         lep1_sm.SetXYZT(lep1_sm.Px()*xB1, lep1_sm.Py()*xB1, lep1_sm.Pz()*xB1, lep1_sm.E()*fB1)
         angle_rot(h_lepAngleRes.GetRandom(), 0.001, lep1_sm)
 
-        #fL2 = np.random.uniform(low= 1.0, high=1.02) # From Lep Energy Resolution,
-        fL2 = np.random.normal(1.0, 0.03)  
+        fL2 =  h_lepEres.GetRandom()        # From Lep Energy Resolution, 
         xL2 = np.sqrt((fL2**2 * lep2_sm.E()**2  - lep2_sm.M2()) / (lep2_sm.P() ** 2))
 
         lep2_sm.SetXYZT(lep2_sm.Px()*xB2, lep2_sm.Py()*xB2, lep2_sm.Pz()*xB2, lep2_sm.E()*fB2)
