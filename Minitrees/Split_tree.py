@@ -6,45 +6,61 @@
 
 import ROOT
 
-def skim(chain):
-    for i in range(20):  #Playing around
-        if (abs(chain.genpart_pid[i]) == 1000006 and chain.genpart_mass[i] == 220) :
-           return True
+
+def skim(chain, mp):
+    for i in range(20): 
+        if (abs(chain.genpart_pid[i]) == 1000006 and chain.genpart_mass[i] == mp):
+            return True
     return False
 
-def main() :
+
+def main():
 
     # Input files and trees
-    inputFile       = ROOT.TFile('SUSY_no_spin.root', 'OPEN')
-    chain 	    = ROOT.TChain()
-    chain.Add('SUSY_no_spin.root/Delphes_Ntuples')
+    inputFile = ROOT.TFile('SUSY_w_abs.root', 'OPEN')
+    chain     = ROOT.TChain()
+    chain.Add('SUSY_w_abs.root/Step8')
 
-    # Declare new tree and file
-    new_file        =  ROOT.TFile('Mstop_220.root','RECREATE')
-    new_tree        =  chain.CloneTree(0)
+    mass_points = [175, 182.5, 190, 197.5, 205, 212.5, 220, 227.5, 235, 242.5]
 
-    numberOfEntries =  chain.GetEntries()
+    for mp in mass_points :
+        if '.' in str(mp) :
+            file_name = 'Mstop_' + (str(mp).replace('.', '_')) + '.root'
+        else :
+            file_name = 'Mstop_' + str(mp) + '.root'
 
-    # Useful counters 
-    n_skim 	    =  0 
+        # Declare new tree and file
+        new_file = ROOT.TFile(file_name, 'RECREATE')
+        new_tree = chain.CloneTree(0)
 
-    ################ Start event loop #######################
+        numberOfEntries = chain.GetEntries()
 
-    for i_event in range(0, numberOfEntries):
-        i_entry = chain.LoadTree(i_event)
-        chain.GetEntry(i_event)
+        # Useful counters
+        n_skim = 0
 
-        if i_event % 1000 == 0:
-            print('Processing event %i of %i' % (i_event, numberOfEntries))
+        ################ Start event loop #######################
 
-	passed_skim = skim(chain)
-	if passed_skim :
-	    	new_tree.Fill()
-		n_skim += 1 
-   
-    inputFile.Close()
-    new_tree.AutoSave()
-    new_file.Close()
+        for i_event in range(0, numberOfEntries):
+            i_entry = chain.LoadTree(i_event)
+            chain.GetEntry(i_event)
 
-    print('Processed events : %i, of which %i passed ' %(numberOfEntries, n_skim))
-main() 
+            if i_event % 1000 == 0:
+                print('Processing event %i of %i' % (i_event, numberOfEntries))
+
+            passed_skim = skim(chain, mp)
+            if passed_skim:
+                new_tree.Fill()
+                n_skim += 1
+
+        inputFile.Close()
+        new_tree.AutoSave()
+        new_file.Close()
+
+        print('Processed events : %i, of which %i passed ' %
+            (numberOfEntries, n_skim))
+
+        print('Finished writing into file ::' + str(file_name))
+
+
+if __name__ == '__main__' :
+    main()
