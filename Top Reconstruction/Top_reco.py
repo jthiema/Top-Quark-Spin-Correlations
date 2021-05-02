@@ -49,38 +49,67 @@ args       = parser.parse_args()
 inputFile  = args.input
 outputFile = args.output
 
-tt_ptr = uproot.open(inputFile)['Step8']
+fileptr = uproot.open(inputFile)['Step8']
 
 # Gen part info
-pt     = tt_ptr['genpart_pt'].array()
-eta    = tt_ptr['genpart_eta'].array()
-phi    = tt_ptr['genpart_phi'].array()
-pid    = tt_ptr['genpart_pid'].array()
-mass   = tt_ptr['genpart_mass'].array()
-status = tt_ptr['genpart_status'].array()
+pt     = fileptr['genpart_pt'].array()
+eta    = fileptr['genpart_eta'].array()
+phi    = fileptr['genpart_phi'].array()
+pid    = fileptr['genpart_pid'].array()
+mass   = fileptr['genpart_mass'].array()
+status = fileptr['genpart_status'].array()
 
 # Reco level info
-tt_MET     = tt_ptr['MET'].array()
-tt_MET_phi = tt_ptr['MET_phi'].array()
+MET      = fileptr['MET'].array()
+MET_phi  = fileptr['MET_phi'].array()
 
-tt_e_pt     = tt_ptr['e_pt'].array()
-tt_e_eta    = tt_ptr['e_eta'].array()
-tt_e_phi    = tt_ptr['e_phi'].array()
-tt_e_charge = tt_ptr['e_charge'].array()
+e_pt     = fileptr['e_pt'].array()
+e_eta    = fileptr['e_eta'].array()
+e_phi    = fileptr['e_phi'].array()
+e_charge = fileptr['e_charge'].array()
 
-tt_mu_pt     = tt_ptr['mu_pt'].array()
-tt_mu_eta    = tt_ptr['mu_eta'].array()
-tt_mu_phi    = tt_ptr['mu_phi'].array()
-tt_mu_charge = tt_ptr['mu_charge'].array()
+mu_pt     = fileptr['mu_pt'].array()
+mu_eta    = fileptr['mu_eta'].array()
+mu_phi    = fileptr['mu_phi'].array()
+mu_charge = fileptr['mu_charge'].array()
 
-jet_btag = tt_ptr['jet_btag'].array()
-jet_pt   = tt_ptr['jet_pt'].array()
-jet_eta  = tt_ptr['jet_eta'].array()
-jet_phi  = tt_ptr['jet_phi'].array()
-jet_mass = tt_ptr['jet_mass'].array()
+jet_btag  = fileptr['jet_btag'].array()
+jet_pt    = fileptr['jet_pt'].array()
+jet_eta   = fileptr['jet_eta'].array()
+jet_phi   = fileptr['jet_phi'].array()
+jet_mass  = fileptr['jet_mass'].array()
+
+weight    = fileptr['weight'].array()
 
 # Storing the reconstructed as arrays
-tt_mass = []
+
+lep_pt   = []
+lep_eta  = []
+lep_phi  = []
+lep_mass = []
+
+alep_pt   = []
+alep_eta  = []
+alep_phi  = []
+alep_mass = []
+
+b_pt   = []
+b_eta  = []
+b_phi  = []
+b_mass = []
+
+bbar_pt   = []
+bbar_eta  = []
+bbar_phi  = []
+bbar_mass = []
+
+nu_pt  = []
+nu_eta = []
+nu_phi = []
+
+anu_pt  = []
+anu_eta = []
+anu_phi = []
 
 top_pt  = []
 top_eta = []
@@ -92,25 +121,22 @@ atop_eta = []
 atop_phi = []
 atop_rap = []
 
-nu_pt  = []
-nu_eta = []
-nu_phi = []
+tt_mass  = []
+# Gen as arrays
 
-anu_pt  = []
-anu_eta = []
-anu_phi = []
+gen_tt_mass = []
+gen_top_pt  = []
+gen_top_eta = []
+gen_top_phi = []
+gen_top_rap = []
 
-lep_pt  = []
-lep_eta = []
-lep_phi = []
-lep_mass = []
+gen_atop_pt  = []
+gen_atop_eta = []
+gen_atop_phi = []
+gen_atop_rap = []
 
-alep_pt  = []
-alep_eta = []
-alep_phi = []
-alep_mass = []
-
-sc_weight = []
+# Let's create a mask
+selection = np.zeros(len(jet_pt))
 
 for i in range(len(tt_MET)):
 
@@ -120,17 +146,17 @@ for i in range(len(tt_MET)):
         current_time = now.strftime("%H:%M:%S")
         print("Current Time =", current_time)
 
-    lep = ROOT.TLorentzVector()
+    lep  = ROOT.TLorentzVector()
     alep = ROOT.TLorentzVector()
 
     # lep charge -1 and alep charge +1
-    if (tt_e_charge[i] == -1. and tt_mu_charge[i] == 1.):
-        lep.SetPtEtaPhiM(tt_e_pt[i], tt_e_eta[i], tt_e_phi[i], 0.0)
-        alep.SetPtEtaPhiM(tt_mu_pt[i], tt_mu_eta[i], tt_mu_phi[i], 0.105)
+    if  (e_charge[i] == -1. and mu_charge[i] == 1.):
+        lep.SetPtEtaPhiM(e_pt[i], e_eta[i], e_phi[i], 0.0)
+        alep.SetPtEtaPhiM(mu_pt[i], mu_eta[i], mu_phi[i], 0.105)
 
-    elif (tt_e_charge[i] == 1. and tt_mu_charge[i] == -1.):
-        lep.SetPtEtaPhiM(tt_mu_pt[i], tt_mu_eta[i], tt_mu_phi[i], 0.105)
-        alep.SetPtEtaPhiM(tt_e_pt[i], tt_e_eta[i], tt_e_phi[i], 0.0)
+    elif (e_charge[i] == 1. and mu_charge[i] == -1.):
+        lep.SetPtEtaPhiM(mu_pt[i], mu_eta[i], mu_phi[i], 0.105)
+        alep.SetPtEtaPhiM(e_pt[i], e_eta[i], e_phi[i], 0.0)
 
     met_x = tt_MET[i] * np.cos(tt_MET_phi[i])
     met_y = tt_MET[i] * np.sin(tt_MET_phi[i])
@@ -149,7 +175,7 @@ for i in range(len(tt_MET)):
                 continue
             if (jet_pt[i][j] < 30 or jet_pt[i][k] < 30):
                 continue
-            if (jet_eta[i][j] > 2.4 or jet_eta[i][k] > 2.4):
+            if (abs(jet_eta[i][j]) > 2.4 or abs(jet_eta[i][k]) > 2.4):
                 continue
             if (jet_btag[i][j] == 0 and jet_btag[i][k] == 0):
                 continue
@@ -165,10 +191,8 @@ for i in range(len(tt_MET)):
             # 2-Btag scenario
             if (jet_btag[i][j] != 0 and jet_btag[i][k] != 0):
 
-                m_tt_1, top_p4_1, atop_p4_1, nu_p4_1, nubar_p4_1, sw_1 = try_smear(
-                    jet1, jet2, alep, lep, met_x, met_y, i)
-                m_tt_2, top_p4_2, atop_p4_2, nu_p4_2, nubar_p4_2, sw_2 = try_smear(
-                    jet2, jet1, alep, lep, met_x, met_y, i)
+                m_tt_1, top_p4_1, atop_p4_1, nu_p4_1, nubar_p4_1, sw_1 = try_smear(jet1, jet2, alep, lep, met_x, met_y, i)
+                m_tt_2, top_p4_2, atop_p4_2, nu_p4_2, nubar_p4_2, sw_2 = try_smear(jet2, jet1, alep, lep, met_x, met_y, i)
 
                 if (m_tt_1 == -999 and m_tt_2 == -999):
                     continue
@@ -176,77 +200,91 @@ for i in range(len(tt_MET)):
                 n_btag = 2
 
                 if (m_tt_2 == -999):
-                    m_tt_final = m_tt_1
-                    top_p4_final = top_p4_1
-                    atop_p4_final = atop_p4_1
-                    nu_p4_final = nu_p4_1
+                    m_tt_final     = m_tt_1
+                    top_p4_final   = top_p4_1
+                    atop_p4_final  = atop_p4_1
+                    nu_p4_final    = nu_p4_1
                     nubar_p4_final = nubar_p4_1
+                    b_p4_final     = jet1
+                    bbar_p4_final  = jet2  
 
                 if (m_tt_1 == -999):
-                    m_tt_final = m_tt_2
-                    top_p4_final = top_p4_2
-                    atop_p4_final = atop_p4_2
-                    nu_p4_final = nu_p4_2
+                    m_tt_final     = m_tt_2
+                    top_p4_final   = top_p4_2
+                    atop_p4_final  = atop_p4_2
+                    nu_p4_final    = nu_p4_2
                     nubar_p4_final = nubar_p4_2
+                    b_p4_final     = jet2
+                    bbar_p4_final  = jet1  
 
                 if((m_tt_1 != -999 and m_tt_2 != -999) and sw_2 <= sw_1):
-                    m_tt_final = m_tt_1
-                    top_p4_final = top_p4_1
-                    atop_p4_final = atop_p4_1
-                    nu_p4_final = nu_p4_1
+                    m_tt_final     = m_tt_1
+                    top_p4_final   = top_p4_1
+                    atop_p4_final  = atop_p4_1
+                    nu_p4_final    = nu_p4_1
                     nubar_p4_final = nubar_p4_1
+                    b_p4_final     = jet1
+                    bbar_p4_final  = jet2  
 
                 if((m_tt_1 != -999 and m_tt_2 != -999) and sw_1 <= sw_2):
-                    m_tt_final = m_tt_2
-                    top_p4_final = top_p4_2
-                    atop_p4_final = atop_p4_2
-                    nu_p4_final = nu_p4_2
+                    m_tt_final     = m_tt_2
+                    top_p4_final   = top_p4_2
+                    atop_p4_final  = atop_p4_2
+                    nu_p4_final    = nu_p4_2
                     nubar_p4_final = nubar_p4_2
+                    b_p4_final     = jet2
+                    bbar_p4_final  = jet1  
 
             if (n_btag == 2):
                 continue
 
             # 1-Btag scenario
             if ((jet_btag[i][j] != 0 and jet_btag[i][k] == 0) or (jet_btag[i][j] == 0 and jet_btag[i][k] != 0)):
-                m_tt_1, top_p4_1, atop_p4_1, nu_p4_1, nubar_p4_1, sw_1 = try_smear(
-                    jet1, jet2, alep, lep, met_x, met_y, i)
-                m_tt_2, top_p4_2, atop_p4_2, nu_p4_2, nubar_p4_2, sw_2 = try_smear(
-                    jet2, jet1, alep, lep, met_x, met_y, i)
+                m_tt_1, top_p4_1, atop_p4_1, nu_p4_1, nubar_p4_1, sw_1 = try_smear(jet1, jet2, alep, lep, met_x, met_y, i)
+                m_tt_2, top_p4_2, atop_p4_2, nu_p4_2, nubar_p4_2, sw_2 = try_smear(jet2, jet1, alep, lep, met_x, met_y, i)
 
                 if (m_tt_1 == -999 and m_tt_2 == -999):
                     continue
 
                 if (m_tt_2 == -999 and high_w <= sw_1):
-                    m_tt_final = m_tt_1
-                    top_p4_final = top_p4_1
-                    atop_p4_final = atop_p4_1
-                    nu_p4_final = nu_p4_1
+                    m_tt_final     = m_tt_1
+                    top_p4_final   = top_p4_1
+                    atop_p4_final  = atop_p4_1
+                    nu_p4_final    = nu_p4_1
                     nubar_p4_final = nubar_p4_1
-                    high_w = sw_1
+                    high_w         = sw_1
+                    b_p4_final     = jet1
+                    bbar_p4_final  = jet2  
 
                 if (m_tt_1 == -999 and high_w <= sw_2):
-                    m_tt_final = m_tt_2
-                    top_p4_final = top_p4_2
-                    atop_p4_final = atop_p4_2
-                    nu_p4_final = nu_p4_2
+                    m_tt_final     = m_tt_2
+                    top_p4_final   = top_p4_2
+                    atop_p4_final  = atop_p4_2
+                    nu_p4_final    = nu_p4_2
                     nubar_p4_final = nubar_p4_2
-                    high_w = sw_2
+                    high_w         = sw_2
+                    b_p4_final     = jet2
+                    bbar_p4_final  = jet1
 
                 if((m_tt_1 != -999 and m_tt_2 != -999) and sw_2 <= sw_1 and high_w <= sw_1):
-                    m_tt_final = m_tt_1
-                    top_p4_final = top_p4_1
-                    atop_p4_final = atop_p4_1
-                    nu_p4_final = nu_p4_1
+                    m_tt_final     = m_tt_1
+                    top_p4_final   = top_p4_1
+                    atop_p4_final  = atop_p4_1
+                    nu_p4_final    = nu_p4_1
                     nubar_p4_final = nubar_p4_1
-                    high_w = sw_1
+                    high_w         = sw_1
+                    b_p4_final     = jet1
+                    bbar_p4_final  = jet2  
 
                 if((m_tt_1 != -999 and m_tt_2 != -999) and sw_1 <= sw_2 and high_w <= sw_2):
-                    m_tt_final = m_tt_2
-                    top_p4_final = top_p4_2
-                    atop_p4_final = atop_p4_2
-                    nu_p4_final = nu_p4_2
+                    m_tt_final     = m_tt_2
+                    top_p4_final   = top_p4_2
+                    atop_p4_final  = atop_p4_2
+                    nu_p4_final    = nu_p4_2
                     nubar_p4_final = nubar_p4_2
-                    high_w = sw_2
+                    high_w         = sw_2
+                    b_p4_final     = jet2
+                    bbar_p4_final  = jet1 
 
                 else:
                     continue
@@ -254,40 +292,21 @@ for i in range(len(tt_MET)):
     if m_tt_final == 0:
         continue
 
-    if m_tt_final > 3000:
-        continue
+    for j in range(len(pt[i])):
+        # Gen level tops for Ecom
+        if (pid[i][j] == 6) and (status[i][j] == 62):
+            gen_top = ROOT.TLorentzVector()
+            gen_top.SetPtEtaPhiM(pt[i][j], eta[i][j], phi[i][j], mass[i][j])
 
-    top_arr  = []
-    chi0_arr = []
-    ferm_arr = []
+        if (pid[i][j] == -6) and (status[i][j] == 62):
+            gen_atop = ROOT.TLorentzVector()
+            gen_atop.SetPtEtaPhiM(pt[i][j], eta[i][j], phi[i][j], mass[i][j])
 
-    for j in range(len(pid[i]) - 1) :
-    
-        if (abs(pid[i][j]) == 1000006) :
-            mstop = mass[i][j]
-        
-        if (abs(pid[i][j]) == 6) :
-            mtop  = mass[i][j]
-            top4  = ROOT.TLorentzVector()
-            top4.SetPtEtaPhiM(pt[i][j], eta[i][j], phi[i][j], mass[i][j])
-            top_arr.append(top4)
-        
-        if (abs(pid[i][j]) == 1000022) :
-            mchi0  = mass[i][j]
-            chi04  = ROOT.TLorentzVector()
-            chi04.SetPtEtaPhiM(pt[i][j], eta[i][j], phi[i][j], mass[i][j])
-            chi0_arr.append(chi04)
+        else:
+            continue
 
-        if ( (abs(pid[i][j]) == 13) or (abs(pid[i][j]) == 11) or (abs(pid[i][j]) == 15)) :
-            ferm4  = ROOT.TLorentzVector()
-            ferm4.SetPtEtaPhiM(pt[i][j], eta[i][j], phi[i][j], mass[i][j])
-            ferm_arr.append(ferm4)
-    
-        else : continue
-            
-    thetaMixingTarget = GetThetaMixingangle(+1, mstop, mtop, mchi0)
-
-    sc_weight.append(GetWeight(thetaMixingTarget, top_arr, ferm_arr, chi0_arr, mtop, mchi0))
+    # COM 4-vec
+    com = gen_top + gen_atop  # Adding the 4 vectors
 
     tt_mass.append(m_tt_final)
     top_pt.append(top_p4_final.Pt())
@@ -318,8 +337,62 @@ for i in range(len(tt_MET)):
     alep_phi.append(alep.Phi())
     alep_mass.append(alep.M())
 
+    b_pt.append(b_p4_final.Pt())
+    b_eta.append(b_p4_final.Eta())
+    b_phi.append(b_p4_final.Phi())
+    b_mass.append(b_p4_final.M())
+
+    bbar_pt.append(bbar_p4_final.Pt())
+    bbar_eta.append(bbar_p4_final.Eta())
+    bbar_phi.append(bbar_p4_final.Phi())
+    bbar_mass.append(bbar_p4_final.M())
+
+    gen_tt_mass.append(com.M())
+    gen_top_pt.append(gen_top.Pt())
+    gen_top_eta.append(gen_top.Eta())
+    gen_top_phi.append(gen_top.Phi())
+    gen_top_rap.append(gen_top.Rapidity())
+
+    gen_atop_pt.append(gen_atop.Pt())
+    gen_atop_eta.append(gen_atop.Eta())
+    gen_atop_phi.append(gen_atop.Phi())
+    gen_atop_rap.append(gen_atop.Rapidity())
+
+    # Create a mask for selection
+    selection[i] = 1
+
+weight_sel = weight[selection == 1]
 
 # Empty arrays that get mapped to histograms in a root file
+# Selected leptons and jets
+l_pt_arr = array('f', [0.])
+l_eta_arr = array('f', [0.])
+l_phi_arr = array('f', [0.])
+l_mass_arr = array('f', [0.])
+
+lbar_pt_arr   = array('f', [0.])
+lbar_eta_arr  = array('f', [0.])
+lbar_phi_arr  = array('f', [0.])
+lbar_mass_arr = array('f', [0.])
+
+b_pt_arr = array('f', [0.])
+b_eta_arr = array('f', [0.])
+b_phi_arr = array('f', [0.])
+b_mass_arr = array('f', [0.])
+
+bbar_pt_arr   = array('f', [0.])
+bbar_eta_arr  = array('f', [0.])
+bbar_phi_arr  = array('f', [0.])
+bbar_mass_arr = array('f', [0.])
+
+# Reconstructed tops and nus
+nu_pt_arr  = array('f', [0.])
+nu_eta_arr = array('f', [0.])
+nu_phi_arr = array('f', [0.])
+
+nubar_pt_arr  = array('f', [0.])
+nubar_eta_arr = array('f', [0.])
+nubar_phi_arr = array('f', [0.])
 
 t_pt_arr = array('f', [0.])
 t_eta_arr = array('f', [0.])
@@ -331,43 +404,29 @@ tbar_eta_arr = array('f', [0.])
 tbar_phi_arr = array('f', [0.])
 tbar_rap_arr = array('f', [0.])
 
-l_pt_arr = array('f', [0.])
-l_eta_arr = array('f', [0.])
-l_phi_arr = array('f', [0.])
-l_mass_arr = array('f', [0.])
-
-lbar_pt_arr   = array('f', [0.])
-lbar_eta_arr  = array('f', [0.])
-lbar_phi_arr  = array('f', [0.])
-lbar_mass_arr = array('f', [0.])
-
-nu_pt_arr  = array('f', [0.])
-nu_eta_arr = array('f', [0.])
-nu_phi_arr = array('f', [0.])
-
-nubar_pt_arr  = array('f', [0.])
-nubar_eta_arr = array('f', [0.])
-nubar_phi_arr = array('f', [0.])
-
 m_ttbar_arr   = array('f', [0.])
 
-sc_weight_arr = array('f', [0.])
+# Weights 
+weight_size_arr = array('i', [0])
+weight_arr      = array('f', maxn*[0.])
 
- 
+# Gen entries
+gen_t_pt_arr = array('f', [0.])
+gen_t_eta_arr = array('f', [0.])
+gen_t_phi_arr = array('f', [0.])
+gen_t_rap_arr = array('f', [0.])
+
+gen_tbar_pt_arr = array('f', [0.])
+gen_tbar_eta_arr = array('f', [0.])
+gen_tbar_phi_arr = array('f', [0.])
+gen_tbar_rap_arr = array('f', [0.])
+
+gen_m_ttbar_arr = array('f', [0.])
+
 opfile = ROOT.TFile(outputFile, 'recreate')
 tree   = ROOT.TTree("Step8", "Step8")
 
-# Tops and nus
-tree.Branch("t_pt", t_pt_arr, 't_pt/F')
-tree.Branch("t_eta", t_eta_arr, 't_eta/F')
-tree.Branch("t_phi", t_phi_arr, 't_phi/F')
-tree.Branch("t_rapidity", t_rap_arr, 't_rapidity/F')
-
-tree.Branch("tbar_pt", tbar_pt_arr, 'tbar_pt/F')
-tree.Branch("tbar_eta", tbar_eta_arr, 'tbar_eta/F')
-tree.Branch("tbar_phi", tbar_phi_arr, 'tbar_phi/F')
-tree.Branch("tbar_rapidity", tbar_rap_arr, 'tbar_rapidity/F')
-
+# Leptons and jets
 tree.Branch("l_pt", l_pt_arr, 'l_pt/F')
 tree.Branch("l_eta", l_eta_arr, 'l_eta/F')
 tree.Branch("l_phi", l_phi_arr, 'l_phi/F')
@@ -378,6 +437,18 @@ tree.Branch("lbar_eta", lbar_eta_arr, 'lbar_eta/F')
 tree.Branch("lbar_phi", lbar_phi_arr, 'lbar_phi/F')
 tree.Branch("lbar_mass", lbar_mass_arr, 'lbar_mass/F')
 
+tree.Branch("b_pt", b_pt_arr, 'b_pt/F')
+tree.Branch("b_eta", b_eta_arr, 'b_eta/F')
+tree.Branch("b_phi", b_phi_arr, 'b_phi/F')
+tree.Branch("b_mass", b_mass_arr, 'b_mass/F')
+
+tree.Branch("bbar_pt", bbar_pt_arr, 'bbar_pt/F')
+tree.Branch("bbar_eta", bbar_eta_arr, 'bbar_eta/F')
+tree.Branch("bbar_phi", bbar_phi_arr, 'bbar_phi/F')
+tree.Branch("bbar_mass", bbar_mass_arr, 'bbar_mass/F')
+
+# Tops and nus
+
 tree.Branch("nu_pt", nu_pt_arr, 'nu_pt/F')
 tree.Branch("nu_eta", nu_eta_arr, 'nu_eta/F')
 tree.Branch("nu_phi", nu_phi_arr, 'nu_phi/F')
@@ -386,11 +457,23 @@ tree.Branch("nubar_pt", nubar_pt_arr, 'nubar_pt/F')
 tree.Branch("nubar_eta", nubar_eta_arr, 'nubar_eta/F')
 tree.Branch("nubar_phi", nubar_phi_arr, 'nubar_phi/F')
 
+tree.Branch("t_pt", t_pt_arr, 't_pt/F')
+tree.Branch("t_eta", t_eta_arr, 't_eta/F')
+tree.Branch("t_phi", t_phi_arr, 't_phi/F')
+tree.Branch("t_rapidity", t_rap_arr, 't_rapidity/F')
+
+tree.Branch("tbar_pt", tbar_pt_arr, 'tbar_pt/F')
+tree.Branch("tbar_eta", tbar_eta_arr, 'tbar_eta/F')
+tree.Branch("tbar_phi", tbar_phi_arr, 'tbar_phi/F')
+tree.Branch("tbar_rapidity", tbar_rap_arr, 'tbar_rapidity/F')
+
 tree.Branch("tt_mass", m_ttbar_arr, 'tt_mass/F')
 
-tree.Branch("sc_weight", sc_weight_arr, "sc_weight/F")
+# Weights
+#tree.Branch("sc_weight", sc_weight_arr, "sc_weight/F")
+tree.Branch("weight_size", weight_size_arr, "weight_size/I")
+tree.Branch("weight", weight_arr, "weight[weight_size]/F")
 
-'''
 # Gen branches
 tree.Branch("gen_t_pt",  gen_t_pt_arr, 'gen_t_pt/F')
 tree.Branch("gen_t_eta", gen_t_eta_arr, 'gen_t_eta/F')
@@ -403,19 +486,9 @@ tree.Branch("gen_tbar_phi", gen_tbar_phi_arr, 'gen_tbar_phi/F')
 tree.Branch("gen_tbar_rapidity", gen_tbar_rap_arr, 'gen_tbar_rapidity/F')
 
 tree.Branch("gen_tt_mass", gen_m_ttbar_arr, 'gen_tt_mass/F')
-'''
+
 
 for i in range(len(top_pt)):
-
-    t_pt_arr[0]  = top_pt[i]
-    t_eta_arr[0] = top_eta[i]
-    t_phi_arr[0] = top_phi[i]
-    t_rap_arr[0] = top_rap[i]
-
-    tbar_pt_arr[0]  = atop_pt[i]
-    tbar_eta_arr[0] = atop_eta[i]
-    tbar_phi_arr[0] = atop_phi[i]
-    tbar_rap_arr[0] = atop_rap[i]
 
     l_pt_arr[0]   = lep_pt[i]
     l_eta_arr[0]  = lep_eta[i]
@@ -427,6 +500,16 @@ for i in range(len(top_pt)):
     lbar_phi_arr[0]  = alep_phi[i]
     lbar_mass_arr[0] = alep_mass[i]
 
+    b_pt_arr[0]   = b_pt[i]
+    b_eta_arr[0]  = b_eta[i]
+    b_phi_arr[0]  = b_phi[i]
+    b_mass_arr[0] = b_mass[i]
+
+    bbar_pt_arr[0]   = bbar_pt[i]
+    bbar_eta_arr[0]  = bbar_eta[i]
+    bbar_phi_arr[0]  = bbar_phi[i]
+    bbar_mass_arr[0] = bbar_mass[i]
+
     nu_pt_arr[0]  = nu_pt[i]
     nu_eta_arr[0] = nu_eta[i]
     nu_phi_arr[0] = nu_phi[i]
@@ -435,10 +518,18 @@ for i in range(len(top_pt)):
     nubar_eta_arr[0] = anu_eta[i]
     nubar_phi_arr[0] = anu_phi[i]
 
-    m_ttbar_arr[0]   = tt_mass[i]
-    sc_weight_arr[0] = sc_weight[i]
+    t_pt_arr[0]  = top_pt[i]
+    t_eta_arr[0] = top_eta[i]
+    t_phi_arr[0] = top_phi[i]
+    t_rap_arr[0] = top_rap[i]
 
-    '''
+    tbar_pt_arr[0]  = atop_pt[i]
+    tbar_eta_arr[0] = atop_eta[i]
+    tbar_phi_arr[0] = atop_phi[i]
+    tbar_rap_arr[0] = atop_rap[i]
+
+    m_ttbar_arr[0]   = tt_mass[i]
+    
     gen_t_pt_arr[0] = gen_top_pt[i]
     gen_t_eta_arr[0] = gen_top_eta[i]
     gen_t_phi_arr[0] = gen_top_phi[i]
@@ -450,7 +541,12 @@ for i in range(len(top_pt)):
     gen_tbar_rap_arr[0] = gen_atop_rap[i]
 
     gen_m_ttbar_arr[0] = gen_tt_mass[i]
-    '''
+    
+    weight_size_arr[0]  = len(weight_sel[i])
+
+    for k in range(weight_size_arr[0]):
+        weight_arr[k] = weight_sel[i][k]
+
     tree.Fill()
 
 # Write the tree into the output file and close the file
