@@ -122,6 +122,7 @@ atop_phi = []
 atop_rap = []
 
 tt_mass  = []
+
 # Gen as arrays
 
 gen_tt_mass = []
@@ -138,7 +139,7 @@ gen_atop_rap = []
 # Let's create a mask
 selection = np.zeros(len(jet_pt))
 
-for i in range(len(tt_MET)):
+for i in range(len(jet_pt)):
 
     if (i % 500 == 0):
         print('Processing event :: ' + str(i))
@@ -158,8 +159,8 @@ for i in range(len(tt_MET)):
         lep.SetPtEtaPhiM(mu_pt[i], mu_eta[i], mu_phi[i], 0.105)
         alep.SetPtEtaPhiM(e_pt[i], e_eta[i], e_phi[i], 0.0)
 
-    met_x = tt_MET[i] * np.cos(tt_MET_phi[i])
-    met_y = tt_MET[i] * np.sin(tt_MET_phi[i])
+    met_x = MET[i] * np.cos(MET_phi[i])
+    met_y = MET[i] * np.sin(MET_phi[i])
 
     # Only consider 2 btagged jets is found, high_w is used for single b-tag case
     n_btag = 0
@@ -182,8 +183,8 @@ for i in range(len(tt_MET)):
 
             jet1 = ROOT.TLorentzVector()
             jet2 = ROOT.TLorentzVector()
-            jet1.SetPtEtaPhiM(jet_pt[i][j], jet_eta[i][j], jet_phi[i][j], 4.2)
-            jet2.SetPtEtaPhiM(jet_pt[i][k], jet_eta[i][k], jet_phi[i][k], 4.2)
+            jet1.SetPtEtaPhiM(jet_pt[i][j], jet_eta[i][j], jet_phi[i][j], jet_mass[i][j])
+            jet2.SetPtEtaPhiM(jet_pt[i][k], jet_eta[i][k], jet_phi[i][k], jet_mass[i][k])
 
             if (lep.DeltaR(jet1) < 0.4 or lep.DeltaR(jet2) < 0.4 or alep.DeltaR(jet1) < 0.4 or alep.DeltaR(jet2) < 0.4):
                 continue
@@ -407,6 +408,7 @@ tbar_rap_arr = array('f', [0.])
 m_ttbar_arr   = array('f', [0.])
 
 # Weights 
+maxn    = 9999
 weight_size_arr = array('i', [0])
 weight_arr      = array('f', maxn*[0.])
 
