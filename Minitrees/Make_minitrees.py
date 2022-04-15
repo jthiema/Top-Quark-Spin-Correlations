@@ -31,51 +31,54 @@ def main():
     inputFile = args.input
     outputFile = args.output
 
-    fileptr = uproot.open(inputFile)['Delphes_Ntuples']
+    fileptr = uproot.open(inputFile)['events']
 
     # Jet MET
-    jet_pt   = fileptr['jet_pt'].array()
-    jet_eta  = fileptr['jet_eta'].array()
-    jet_phi  = fileptr['jet_phi'].array()
-    jet_mass = fileptr['jet_mass'].array()
-    jet_btag = fileptr['jet_btag'].array()
+    jet_px   = fileptr['pfjets04.core.p4.px'].array()
+    jet_py  = fileptr['pfjets04.core.p4.py'].array()
+    jet_pz  = fileptr['pfjets04.core.p4.pz'].array()
+    jet_pt   =
+    jet_eta  =
+    jet_phi  =
+    jet_mass = fileptr['pfjets04.core.p4.mass'].array()
+    jet_btag = fileptr['pfbTags04.tag'].array()
 
-    met_pt    = fileptr['met_pt'].array()
-    met_phi   = fileptr['met_phi'].array()
-    weight    = fileptr['weight'].array()
-    scalar_ht = fileptr['scalar_ht'].array()
+    met_pt    = fileptr['met.magnitude'].array()
+    met_phi   = fileptr['met.phi'].array()
+    weight    = fileptr['mcEventWeights'].array()
+    scalar_ht = fileptr['met.scalarSum'].array()
 
     # Electrons
     elec_pt     = fileptr['elec_pt'].array()
     elec_eta    = fileptr['elec_eta'].array()
     elec_phi    = fileptr['elec_phi'].array()
-    elec_mass   = fileptr['elec_mass'].array()
-    elec_charge = fileptr['elec_charge'].array()
-    elec_reliso = fileptr['elec_reliso'].array()
+    elec_mass   = fileptr['electrons.core.p4.mass'].array()
+    elec_charge = fileptr['electrons.core.charge'].array()
+#    elec_reliso = fileptr['elec_reliso'].array()
 
     # Muons
     muon_pt     = fileptr['muon_pt'].array()
     muon_eta    = fileptr['muon_eta'].array()
     muon_phi    = fileptr['muon_phi'].array()
-    muon_mass   = fileptr['muon_mass'].array()
-    muon_charge = fileptr['muon_charge'].array()
-    muon_reliso = fileptr['muon_reliso'].array()
+    muon_mass   = fileptr['muons.core.p4.mass'].array()
+    muon_charge = fileptr['muons.core.charge'].array()
+#    muon_reliso = fileptr['muon_reliso'].array()
 
     # Gen level jets
     genjet_pt   = fileptr['genjet_pt'].array()
     genjet_eta  = fileptr['genjet_eta'].array()
     genjet_phi  = fileptr['genjet_phi'].array()
-    genjet_mass = fileptr['genjet_mass'].array()
+    genjet_mass = fileptr['genjets04.core.p4.mass'].array()
     #genjet_btag = fileptr['genjet_btag'].array()
 
     # Gen level data
     genpart_pt     = fileptr['genpart_pt'].array()
     genpart_eta    = fileptr['genpart_eta'].array()
     genpart_phi    = fileptr['genpart_phi'].array()
-    genpart_mass   = fileptr['genpart_mass'].array()
-    genpart_pid    = fileptr['genpart_pid'].array()
-    genpart_status = fileptr['genpart_status'].array()
-    genpart_charge = fileptr['genpart_charge'].array()
+    genpart_mass   = fileptr['skimmedGenParticles.core.p4.mass'].array()
+    genpart_pid    = fileptr['skimmedGenParticles.core.p4.pdgId'].array()
+    genpart_status = fileptr['skimmedGenParticles.core.status'].array()
+    genpart_charge = fileptr['skimmedGenParticles.core.charge'].array()
 
     # Empty arrays
     # Similar to histograms in ROOT
@@ -167,8 +170,8 @@ def main():
             if (abs(muon_eta[i][j]) > 2.4):       # Should be 4?
                 continue
 
-            if (muon_reliso[i][j] > 0.15):
-                continue
+            #if (muon_reliso[i][j] > 0.15):
+                #continue
 
             mu_idx.append(j)
 
