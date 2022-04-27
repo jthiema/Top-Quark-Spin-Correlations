@@ -21,6 +21,37 @@ def dR(e_phi, e_eta, m_phi, m_eta):
     return np.sqrt(d_phi**2 + d_eta**2)
 
 
+def CalcE(px,py,pz,m):
+	E = np.sqrt(px**2 + py**2 + pz**2 + m**2)
+	return E
+
+
+def ptetaphiarray(mass, px, py, pz):
+    pt = []
+    eta = []
+    phi = []
+    for i in range(len(px)):
+        pt.append([])
+        eta.append([])
+        phi.append([])
+        for v in range(len(px[i]))
+            pxi = px[i][v]
+            pyi = py[i][v]
+            pzi = pz[i][v]
+            massi = mass[i][v]
+            Ei = CalcE(pxi, pyi, pzi, massi)
+            l  = ROOT.TLorentzVector()
+            l.SetPxPyPzE(pxi, pyi, pzi, Ei)
+            pti = l.Pt()
+            phii = l.Phi()
+            etai = l.Eta()
+            pt[i].append(pti)
+            eta[i].append(etai)
+            phi[i].append(phii)
+    return (pt, eta, phi)
+
+
+
 def main():
 
     parser = argparse.ArgumentParser()
@@ -37,11 +68,9 @@ def main():
     jet_px   = fileptr['pfjets04.core.p4.px'].array()
     jet_py  = fileptr['pfjets04.core.p4.py'].array()
     jet_pz  = fileptr['pfjets04.core.p4.pz'].array()
-    jet_pt   =
-    jet_eta  =
-    jet_phi  =
     jet_mass = fileptr['pfjets04.core.p4.mass'].array()
     jet_btag = fileptr['pfbTags04.tag'].array()
+    (jet_pt, jet_eta, jet_phi) = ptetaphiarray(jet_mass, jet_px, jet_py, jet_pz)
 
     met_pt    = fileptr['met.magnitude'].array()
     met_phi   = fileptr['met.phi'].array()
@@ -49,36 +78,40 @@ def main():
     scalar_ht = fileptr['met.scalarSum'].array()
 
     # Electrons
-    elec_pt     = fileptr['elec_pt'].array()
-    elec_eta    = fileptr['elec_eta'].array()
-    elec_phi    = fileptr['elec_phi'].array()
+    elec_px     = fileptr['electrons.core.p4.px'].array()
+    elec_py    = fileptr['electrons.core.p4.py'].array()
+    elec_pz    = fileptr['electrons.core.p4.pz'].array()
     elec_mass   = fileptr['electrons.core.p4.mass'].array()
     elec_charge = fileptr['electrons.core.charge'].array()
+    (elec_pt, elec_eta, elec_phi) = ptetaphiarray(elec_mass, elec_px, elec_py, elec_pz)
 #    elec_reliso = fileptr['elec_reliso'].array()
 
     # Muons
-    muon_pt     = fileptr['muon_pt'].array()
-    muon_eta    = fileptr['muon_eta'].array()
-    muon_phi    = fileptr['muon_phi'].array()
+    muon_px = fileptr['muons.core.p4.px'].array()
+    muon_py = fileptr['muons.core.p4.py'].array()
+    muon_pz = fileptr['muons.core.p4.pz'].array()
     muon_mass   = fileptr['muons.core.p4.mass'].array()
     muon_charge = fileptr['muons.core.charge'].array()
+    (muon_pt, muon_eta, muon_phi) = ptetaphiarray(muon_mass, muon_px, muon_py, muon_pz)
 #    muon_reliso = fileptr['muon_reliso'].array()
 
     # Gen level jets
-    genjet_pt   = fileptr['genjet_pt'].array()
-    genjet_eta  = fileptr['genjet_eta'].array()
-    genjet_phi  = fileptr['genjet_phi'].array()
+    genjet_px   = fileptr['genjets04.core.p4.px'].array()
+    genjet_py  = fileptr['genjets04.core.p4.py'].array()
+    genjet_pz  = fileptr['genjets04.core.p4.pz'].array()
     genjet_mass = fileptr['genjets04.core.p4.mass'].array()
+    (genjet_pt, genjet_eta, genjet_phi) = ptetaphiarray(genjet_mass, genjet_px, genjet_py, genjet_pz)
     #genjet_btag = fileptr['genjet_btag'].array()
 
     # Gen level data
-    genpart_pt     = fileptr['genpart_pt'].array()
-    genpart_eta    = fileptr['genpart_eta'].array()
-    genpart_phi    = fileptr['genpart_phi'].array()
+    genpart_px     = fileptr['skimmedGenParticles.core.p4.px'].array()
+    genpart_py    = fileptr['skimmedGenParticles.core.p4.px'].array()
+    genpart_pz    = fileptr['skimmedGenParticles.core.p4.pxi'].array()
     genpart_mass   = fileptr['skimmedGenParticles.core.p4.mass'].array()
     genpart_pid    = fileptr['skimmedGenParticles.core.p4.pdgId'].array()
     genpart_status = fileptr['skimmedGenParticles.core.status'].array()
     genpart_charge = fileptr['skimmedGenParticles.core.charge'].array()
+    (genpart_pt, genpart_eta, genpart_phi) = ptetaphiarray(genpart_mass, genpart_px, genpart_py, genpart_pz)
 
     # Empty arrays
     # Similar to histograms in ROOT
