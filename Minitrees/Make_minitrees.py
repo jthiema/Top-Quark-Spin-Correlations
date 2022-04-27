@@ -34,7 +34,7 @@ def ptetaphiarray(mass, px, py, pz):
         pt.append([])
         eta.append([])
         phi.append([])
-        for v in range(len(px[i]))
+        for v in range(len(px[i])):
             pxi = px[i][v]
             pyi = py[i][v]
             pzi = pz[i][v]
@@ -100,8 +100,9 @@ def main():
     genjet_py  = fileptr['genjets04.core.p4.py'].array()
     genjet_pz  = fileptr['genjets04.core.p4.pz'].array()
     genjet_mass = fileptr['genjets04.core.p4.mass'].array()
+    #genjet_btag = fileptr['genjetsFlavor04.tag'].array() #maybe a fix
     (genjet_pt, genjet_eta, genjet_phi) = ptetaphiarray(genjet_mass, genjet_px, genjet_py, genjet_pz)
-    #genjet_btag = fileptr['genjet_btag'].array()
+    #genjet_btag = fileptr['genjets'].array()
 
     # Gen level data
     genpart_px     = fileptr['skimmedGenParticles.core.p4.px'].array()
