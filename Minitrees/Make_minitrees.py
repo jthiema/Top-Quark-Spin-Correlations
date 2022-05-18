@@ -3,6 +3,7 @@ import uproot
 import argparse
 import numpy as np
 from   array import array
+import awkward as ak
 import matplotlib.pyplot as plt
 
 
@@ -31,6 +32,8 @@ def ptetaphiarray(mass, px, py, pz):
     eta = []
     phi = []
     for i in range(len(px)):
+        if (i % 1000 == 0):
+            print('Processing event ' + str(i) + ' of ' + str(len(px)))
         pt.append([])
         eta.append([])
         phi.append([])
@@ -48,7 +51,7 @@ def ptetaphiarray(mass, px, py, pz):
             pt[i].append(pti)
             eta[i].append(etai)
             phi[i].append(phii)
-    return (pt, eta, phi)
+    return (ak.Array(pt), ak.Array(eta), ak.Array(phi))
 
 
 
@@ -74,7 +77,7 @@ def main():
 
     met_pt    = fileptr['met.magnitude'].array()
     met_phi   = fileptr['met.phi'].array()
-    weight    = fileptr['mcEventWeights'].array()
+    weight    = fileptr['mcEventWeights.value'].array()
     scalar_ht = fileptr['met.scalarSum'].array()
 
     # Electrons
@@ -100,16 +103,16 @@ def main():
     genjet_py  = fileptr['genjets04.core.p4.py'].array()
     genjet_pz  = fileptr['genjets04.core.p4.pz'].array()
     genjet_mass = fileptr['genjets04.core.p4.mass'].array()
-    #genjet_btag = fileptr['genjetsFlavor04.tag'].array() #maybe a fix
     (genjet_pt, genjet_eta, genjet_phi) = ptetaphiarray(genjet_mass, genjet_px, genjet_py, genjet_pz)
+    #genjet_btag = fileptr['genjetsFlavor04.tag'].array() #maybe a fix
     #genjet_btag = fileptr['genjets'].array()
 
     # Gen level data
     genpart_px     = fileptr['skimmedGenParticles.core.p4.px'].array()
-    genpart_py    = fileptr['skimmedGenParticles.core.p4.px'].array()
-    genpart_pz    = fileptr['skimmedGenParticles.core.p4.pxi'].array()
+    genpart_py    = fileptr['skimmedGenParticles.core.p4.py'].array()
+    genpart_pz    = fileptr['skimmedGenParticles.core.p4.pz'].array()
     genpart_mass   = fileptr['skimmedGenParticles.core.p4.mass'].array()
-    genpart_pid    = fileptr['skimmedGenParticles.core.p4.pdgId'].array()
+    genpart_pid    = fileptr['skimmedGenParticles.core.pdgId'].array()
     genpart_status = fileptr['skimmedGenParticles.core.status'].array()
     genpart_charge = fileptr['skimmedGenParticles.core.charge'].array()
     (genpart_pt, genpart_eta, genpart_phi) = ptetaphiarray(genpart_mass, genpart_px, genpart_py, genpart_pz)
@@ -594,7 +597,7 @@ def main():
             jet_eta_arr[j]  = jet_eta_sel[i][j]
             jet_phi_arr[j]  = jet_phi_sel[i][j]
             jet_mass_arr[j] = jet_mass_sel[i][j]
-            jet_btag_arr[j] = jet_btag_sel[i][j]
+            jet_btag_arr[j] = int(jet_btag_sel[i][j])
 
         for j in range(genjet_size_arr[0]):
             genjet_pt_arr[j]   = genjet_pt_sel[i][j]
