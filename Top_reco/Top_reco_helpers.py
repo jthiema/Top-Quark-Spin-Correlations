@@ -144,11 +144,6 @@ def try_smear(jet1, jet2, lep1, lep2, metx, mety, evt_idx) :
 
         fB2 = h_jetEres.GetRandom()         # From Jet Energy Resolution  
 
-        print(fB2)
-        print(jet2_sm.E())
-        print(jet2_sm.M2())
-        print(jet2_sm.P())
-
         xB2 = np.sqrt((fB2**2 * jet2_sm.E()**2  - jet2_sm.M2()) / (jet2_sm.P() ** 2))
 
         jet2_sm.SetXYZT(jet2_sm.Px()*xB2, jet2_sm.Py()*xB2, jet2_sm.Pz()*xB2, jet2_sm.E()*fB2)
