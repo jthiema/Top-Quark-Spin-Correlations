@@ -4,6 +4,8 @@ import uproot
 import numpy  as np
 import pandas as pd
 from   datetime  import datetime
+import argparse
+from array import array
 
 def ifOk(var_check) :
     if math.isfinite(var_check) :
@@ -12,8 +14,15 @@ def ifOk(var_check) :
         vOk = -999999.    
     return vOk
     
+parser = argparse.ArgumentParser()
+parser.add_argument('-i', '--input', help='Input  Delphes Ntuple location')
+parser.add_argument('-o', '--output', help='Output Delphes Minitree location')
 
-ptr = uproot.open('Root_files/Top_reco_op.root')['Step8']
+args = parser.parse_args()
+inputFile = args.input
+outputFile = args.output
+
+ptr = uproot.open(inputFile)['Step8']
 
 t_pt     = ptr['t_pt'].array()
 t_phi    = ptr['t_phi'].array()
@@ -279,8 +288,103 @@ for i in range(len(t_pt)) :
     h_c_hel.append(cHel)
 
 
-arr        = [h_ckk , h_ckr,  h_crk,  h_cnn,  h_cnk,  h_ckn,  h_crr,  h_crn,  h_cnr, h_b1k, h_b2k, h_b1q, h_b2q, h_b1r, h_b2r, h_b1n, h_b2n, h_b1j, h_b2j,     h_ll_dphi,    h_ll_deta, h_ll_dR, h_c_hel]
-df         = pd.DataFrame(data = arr).T
-df.columns = ['c_kk','c_kr', 'c_rk', 'c_nn', 'c_nk', 'c_kn', 'c_rr', 'c_rn', 'c_nr', 'b1k', 'b2k', 'b1q', 'b2q', 'b1r', 'b2r', 'b1n', 'b2n' , 'b1j', 'b2j', 'llbar_dphi', 'llbar_deta',    'dR', 'c_hel']
+opfile = ROOT.TFile(outputFile, 'recreate')
+tree = ROOT.TTree("Step9", "Step9")
+#hist = ROOT.TH1F('Nevents', 'Nevents', 1, 0.5, 1.5)
 
-df.to_pickle('Pkl_ips/SC_ttbar_rap.pkl')
+maxn = 9999
+h_b2k_arr = array('f', h_b2k)
+h_b1k_arr = array('f', h_b1k)
+h_b1j_arr = array('f', h_b1j)
+h_b2j_arr = array('f', h_b2j)
+h_b1r_arr = array('f', h_b1r)
+h_b2r_arr = array('f', h_b2r)
+h_b1q_arr = array('f', h_b1q)
+h_b2q_arr = array('f', h_b2q)
+h_b1n_arr = array('f', h_b1n)
+h_b2n_arr = array('f', h_b2n)
+
+h_bP_kk_arr = array('f', h_bP_kk)
+h_bM_kk_arr = array('f', h_bM_kk)
+h_bP_jj_arr = array('f', h_bP_jj)
+h_bM_jj_arr = array('f', h_bM_jj)
+h_bP_rr_arr = array('f', h_bP_rr)
+h_bM_rr_arr = array('f', h_bM_rr)
+h_bP_qq_arr = array('f', h_bP_qq)
+h_bM_qq_arr = array('f', h_bM_qq)
+h_bP_nn_arr = array('f', h_bP_nn)
+h_bM_nn_arr = array('f', h_bM_nn)
+
+h_ckk_arr = array('f', h_ckk)
+h_crr_arr = array('f', h_crr)
+h_cnn_arr = array('f', h_cnn)
+h_crk_arr = array('f', h_crk)
+h_ckr_arr = array('f', h_ckr)
+h_cnr_arr = array('f', h_cnr)
+h_crn_arr = array('f', h_crn)
+h_cnk_arr = array('f', h_cnk)
+h_ckn_arr = array('f', h_ckn)
+
+h_cP_rk_arr = array('f', h_cP_rk)
+h_cM_rk_arr = array('f', h_cM_rk)
+h_cP_nr_arr = array('f', h_cP_nr)
+h_cM_nr_arr = array('f', h_cM_nr)
+h_cP_nk_arr = array('f', h_cP_nk)
+h_cM_nk_arr = array('f', h_cM_nk)
+
+h_ll_dphi_arr = array('f', h_ll_dphi)
+h_ll_deta_arr = array('f', h_ll_deta)
+h_ll_dR_arr = array('f', h_ll_dR)
+h_c_hel_arr = array('f', h_c_hel)
+
+arr        = [h_ckk_arr , h_ckr_arr,  h_crk_arr,  h_cnn_arr,  h_cnk_arr,  h_ckn_arr,  h_crr_arr,  h_crn_arr,  h_cnr_arr, h_b1k_arr, h_b2k_arr, h_b1q_arr, h_b2q_arr, h_b1r_arr, h_b2r_arr, h_b1n_arr, h_b2n_arr, h_b1j_arr, h_b2j_arr,     h_ll_dphi_arr,    h_ll_deta_arr, h_ll_dR_arr, h_c_hel_arr]
+#df         = pd.DataFrame(data = arr).T
+#df.columns = ['c_kk','c_kr', 'c_rk', 'c_nn', 'c_nk', 'c_kn', 'c_rr', 'c_rn', 'c_nr', 'b1k', 'b2k', 'b1q', 'b2q', 'b1r', 'b2r', 'b1n', 'b2n' , 'b1j', 'b2j', 'llbar_dphi', 'llbar_deta',    'dR', 'c_hel']
+cols = ['c_kk','c_kr', 'c_rk', 'c_nn', 'c_nk', 'c_kn', 'c_rr', 'c_rn', 'c_nr', 'b1k', 'b2k', 'b1q', 'b2q', 'b1r', 'b2r', 'b1n', 'b2n' , 'b1j', 'b2j', 'llbar_dphi', 'llbar_deta',    'dR', 'c_hel']
+#df.to_pickle('Pkl_ips/SC_ttbar_rap.pkl')
+
+for i in range(len(arr)):
+    tree.Branch(cols[i], arr[i], cols[i]+'/F')
+
+for i in range(len(h_b1k_arr)):
+    h_b1k_arr[0] = h_b1k[i]
+    h_b2k_arr[0] = h_b2k[i]
+    h_b1j_arr[0] = h_b1j[i]
+    h_b2j_arr[0] = h_b2j[i]
+    h_b1r_arr[0] = h_b1r[i]
+    h_b2r_arr[0] = h_b2r[i]
+    h_b1q_arr[0] = h_b1q[i]
+    h_b2q_arr[0] = h_b2q[i]
+    h_b1n_arr[0] = h_b1n[i]
+    h_b2n_arr[0] = h_b2n[i]
+
+    h_bP_kk_arr[0] = h_bP_kk[i]
+    h_bM_kk_arr[0] = h_bM_kk[i]
+    h_bP_jj_arr[0] = h_bP_jj[i]
+    h_bM_jj_arr[0] = h_bM_jj[i]
+    h_bP_rr_arr[0] = h_bP_rr[i]
+    h_bM_rr_arr[0] = h_bM_rr[i]
+    h_bP_qq_arr[0] = h_bP_qq[i]
+    h_bM_qq_arr[0] = h_bM_qq[i]
+    h_bP_nn_arr[0] = h_bP_nn[i]
+    h_bM_nn_arr[0] = h_bM_nn[i]
+
+    h_ckk_arr[0] = h_ckk[i]
+    h_ckr_arr[0] = h_ckr[i]
+    h_crk_arr[0] = h_crk[i]
+    h_cnn_arr[0] = h_cnn[i]
+    h_cnk_arr[0] = h_cnk[i]
+    h_ckn_arr[0] = h_ckn[i]
+    h_crr_arr[0] = h_crr[i]
+    h_crn_arr[0] = h_crn[0]
+    h_cnr_arr[0] = h_cnr[i]
+
+    h_ll_dphi_arr[0] = h_ll_dphi[i]
+    h_ll_deta_arr[0] = h_ll_deta[i]
+    h_ll_dR_arr[0] = h_ll_dR[i]
+    h_c_hel_arr[0] = h_c_hel[i]
+    tree.Fill()
+
+
+opfile.Write()
+opfile.Close()
