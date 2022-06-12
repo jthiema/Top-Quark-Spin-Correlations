@@ -413,13 +413,13 @@ def main():
             lep_eta.append(elec_eta[i][e_index])
             lep_phi.append(elec_phi[i][e_index])
             lep_mass.append(elec_mass[i][e_index])
-            lep_pdgid.append(-11)
+            lep_pdgid.append(11)
 
             alep_pt.append(muon_pt[i][mu_index])
             alep_eta.append(muon_eta[i][mu_index])
             alep_phi.append(muon_phi[i][mu_index])
             alep_mass.append(muon_mass[i][mu_index])
-            alep_pdgid.append(13)
+            alep_pdgid.append(-13)
 
         elif (elec_charge[i][e_index] > 0 and muon_charge[i][mu_index] < 0):
 
@@ -427,13 +427,13 @@ def main():
             alep_eta.append(elec_eta[i][e_index])
             alep_phi.append(elec_phi[i][e_index])
             alep_mass.append(elec_mass[i][e_index])
-            alep_pdgid.append(11)
+            alep_pdgid.append(-11)
 
             lep_pt.append(muon_pt[i][mu_index])
             lep_eta.append(muon_eta[i][mu_index])
             lep_phi.append(muon_phi[i][mu_index])
             lep_mass.append(muon_mass[i][mu_index])
-            lep_pdgid.append(-13)
+            lep_pdgid.append(13)
 
 
         # Leading and Subleading Pt
@@ -639,14 +639,14 @@ def main():
 
             if (elec_charge[i][e_index] < 0 and muon_charge[i][mu_index] > 0):
 
-                if (genpart_pid[i][j] == -11):
+                if (genpart_pid[i][j] == 11):
 
                     if (dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j]) < lep_dR):
 
                         lep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j])
                         gen_lep_nearest_index = j
 
-                elif (genpart_pid[i][j] == 13):
+                elif (genpart_pid[i][j] == -13):
 
                     if (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j]) < alep_dR):
 
@@ -655,14 +655,14 @@ def main():
 
             elif (elec_charge[i][e_index] > 0 and muon_charge[i][mu_index] < 0):
 
-                if (genpart_pid[i][j] == 11):
+                if (genpart_pid[i][j] == -11):
 
                     if (dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j]) < lep_dR):
 
                         alep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j])
                         gen_alep_nearest_index = j
 
-                elif (genpart_pid[i][j] == -13):
+                elif (genpart_pid[i][j] == 13):
 
                     if (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j]) < alep_dR):
 
