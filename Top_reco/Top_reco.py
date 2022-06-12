@@ -694,11 +694,13 @@ tree.Branch("aneu_phi", aneu_phi_arr, 'aneu_phi/F')
 tree.Branch("top_pt", top_pt_arr, 'top_pt/F')
 tree.Branch("top_eta", top_eta_arr, 'top_eta/F')
 tree.Branch("top_phi", top_phi_arr, 'top_phi/F')
+tree.Branch("top_mass", top_mass_arr, 'top_mass/F')
 tree.Branch("top_rapidity", top_rap_arr, 'top_rapidity/F')
 
 tree.Branch("atop_pt", atop_pt_arr, 'atop_pt/F')
 tree.Branch("atop_eta", atop_eta_arr, 'atop_eta/F')
 tree.Branch("atop_phi", atop_phi_arr, 'atop_phi/F')
+tree.Branch("atop_mass", atop_mass_arr, 'atop_mass/F')
 tree.Branch("atop_rapidity", atop_rap_arr, 'atop_rapidity/F')
 
 tree.Branch("tt_mass", m_ttbar_arr, 'tt_mass/F')

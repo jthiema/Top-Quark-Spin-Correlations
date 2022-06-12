@@ -215,8 +215,8 @@ def try_smear(jet1, jet2, lep1, lep2, metx, mety, evt_idx) :
         return -999, zero_lv, zero_lv, zero_lv, zero_lv, sum(v_weights)
         
     else :
-        mean_top_sol     = get_mean_sol(vlv_tops    , v_weights, 172.5)
-        mean_antitop_sol = get_mean_sol(vlv_antitops, v_weights, 172.5)
+        mean_top_sol     = get_mean_sol(vlv_tops    , v_weights, 173)
+        mean_antitop_sol = get_mean_sol(vlv_antitops, v_weights, 173)
         mean_nu_sol      = get_mean_sol(vlv_nus     , v_weights, 0)
         mean_nubar_sol   = get_mean_sol(vlv_nubars  , v_weights, 0)
         ttbar_mass       = (mean_top_sol + mean_antitop_sol).M()
