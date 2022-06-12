@@ -31,13 +31,14 @@ runfile = open("RunSlurm_"+os.path.basename(commandlistfilepath).rsplit(".",1)[0
 runfile.write("#!/bin/sh")
 runfile.write("\n")
 
-for line in lines :
-    if len(str(line.strip())) == 0: continue
-    if str(line)[0] == "#": continue
-    if str(line) == "\n": continue
+# loop through every other line
+for j in range(0,len(lines),2) :
+    if len(str(lines[j].strip())) == 0: continue
+    if str(lines[j])[0] == "#": continue
+    if str(lines[j]) == "\n": continue
 
-    i   += 1
-    line = line.strip("\n")
+    line1 = lines[j].strip("\n")
+    line2 = lines[j+1].strip("\n")
     sh_file = "SlurmJobs/SlurmJob_" + str(i) + ".sh"
     
     with open(sh_file, "w") as cfg :
@@ -59,8 +60,12 @@ for line in lines :
         cfg.write("\n")
         cfg.write("source /cvmfs/fcc.cern.ch/sw/latest/setup.sh")
         cfg.write("\n")
-        cfg.write(str(line))
+        cfg.write(str(line1))
+        cfg.write("\n")
+        cfg.write(str(line2))
 
 
     runfile.write("sbatch SlurmJobs/SlurmJob_" + str(i) + ".sh")
     runfile.write("\n")
+
+    i   += 1
