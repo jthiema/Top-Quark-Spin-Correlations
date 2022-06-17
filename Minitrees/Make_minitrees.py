@@ -140,6 +140,18 @@ def main():
     alep_mass    = []
     alep_pdgid = []
 
+    lep_nearest_pt     = []
+    lep_nearest_eta    = []
+    lep_nearest_phi    = []
+    lep_nearest_mass    = []
+    lep_nearest_pdgid = []
+
+    alep_nearest_pt     = []
+    alep_nearest_eta    = []
+    alep_nearest_phi    = []
+    alep_nearest_mass    = []
+    alep_nearest_pdgid = []
+
     # By leading and subleading Pt
     l_pt   = []
     l_eta  = []
@@ -171,6 +183,16 @@ def main():
     sljet_eta  = []
     sljet_phi  = []
     sljet_mass = []
+
+    bjet_nearest_pt   = []
+    bjet_nearest_eta  = []
+    bjet_nearest_phi  = []
+    bjet_nearest_mass = []
+
+    abjet_nearest_pt   = []
+    abjet_nearest_eta  = []
+    abjet_nearest_phi  = []
+    abjet_nearest_mass = []
 
     ST = []
     HT = []
@@ -279,12 +301,12 @@ def main():
 
         ########## Electrons ##########
 
-        # Ensure pt > 20 GeV and eta < 2.4 and isolation
+        # Ensure pt > 20 GeV and eta < 5.0 and isolation
         for j in range(len(elec_pt[i])):
             if (elec_pt[i][j] < 20):
                 continue
 
-            if ( abs(elec_eta[i][j]) > 2.4 or (1.4442 < abs(elec_eta[i][j]) < 1.5660)):
+            if ( abs(elec_eta[i][j]) > 5.0 ):
                 continue
 
             #if (elec_reliso[i][j] > 0.0588):
@@ -294,12 +316,12 @@ def main():
 
         ###########  Muons ############
 
-        # Ensure pt > 20 GeV and eta < 2.4 and isolation
+        # Ensure pt > 20 GeV and eta < 5.0 and isolation
         for j in range(len(muon_pt[i])):
             if (muon_pt[i][j] < 20):
                 continue
 
-            if (abs(muon_eta[i][j]) > 2.4):       # Should be 4?
+            if (abs(muon_eta[i][j]) > 5.0):       # Should be 4?
                 continue
 
             #if (muon_reliso[i][j] > 0.15):
@@ -307,8 +329,8 @@ def main():
 
             mu_idx.append(j)
 
-        # Ensure atleast one muon and one electron
-        if (len(e_idx) == 0 or len(mu_idx) == 0):
+        # Ensure exactly one muon and one electron
+        if (len(e_idx) != 1 or len(mu_idx) != 1):
             continue
 
         # Check for opp sign charge pairings
@@ -342,7 +364,7 @@ def main():
 
         for j in range(len(jet_pt[i])):
 
-            # Ensure pt > 30 GeV and eta < 2.4 isolation
+            # Ensure pt > 30 GeV and eta < 5.0 isolation
 
             if ((dR(elec_phi[i][e_index],  elec_eta[i][e_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)
             or (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)):
@@ -351,7 +373,7 @@ def main():
             if ((jet_pt[i][j] < 30)):
                 continue
 
-            if ((abs(jet_eta[i][j]) > 2.4)):
+            if ((abs(jet_eta[i][j]) > 5.0)):
                 continue
 
             if (jet_btag[i][j] != 0):
@@ -363,7 +385,7 @@ def main():
         if(len(jet_idx) < 2):
             continue
 
-        # Atleast one b-tag (Step 7 according to the FW)
+        # Atleast one b-tag (Step 6 according to the FW)
         if (btag_cnt == 0):
             continue
 
@@ -497,24 +519,24 @@ def main():
 
         if ((elec_charge[i][e_index] < 0 and muon_charge[i][mu_index] > 0) and gen_lep_index > -1):
 
-            lep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index])
+            gen_lep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index])
 
         elif ((elec_charge[i][e_index] > 0 and muon_charge[i][mu_index] < 0) and gen_lep_index > -1):
 
-            lep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index])
+            gen_lep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index])
 
-        else: lep_dR = 9999
+        else: gen_lep_dR = 9999
 
 
         if ((elec_charge[i][e_index] < 0 and muon_charge[i][mu_index] > 0) and gen_alep_index > -1):
 
-            alep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index])
+            agen_lep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index])
 
         elif ((elec_charge[i][e_index] > 0 and muon_charge[i][mu_index] < 0) and gen_alep_index > -1):
 
-            alep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index])
+            agen_lep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index])
 
-        else: alep_dR = 9999
+        else: agen_lep_dR = 9999
 
         
         # begin search for a closer gen lepton
@@ -525,74 +547,158 @@ def main():
 
                 if (genpart_pid[i][j] == 11):
 
-                    if (dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j]) < lep_dR):
+                    if (dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j]) < gen_lep_dR):
 
-                        lep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j])
+                        gen_lep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j])
                         gen_lep_nearest_index = j
 
                 elif (genpart_pid[i][j] == -13):
 
-                    if (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j]) < alep_dR):
+                    if (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j]) < agen_lep_dR):
 
-                        alep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j])
+                        agen_lep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j])
                         gen_alep_nearest_index = j
 
             elif (elec_charge[i][e_index] > 0 and muon_charge[i][mu_index] < 0):
 
                 if (genpart_pid[i][j] == -11):
 
-                    if (dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j]) < lep_dR):
+                    if (dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j]) < gen_lep_dR):
 
-                        alep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j])
+                        agen_lep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][j], genpart_eta[i][j])
                         gen_alep_nearest_index = j
 
                 elif (genpart_pid[i][j] == 13):
 
-                    if (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j]) < alep_dR):
+                    if (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j]) < agen_lep_dR):
 
-                        lep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j])
+                        gen_lep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j])
                         gen_lep_nearest_index = j
 
         # append arrays with nearest lepton, if found, else fill with -9999
 
-        if( lep_dR != 9999):
-
-            gen_lep_nearest_pt.append(genpart_pt[i][gen_lep_nearest_index])
-            gen_lep_nearest_eta.append(genpart_eta[i][gen_lep_nearest_index])
-            gen_lep_nearest_phi.append(genpart_phi[i][gen_lep_nearest_index])
-            gen_lep_nearest_mass.append(genpart_mass[i][gen_lep_nearest_index])
-            gen_lep_nearest_pdgid.append(genpart_pid[i][gen_lep_nearest_index])
-            gen_lep_nearest_status.append(genpart_status[i][gen_lep_nearest_index])
-
-        else:
-
-            gen_lep_nearest_pt.append(-9999)
-            gen_lep_nearest_eta.append(-9999)
-            gen_lep_nearest_phi.append(-9999)
-            gen_lep_nearest_mass.append(-9999)
-            gen_lep_nearest_pdgid.append(-9999)
-            gen_lep_nearest_status.append(-9999)
-
-        if( alep_dR != 9999):
-
-            gen_alep_nearest_pt.append(genpart_pt[i][gen_alep_nearest_index])
-            gen_alep_nearest_eta.append(genpart_eta[i][gen_alep_nearest_index])
-            gen_alep_nearest_phi.append(genpart_phi[i][gen_alep_nearest_index])
-            gen_alep_nearest_mass.append(genpart_mass[i][gen_alep_nearest_index])
-            gen_alep_nearest_pdgid.append(genpart_pid[i][gen_alep_nearest_index])
-            gen_alep_nearest_status.append(genpart_status[i][gen_alep_nearest_index])
-
-        else:
-
-            gen_alep_nearest_pt.append(-9999)
-            gen_alep_nearest_eta.append(-9999)
-            gen_alep_nearest_phi.append(-9999)
-            gen_alep_nearest_mass.append(-9999)
-            gen_alep_nearest_pdgid.append(-9999)
-            gen_alep_nearest_status.append(-9999)
+        gen_lep_nearest_pt.append(genpart_pt[i][gen_lep_nearest_index])
+        gen_lep_nearest_eta.append(genpart_eta[i][gen_lep_nearest_index])
+        gen_lep_nearest_phi.append(genpart_phi[i][gen_lep_nearest_index])
+        gen_lep_nearest_mass.append(genpart_mass[i][gen_lep_nearest_index])
+        gen_lep_nearest_pdgid.append(genpart_pid[i][gen_lep_nearest_index])
+        gen_lep_nearest_status.append(genpart_status[i][gen_lep_nearest_index])
 
 
-       ####### Fill the RECO arrays ##########
+        gen_alep_nearest_pt.append(genpart_pt[i][gen_alep_nearest_index])
+        gen_alep_nearest_eta.append(genpart_eta[i][gen_alep_nearest_index])
+        gen_alep_nearest_phi.append(genpart_phi[i][gen_alep_nearest_index])
+        gen_alep_nearest_mass.append(genpart_mass[i][gen_alep_nearest_index])
+        gen_alep_nearest_pdgid.append(genpart_pid[i][gen_alep_nearest_index])
+        gen_alep_nearest_status.append(genpart_status[i][gen_alep_nearest_index])
+
+
+
+        ####### Fill the RECO arrays ##########
+
+
+        # Find the nearest reco jets to the gen b quarks
+
+        bjet_nearest_index = -1
+        abjet_nearest_index = -1
+
+        bjet_dR = 9999
+        abjet_dR = 9999
+
+        for idx in jet_idx:
+
+            if (dR(genpart_phi[i][gen_b_index], genpart_eta[i][gen_b_index], jet_phi[i][idx], jet_eta[i][idx]) < bjet_dR):
+
+                 bjet_dR = dR(genpart_phi[i][gen_b_index], genpart_eta[i][gen_b_index], jet_phi[i][idx], jet_eta[i][idx])
+                 bjet_nearest_index = idx
+
+            if (dR(genpart_phi[i][gen_ab_index], genpart_eta[i][gen_ab_index], jet_phi[i][idx], jet_eta[i][idx]) < abjet_dR):
+
+                 abjet_dR = dR(genpart_phi[i][gen_ab_index], genpart_eta[i][gen_ab_index], jet_phi[i][idx], jet_eta[i][idx])
+                 abjet_nearest_index = idx
+
+        bjet_nearest_pt.append(jet_pt[i][bjet_nearest_index])
+        bjet_nearest_phi.append(jet_phi[i][bjet_nearest_index])
+        bjet_nearest_eta.append(jet_eta[i][bjet_nearest_index])
+        bjet_nearest_mass.append(jet_mass[i][bjet_nearest_index])
+
+        abjet_nearest_pt.append(jet_pt[i][abjet_nearest_index])
+        abjet_nearest_phi.append(jet_phi[i][abjet_nearest_index])
+        abjet_nearest_eta.append(jet_eta[i][abjet_nearest_index])
+        abjet_nearest_mass.append(jet_mass[i][abjet_nearest_index])
+
+             
+        # Find the nearest reco leptons to the gen leptons
+
+        lep_nearest_index = -1
+        alep_nearest_index = -1
+
+        lep_nearest_pdgid_tmp = 0
+        alep_nearest_pdgid_tmp = 0
+
+        lep_dR = 9999
+        alep_dR = 9999
+
+        for idx in e_idx:
+
+            if (genpart_pid[i][gen_lep_index] * elec_charge[i][idx] < 0 and dR(genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index], elec_phi[i][idx], elec_eta[i][idx]) < lep_dR):
+
+                 lep_dR = dR(genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index], elec_phi[i][idx], elec_eta[i][idx])
+                 lep_nearest_index = idx
+                 lep_nearest_pdgid_tmp = -11*elec_charge[i][idx]
+
+            if (genpart_pid[i][gen_alep_index] * elec_charge[i][idx] < 0 and dR(genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index], elec_phi[i][idx], elec_eta[i][idx]) < alep_dR):
+
+                 alep_dR = dR(genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index], elec_phi[i][idx], elec_eta[i][idx])
+                 alep_nearest_index = idx
+                 alep_nearest_pdgid_tmp = -11*elec_charge[i][idx]
+
+        for idx in mu_idx:
+
+            if (genpart_pid[i][gen_lep_index] * muon_charge[i][idx] < 0 and dR(genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index], muon_phi[i][idx], muon_eta[i][idx]) < lep_dR):
+
+                 lep_dR = dR(genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index], muon_phi[i][idx], muon_eta[i][idx])
+                 lep_nearest_index = idx
+                 lep_nearest_pdgid_tmp = -13*muon_charge[i][idx]
+
+            if (genpart_pid[i][gen_alep_index] * muon_charge[i][idx] < 0 and dR(genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index], muon_phi[i][idx], muon_eta[i][idx]) < alep_dR):
+
+                 alep_dR = dR(genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index], muon_phi[i][idx], muon_eta[i][idx])
+                 alep_nearest_index = idx
+                 alep_nearest_pdgid_tmp = -13*muon_charge[i][idx]
+             
+        if ( lep_nearest_pdgid_tmp == 11 ):
+
+            lep_nearest_pt.append(elec_pt[i][lep_nearest_index])
+            lep_nearest_phi.append(elec_phi[i][lep_nearest_index])
+            lep_nearest_eta.append(elec_eta[i][lep_nearest_index])
+            lep_nearest_mass.append(elec_mass[i][lep_nearest_index])
+            lep_nearest_pdgid.append(11)
+
+        elif ( lep_nearest_pdgid_tmp == 13 ):
+
+            lep_nearest_pt.append(muon_pt[i][lep_nearest_index])
+            lep_nearest_phi.append(muon_phi[i][lep_nearest_index])
+            lep_nearest_eta.append(muon_eta[i][lep_nearest_index])
+            lep_nearest_mass.append(muon_mass[i][lep_nearest_index])
+            lep_nearest_pdgid.append(13)
+
+        if ( alep_nearest_pdgid_tmp == -11 ):
+
+            alep_nearest_pt.append(elec_pt[i][alep_nearest_index])
+            alep_nearest_phi.append(elec_phi[i][alep_nearest_index])
+            alep_nearest_eta.append(elec_eta[i][alep_nearest_index])
+            alep_nearest_mass.append(elec_mass[i][alep_nearest_index])
+            alep_nearest_pdgid.append(-11)
+
+        elif ( alep_nearest_pdgid_tmp == -13 ):
+
+            alep_nearest_pt.append(muon_pt[i][alep_nearest_index])
+            alep_nearest_phi.append(muon_phi[i][alep_nearest_index])
+            alep_nearest_eta.append(muon_eta[i][alep_nearest_index])
+            alep_nearest_mass.append(muon_mass[i][alep_nearest_index])
+            alep_nearest_pdgid.append(-13)
+
 
         # Leading and sub-leading lepton pts
         if (elec_pt[i][e_index] > muon_pt[i][mu_index] and elec_pt[i][e_index] > 25):
@@ -779,6 +885,18 @@ def main():
     alep_mass_arr    = array('f', [0.])
     alep_pdgid_arr = array('f', [0.])
 
+    lep_nearest_pt_arr      = array('f', [0.])
+    lep_nearest_eta_arr     = array('f', [0.])
+    lep_nearest_phi_arr     = array('f', [0.])
+    lep_nearest_mass_arr     = array('f', [0.])
+    lep_nearest_pdgid_arr  = array('f', [0.])
+
+    alep_nearest_pt_arr     = array('f', [0.])
+    alep_nearest_eta_arr    = array('f', [0.])
+    alep_nearest_phi_arr    = array('f', [0.])
+    alep_nearest_mass_arr    = array('f', [0.])
+    alep_nearest_pdgid_arr = array('f', [0.])
+
     ljet_pt_arr   = array('f', [0.])
     ljet_eta_arr  = array('f', [0.])
     ljet_phi_arr  = array('f', [0.])
@@ -788,6 +906,16 @@ def main():
     sljet_eta_arr  = array('f', [0.])
     sljet_phi_arr  = array('f', [0.])
     sljet_mass_arr = array('f', [0.])
+
+    bjet_nearest_pt_arr   = array('f', [0.])
+    bjet_nearest_eta_arr  = array('f', [0.])
+    bjet_nearest_phi_arr  = array('f', [0.])
+    bjet_nearest_mass_arr = array('f', [0.])
+
+    abjet_nearest_pt_arr   = array('f', [0.])
+    abjet_nearest_eta_arr  = array('f', [0.])
+    abjet_nearest_phi_arr  = array('f', [0.])
+    abjet_nearest_mass_arr = array('f', [0.])
 
     llbar_deta_arr = array('f', [0.])
     llbar_dphi_arr = array('f', [0.])
@@ -937,6 +1065,18 @@ def main():
     Step7tree.Branch("alep_mass"   , alep_mass_arr   , 'alep_mass/F')
     Step7tree.Branch("alep_pdgid", alep_pdgid_arr, 'alep_pdgid/F')
  
+    Step7tree.Branch("lep_nearest_pt"    , lep_nearest_pt_arr    , 'lep_nearest_pt/F')
+    Step7tree.Branch("lep_nearest_eta"   , lep_nearest_eta_arr   , 'lep_nearest_eta/F')
+    Step7tree.Branch("lep_nearest_phi"   , lep_nearest_phi_arr   , 'lep_nearest_phi/F')
+    Step7tree.Branch("lep_nearest_mass"   , lep_nearest_mass_arr   , 'lep_nearest_mass/F')
+    Step7tree.Branch("lep_nearest_pdgid", lep_nearest_pdgid_arr, 'lep_nearest_pdgid/F')
+
+    Step7tree.Branch("alep_nearest_pt"    , alep_nearest_pt_arr    , 'alep_nearest_pt/F')
+    Step7tree.Branch("alep_nearest_eta"   , alep_nearest_eta_arr   , 'alep_nearest_eta/F')
+    Step7tree.Branch("alep_nearest_phi"   , alep_nearest_phi_arr   , 'alep_nearest_phi/F')
+    Step7tree.Branch("alep_nearest_mass"   , alep_nearest_mass_arr   , 'alep_nearest_mass/F')
+    Step7tree.Branch("alep_nearest_pdgid", alep_nearest_pdgid_arr, 'alep_nearest_pdgid/F')
+ 
     # Leading and sub-leading jets
     Step7tree.Branch("ljet_pt", ljet_pt_arr, 'ljet_pt/F')
     Step7tree.Branch("ljet_eta", ljet_eta_arr, 'ljet_eta/F')
@@ -947,6 +1087,17 @@ def main():
     Step7tree.Branch("sljet_eta", sljet_eta_arr, 'sljet_eta/F')
     Step7tree.Branch("sljet_phi", sljet_phi_arr, 'sljet_phi/F')
     Step7tree.Branch("sljet_mass", sljet_mass_arr, 'sljet_mass/F')
+
+    #
+    Step7tree.Branch("bjet_nearest_pt", bjet_nearest_pt_arr, 'bjet_nearest_pt/F')
+    Step7tree.Branch("bjet_nearest_eta", bjet_nearest_eta_arr, 'bjet_nearest_eta/F')
+    Step7tree.Branch("bjet_nearest_phi", bjet_nearest_phi_arr, 'bjet_nearest_phi/F')
+    Step7tree.Branch("bjet_nearest_mass", bjet_nearest_mass_arr, 'bjet_nearest_mass/F')
+
+    Step7tree.Branch("abjet_nearest_pt", abjet_nearest_pt_arr, 'abjet_nearest_pt/F')
+    Step7tree.Branch("abjet_nearest_eta", abjet_nearest_eta_arr, 'abjet_nearest_eta/F')
+    Step7tree.Branch("abjet_nearest_phi", abjet_nearest_phi_arr, 'abjet_nearest_phi/F')
+    Step7tree.Branch("abjet_nearest_mass", abjet_nearest_mass_arr, 'abjet_nearest_mass/F')
 
     # Lepton angular stuff
     Step7tree.Branch("llbar_deta", llbar_deta_arr, 'llbar_deta/F')
@@ -1098,6 +1249,18 @@ def main():
         alep_mass_arr[0]    = alep_mass[i]
         alep_pdgid_arr[0] = alep_pdgid[i]
 
+        lep_nearest_pt_arr[0]     = lep_nearest_pt[i]
+        lep_nearest_eta_arr[0]    = lep_nearest_eta[i]
+        lep_nearest_phi_arr[0]    = lep_nearest_phi[i]
+        lep_nearest_mass_arr[0]    = lep_nearest_mass[i]
+        lep_nearest_pdgid_arr[0] = lep_nearest_pdgid[i]
+
+        alep_nearest_pt_arr[0]     = alep_nearest_pt[i]
+        alep_nearest_eta_arr[0]    = alep_nearest_eta[i]
+        alep_nearest_phi_arr[0]    = alep_nearest_phi[i]
+        alep_nearest_mass_arr[0]    = alep_nearest_mass[i]
+        alep_nearest_pdgid_arr[0] = alep_nearest_pdgid[i]
+
         ljet_pt_arr[0]   = ljet_pt[i]
         ljet_eta_arr[0]  = ljet_eta[i]
         ljet_phi_arr[0]  = ljet_phi[i]
@@ -1107,6 +1270,16 @@ def main():
         sljet_eta_arr[0]  = sljet_eta[i]
         sljet_phi_arr[0]  = sljet_phi[i]
         sljet_mass_arr[0] = sljet_mass[i]
+
+        bjet_nearest_pt_arr[0]   = bjet_nearest_pt[i]
+        bjet_nearest_eta_arr[0]  = bjet_nearest_eta[i]
+        bjet_nearest_phi_arr[0]  = bjet_nearest_phi[i]
+        bjet_nearest_mass_arr[0] = bjet_nearest_mass[i]
+
+        abjet_nearest_pt_arr[0]   = abjet_nearest_pt[i]
+        abjet_nearest_eta_arr[0]  = abjet_nearest_eta[i]
+        abjet_nearest_phi_arr[0]  = abjet_nearest_phi[i]
+        abjet_nearest_mass_arr[0] = abjet_nearest_mass[i]
 
         llbar_deta_arr[0] = llbar_deta[i]
         llbar_dphi_arr[0] = llbar_dphi[i]
