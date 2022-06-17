@@ -48,7 +48,7 @@ for j in range(0,len(lines),2) :
         cfg.write("\n")
         cfg.write("#SBATCH --nodes=1")
         cfg.write("\n")
-        cfg.write("#SBATCH --time=3:00:00")
+        cfg.write("#SBATCH --time=0:19:00")
         cfg.write("\n")
         cfg.write("#SBATCH --mem=8000")
         cfg.write("\n")
