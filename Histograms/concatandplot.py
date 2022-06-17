@@ -55,6 +55,47 @@ h_KinReco_fE_jet_step7 = ROOT.TH1D("KinReco_fE_jet_step7", "Jet Energy Correctio
 h_KinReco_fE_lep_step7 = ROOT.TH1D("KinReco_fE_lep_step7", "Lepton Energy Correction Factor;#frac{E^{true}_{lep}}{E^{reco}_{lep}};Entries", 200, 0.5, 2.5 )  
 h_KinReco_mbl_true_step7  = ROOT.TH1D("KinReco_mbl_true_step7","mbl_true", 100, 0, 180 )
 
+gen_lep_pt = fileptr['gen_lep_pt']
+gen_lep_eta = fileptr['gen_lep_eta']
+gen_lep_phi = fileptr['gen_lep_phi']
+gen_lep_mass = fileptr['gen_lep_mass']
+
+gen_alep_pt = fileptr['gen_alep_pt']
+gen_alep_eta = fileptr['gen_alep_eta']
+gen_alep_phi = fileptr['gen_alep_phi']
+gen_alep_mass = fileptr['gen_alep_mass']
+
+gen_b_pt = fileptr['gen_b_pt']
+gen_b_eta = fileptr['gen_b_eta']
+gen_b_phi = fileptr['gen_b_phi']
+gen_b_mass = fileptr['gen_b_mass']
+
+gen_ab_pt = fileptr['gen_ab_pt']
+gen_ab_eta = fileptr['gen_ab_eta']
+gen_ab_phi = fileptr['gen_ab_phi']
+gen_ab_mass = fileptr['gen_ab_mass']
+
+lep_pt = fileptr['lep_pt']
+lep_eta = fileptr['lep_eta']
+lep_phi = fileptr['lep_phi']
+lep_mass = fileptr['lep_mass']
+
+alep_pt = fileptr['alep_pt']
+alep_eta = fileptr['alep_eta']
+alep_phi = fileptr['alep_phi']
+alep_mass = fileptr['alep_mass']
+
+ljet_pt = fileptr['ljet_pt']
+ljet_eta = fileptr['ljet_eta']
+ljet_phi = fileptr['ljet_phi']
+ljet_mass = fileptr['ljet_mass']
+
+sljet_pt = fileptr['sljet_pt']
+sljet_eta = fileptr['sljet_eta']
+sljet_phi = fileptr['sljet_phi']
+sljet_mass = fileptr['sljet_mass']
+
+
 for i in range(len(fileptr['lep_pt'])):
 
     gen_lep_4vec  = ROOT.TLorentzVector()
@@ -82,28 +123,26 @@ for i in range(len(fileptr['lep_pt'])):
     sljet_4vec.SetPtEtaPhiM(sljet_pt[i] , sljet_eta[i] , sljet_phi[i] , sljet_mass[i])
 
     
-    h_KinReco_fE_jet_step7.fill(gen_b_4vec.E()/ljet_4vec.E())
-    h_KinReco_fE_jet_step7.fill(gen_ab_4vec.E()/ljet_4vec.E())
-    h_KinReco_fE_jet_step7.fill(gen_b_4vec.E()/sljet_4vec.E())
-    h_KinReco_fE_jet_step7.fill(gen_ab_4vec.E()/sljet_4vec.E())
+    h_KinReco_fE_jet_step7.Fill(gen_b_4vec.E()/ljet_4vec.E())
+    h_KinReco_fE_jet_step7.Fill(gen_ab_4vec.E()/ljet_4vec.E())
+    h_KinReco_fE_jet_step7.Fill(gen_b_4vec.E()/sljet_4vec.E())
+    h_KinReco_fE_jet_step7.Fill(gen_ab_4vec.E()/sljet_4vec.E())
 
-    h_KinReco_fE_lep_step7.fill(gen_lep_4vec.E()/lep_4vec.E())
-    h_KinReco_fE_lep_step7.fill(gen_alep_4vec.E()/alep_4vec.E())
+    h_KinReco_fE_lep_step7.Fill(gen_lep_4vec.E()/lep_4vec.E())
+    h_KinReco_fE_lep_step7.Fill(gen_alep_4vec.E()/alep_4vec.E())
 
 
-    h_KinReco_d_angle_jet_step7.fill(gen_b_4vec.Angle(sljet_4vec.Vect()))
-    h_KinReco_d_angle_jet_step7.fill(gen_b_4vec.Angle(ljet_4vec.Vect()))
-    h_KinReco_d_angle_jet_step7.fill(gen_ab_4vec.Angle(sljet_4vec.Vect()))
-    h_KinReco_d_angle_jet_step7.fill(gen_ab_4vec.Angle(ljet_4vec.Vect()))
+    h_KinReco_d_angle_jet_step7.Fill(gen_b_4vec.Angle(sljet_4vec.Vect()))
+    h_KinReco_d_angle_jet_step7.Fill(gen_b_4vec.Angle(ljet_4vec.Vect()))
+    h_KinReco_d_angle_jet_step7.Fill(gen_ab_4vec.Angle(sljet_4vec.Vect()))
+    h_KinReco_d_angle_jet_step7.Fill(gen_ab_4vec.Angle(ljet_4vec.Vect()))
 
-    h_KinReco_d_angle_lep_step7.fill(gen_lep_4vec.Angle(lep_4vec.Vect()))
-    h_KinReco_d_angle_lep_step7.fill(gen_alep_4vec.Angle(alep_4vec.Vect()))
+    h_KinReco_d_angle_lep_step7.Fill(gen_lep_4vec.Angle(lep_4vec.Vect()))
+    h_KinReco_d_angle_lep_step7.Fill(gen_alep_4vec.Angle(alep_4vec.Vect()))
 
-    h_KinReco_mbl_true_step7.fill((gen_alep_4vec + gen_b_4vec).M())
-    h_KinReco_mbl_true_step7.fill((gen_lep_4vec + gen_ab_4vec).M())
+    h_KinReco_mbl_true_step7.Fill((gen_alep_4vec + gen_b_4vec).M())
+    h_KinReco_mbl_true_step7.Fill((gen_lep_4vec + gen_ab_4vec).M())
     
-
-h_KinReco_fE_jet_step7.Write()  
 
 
 opfile.Write()
