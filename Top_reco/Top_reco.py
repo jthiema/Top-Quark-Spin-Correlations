@@ -289,7 +289,7 @@ for i in range(len(step7_jet_pt)):
                 continue
             if (step7_jet_pt[i][j] < 30 or step7_jet_pt[i][k] < 30):
                 continue
-            if (abs(step7_jet_eta[i][j]) > 2.4 or abs(step7_jet_eta[i][k]) > 2.4):
+            if (abs(step7_jet_eta[i][j]) > 5.0 or abs(step7_jet_eta[i][k]) > 5.0):
                 continue
             if (step7_jet_btag[i][j] == 0 and step7_jet_btag[i][k] == 0):
                 continue
