@@ -309,9 +309,16 @@ htbarptgtbarpt = ROOT.TH2D('tbar_pt_v_gen_tbar_pt', 'pt vs gen pt', 1200,0,1200,
 htbaretagtbareta = ROOT.TH2D('tbar_eta_v_gen_tbar_eta', 'eta vs gen eta', 1200,-2*np.pi,2*np.pi, 1200,-2*np.pi,2*np.pi)
 httmgttm = ROOT.TH2D('ttbarmass_v_gen_ttbarmass', "mass vs gen mass", 1400, 0, 1400, 1400, 0, 1400)
 
-hckk = ROOT.TH1D("ckk", "ckk", 1200, -2, 2)
-hcrr = ROOT.TH1D("crr", "crr", 1200, -2, 2)
-hcnn = ROOT.TH1D("cnn", "cnn", 1200, -2, 2)
+hckk = ROOT.TH1D("ckk", "ckk", 1200, -1, 1)
+hcrr = ROOT.TH1D("crr", "crr", 1200, -1, 1)
+hcnn = ROOT.TH1D("cnn", "cnn", 1200, -1, 1)
+
+hcrk = ROOT.TH1D("crk", "crk", 1200, -1, 1)
+hckr = ROOT.TH1D("ckr", "ckr", 1200, -1, 1)
+
+hcPrk = ROOT.TH1D("cP_rk", "cP_rk", 1200, -1, 1)
+hcMrk = ROOT.TH1D("cM_rk", "cM_rk", 1200, -1, 1)
+
 hchel = ROOT.TH1D("c_hel", "c_hel", 1200, -1, 1)
 
 for i in range(len(t_pt)):
@@ -324,6 +331,13 @@ for i in range(len(t_pt)):
     hckk.Fill(h_ckk[i])
     hcrr.Fill(h_crr[i])
     hcnn.Fill(h_cnn[i])
+
+    hcrk.Fill(h_crk[i])
+    hckr.Fill(h_ckr[i])
+
+    hcPrk.Fill(h_cP_rk[i])
+    hcMrk.Fill(h_cM_rk[i])
+    
     hchel.Fill(h_c_hel[i])
 
 ## STEP 7
