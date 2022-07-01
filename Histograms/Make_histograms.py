@@ -138,6 +138,8 @@ hgencMrk = ROOT.TH1D("gen_cM_rk", "gen_cM_rk", 1200, -1, 1)
 
 hgenchel = ROOT.TH1D("gen_c_hel", "gen_c_hel", 1200, -1, 1)
 
+#2D hists
+
 hrvgleppt = ROOT.TH2D('rvg_lep_pt', 'reco vs gen lep pt', 1200, 0, 1200, 1200, 0, 1200)
 hrvglepeta = ROOT.TH2D('rvg_lep_eta', 'reco vs gen lep eta', 1200, -2*np.pi, 2*np.pi, 1200, -2*np.pi, 2*np.pi)
 hrvglepphi = ROOT.TH2D('rvg_lep_phi', 'reco vs gen lep phi', 1200, -2*np.pi, 2*np.pi, 1200, -2*np.pi, 2*np.pi)
@@ -174,6 +176,18 @@ hrvgateta = ROOT.TH2D('rvg_at_eta', 'reco vs gen at eta', 1200, -2*np.pi, 2*np.p
 hrvgatphi = ROOT.TH2D('rvg_at_phi', 'reco vs gen at phi', 1200, -2*np.pi, 2*np.pi, 1200, -2*np.pi, 2*np.pi)
 
 htvgtatm = ROOT.TH2D('rvg_tat_m', "reco vs gen tat mass", 1400, 0, 1400, 1400, 0, 1400)
+
+hrvgckk = ROOT.TH2D("rvg_ckk", "reco vs gen ckk", 1200, -1, 1, 1200, -1, 1)
+hrvgcrr = ROOT.TH2D("rvg_crr", "reco vs gen crr", 1200, -1, 1, 1200, -1, 1)
+hrvgcnn = ROOT.TH2D("rvg_cnn", "reco vs gen cnn", 1200, -1, 1, 1200, -1, 1)
+
+hrvgcrk = ROOT.TH2D('rvg_crk', "reco vs gen crk", 1200, -1, 1, 1200, -1, 1)
+hrvgckr = ROOT.TH2D('rvg_ckr', "reco vs gen ckr", 1200, -1, 1, 1200, -1, 1)
+
+hrvgcPrk = ROOT.TH2D("rvg_cPrk", "reco vs gen cPrk", 1200, -1, 1, 1200, -1, 1)
+hrvgcMrk = ROOT.TH2D("rvg_cMrk", "reco vs gen cMrk", 1200, -1, 1, 1200, -1, 1)
+
+hrvgchel = ROOT.TH2D("rvg_c_hel", "reco vs gen c_hel", 1200, -1, 1, 1200, -1, 1)
 
 # Step 7 hists
 
@@ -632,6 +646,18 @@ for i in range(len(t_pt)):
     hrvgatphi.Fill(fileptr['atop_phi'].array()[i], fileptr['gen_atop_phi'].array()[i])
 
     htvgtatm.Fill(tt_mass[i], fileptr['gen_tt_mass'].array()[i])
+
+    hrvgckk.Fill(ckk, gen_ckk)
+    hrvgcrr.Fill(crr, gen_crr)
+    hrvgcnn.Fill(cnn, gen_cnn)
+
+    hrvgcrk.Fill(crk, gen_crk)
+    hrvgckr.Fill(ckr, gen_ckr)
+
+    hrvgcPrk.Fill(cP_rk, gen_cP_rk)
+    hrvgcMrk.Fill(cM_rk, gen_cM_rk)
+
+    hrvgchel.Fill(cHel, gen_cHel)
 
 
 ## STEP 7
