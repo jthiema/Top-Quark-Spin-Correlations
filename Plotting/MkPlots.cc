@@ -51,6 +51,7 @@ void setPad(TPad *p, bool hasGridX_ = true) {
   p->cd();
 
   gStyle->SetOptStat(0);
+  gStyle->SetOptTitle(0);
   gStyle->SetPaintTextFormat("3.3f");
 
 }
@@ -68,6 +69,7 @@ void set2DPad(TPad *p) {
   p->cd();
 
   gStyle->SetOptStat(0);
+  gStyle->SetOptTitle(0);
 
 }
 
