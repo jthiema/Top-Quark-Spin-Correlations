@@ -271,8 +271,8 @@ void MkPlots(){
 	setPad(p_ratio, false);
 	drawRatio(h_Ratio, xAxisTitles[j], xMins[j], xMaxs[j], "Reco/Gen", 0.5, 1.5);
 	
-	c->SaveAs((output_dir+"h_"+variables[j]+".pdf").c_str());      
-	c->SaveAs((output_dir+"h_"+variables[j]+".C").c_str());      
+	c->SaveAs((output_dir+"/h_"+variables[j]+".pdf").c_str());      
+	c->SaveAs((output_dir+"/h_"+variables[j]+".C").c_str());      
 	
 	c->Write();
 
