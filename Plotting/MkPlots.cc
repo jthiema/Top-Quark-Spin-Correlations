@@ -106,7 +106,7 @@ void draw_FCC_ch() {
 
 
 
-void drawGraph(TH1F *h1, TH1F *h2, string yAxisTitle_, double xMin_, double xMax_) {
+void draw1DHists(TH1F *h1, TH1F *h2, string yAxisTitle_, double xMin_, double xMax_) {
 
   h1->SetLineWidth(2);
   h1->SetLineColor(kAzure);
@@ -180,7 +180,7 @@ void drawRatio(TH1F *h, string xAxisTitle_, double xMin_, double xMax_, string y
 }
 
 
-void drawMultivariables(TH2F *h, string multivariablesxAxisTitles_, string multivariablesyAxisTitles_) {
+void draw2DHists(TH2F *h, string multivariablesxAxisTitles_, string multivariablesyAxisTitles_) {
 
   gStyle->SetPalette(1);
 
@@ -243,6 +243,8 @@ void MkPlots(){
 
     cout << channels[i] << endl;
 
+    // To Make 1D Plots
+
     for (UInt_t j = 0; j < variables.size(); j++) {
 
         cout << variables[j] << endl;
@@ -263,20 +265,21 @@ void MkPlots(){
 	TCanvas *c = new TCanvas(("c_"+variables[j]).c_str(), "", 1000., 1000.);
 	TPad *p = new TPad(("p_"+variables[j]).c_str(), "", 0, 0.15, 1, 1.0); 
 	setPad(p);
-	drawGraph(h_Reco,h_Gen,"Entries", xMins[j], xMaxs[j]);
+	draw1DHists(h_Reco,h_Gen,"Entries", xMins[j], xMaxs[j]);
 	c->cd();
 	TPad *p_ratio = new TPad(("p_ratio_"+variables[j]).c_str(), "", 0, 0.05, 1, 0.3);  
 	setPad(p_ratio, false);
 	drawRatio(h_Ratio, xAxisTitles[j], xMins[j], xMaxs[j], "Reco/Gen", 0.5, 1.5);
 	
-	c->SaveAs((output_dir+"h_"+variables[j]+".png").c_str());      
+	c->SaveAs((output_dir+"h_"+variables[j]+".pdf").c_str());      
 	c->SaveAs((output_dir+"h_"+variables[j]+".C").c_str());      
 	
 	c->Write();
 
     }
 
-    ///TO GET 2D SF
+    // To Make 2D Plots
+
     for (UInt_t j = 0; j < multivariables.size(); j++) {
 	
 	TH2F *h2D_RecovGen = (TH2F*)f_hists->Get((multivariables[j]).c_str());
@@ -284,10 +287,10 @@ void MkPlots(){
 	TCanvas *c_2D = new TCanvas(("c_2D_"+multivariables[j]).c_str(), "", 1200., 800.);
 	TPad *p_2D = new TPad(("p_2D_"+multivariables[j]).c_str(), "", 0, 0, 1, 1); 
 	set2DPad(p_2D);
-	drawMultivariables(h2D_RecovGen, multivariablesxAxisTitles[j], multivariablesyAxisTitles[j]);
+	draw2DHists(h2D_RecovGen, multivariablesxAxisTitles[j], multivariablesyAxisTitles[j]);
 	h2D_RecovGen->Write();
 
-	c_2D->SaveAs((output_dir+"/h2D_"+multivariables[j]+".png").c_str());
+	c_2D->SaveAs((output_dir+"/h2D_"+multivariables[j]+".pdf").c_str());
 	c_2D->SaveAs((output_dir+"/h2D_"+multivariables[j]+".C").c_str());
   
 	c_2D->Write();
