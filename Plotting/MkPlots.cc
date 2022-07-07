@@ -342,6 +342,9 @@ void MkPlots(){
 	TH1F *h_Reco = (TH1F*)f_hists->Get((variables[j]).c_str());
 	TH1F *h_Gen = (TH1F*)f_hists->Get(("gen_"+variables[j]).c_str());
 	
+	h_Reco->Sumw2();
+	h_Gen->Sumw2();
+	
 	
 	//cout << to_string(h_Gen1->GetXaxis()->GetXmax()) << endl;
 	
@@ -353,16 +356,20 @@ void MkPlots(){
 	//Third arg is what max of entries qualifies as part of the tailord
 	//Fourth arg is min entries the rebinning will try to put together, may overshoot i.e. arg 3 is 100 arg 4 is 300, 99 + 98 + 97 + 96 is > 300
 	//Fifth arg is where the hists are stored in the end, can be retrieved easily such as h1 = arr[0]
-	reBin1D(h_Reco, h_Gen, 100, 300, arr);
+	h_Reco = (TH1F*)h_Reco->Rebin(24, h_Reco->GetTitle());
+	h_Gen = (TH1F*)h_Gen->Rebin(24, h_Gen->GetTitle());
 	
+	reBin1D(h_Reco, h_Gen, 300, 1000000, arr);
 	h_Reco = arr[0];
 	h_Gen = arr[1];
 	
-	//h_Reco = (TH1F*)h_Reco->Rebin(10, h_Reco->GetTitle());
-	//h_Gen = (TH1F*)h_Gen->Rebin(10, h_Gen->GetTitle());
+	reBin1D(h_Gen, h_Reco, 300, 1000000, arr);
+	h_Reco = arr[1];
+	h_Gen = arr[0];
 	
-	h_Reco->Sumw2();
-	h_Gen->Sumw2();
+	
+	
+	
 
 	
 	
