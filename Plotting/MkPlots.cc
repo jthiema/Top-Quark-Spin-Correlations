@@ -216,57 +216,84 @@ void draw2DHists(TH2F *h, string multivariablesxAxisTitles_, string multivariabl
 
 }
 
-void reBin1D(TH1F *hfirst, TH1F *hsecond, float minamount, float tailratio, TH1F* arr[])
+void reBin1D(TH1F *hfirst, TH1F *hsecond, float tailstart, float targetquantity, TH1F* arr[])
 {
 	float count = 0;
 	int nbins = 0;
-	for(int i = 0; i <= hfirst->GetBin(1000000); i++)
+	int totbins = 0;
+	
+	//cout << "===" << endl;
+	for(int i = 1; i < hfirst->GetBin(1000000); i++)
 	{
-		if(hfirst->GetBinContent(i) >= minamount)
+		totbins++;
+		//cout << to_string(hfirst->GetBinContent(i)) << endl;
+		if(hfirst->GetBinContent(i) >= tailstart)
 		{
-			count = 0;
 			nbins++;
-		}
-		else if(hfirst->GetBinContent(i) < minamount)
-		{
-			count = count + hfirst->GetBinContent(i);
-			if(count >= tailratio * minamount)
-			{
-				count = 0;
-				nbins++;
-			}
-		}
-	}
-	
-	cout << to_string(nbins) << endl;
-	
-	double* newbins = new double[nbins + 2];
-	count = 0;
-	int currentbin = 0;
-	for(int i = 0; i <= hfirst->GetBin(1000000); i++)
-	{
-		if(hfirst->GetBinContent(i) >= minamount)
-		{
 			count = 0;
-			newbins[currentbin] = i;
-			currentbin++;
+			//cout << "-" << endl;
 		}
-		else if(hfirst->GetBinContent(i) < minamount)
+		else if(hfirst->GetBinContent(i) < tailstart)
 		{
-			count = count + hfirst->GetBinContent(i);
-			if(count >= tailratio * minamount)
+			count += hfirst->GetBinContent(i);
+			if(count >= targetquantity)
 			{
+				nbins++;
 				count = 0;
-				newbins[currentbin] = i;
-				currentbin++;
+			}
+			else if(i == hfirst->GetBin(1000000) - 1)
+			{
+				nbins++;
+				count = 0;
+				//cout << "-" << endl;
 			}
 		}
 	}
-	newbins[nbins-1] = hfirst->GetBin(1000000)-1;
-	newbins[nbins] = hfirst->GetBin(1000000);
+	
+	cout << to_string(totbins) << endl;
+	cout << to_string(nbins) << endl;
+	//cout << "===" << endl;
+	
+	int currentbin = 1;
+	double* newbins = new double[nbins + 1];
+	newbins[0] = hfirst->GetBinLowEdge(1);
+	//cout << to_string(hfirst->GetBinLowEdge(1)) << endl;
+	//cout << "-" << endl;
+	
+	for(int i = 1; i < hfirst->GetBin(1000000); i++)
+	{
+		if(hfirst->GetBinContent(i) >= tailstart)
+		{
+			newbins[currentbin] = hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i);
+			currentbin++;
+			count = 0;
+			//cout << to_string( hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i)) << endl;
+			//cout << "-" << endl;
+		}
+		else if(hfirst->GetBinContent(i) < tailstart)
+		{
+			count += hfirst->GetBinContent(i);
+			if(count >= targetquantity)
+			{
+				newbins[currentbin] =  hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i);
+				currentbin++;
+				count = 0;
+			}
+			else if(i == hfirst->GetBin(1000000) - 1)
+			{
+				newbins[currentbin] =  hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i);
+				currentbin++;
+				count = 0;
+				//cout << to_string( hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i)) << endl;
+				//cout << "-" << endl;
+			}
+		}
+	}
 	
 	arr[0] = (TH1F*)hfirst->Rebin(nbins, hfirst->GetTitle(), newbins);
 	arr[1] = (TH1F*)hsecond->Rebin(nbins, hsecond->GetTitle(), newbins);
+	
+	
 	
 }
 
@@ -278,8 +305,8 @@ void MkPlots(){
 
   TH1::SetDefaultSumw2();
 
-  //TFile* f_hists = new TFile("~/FCCAn/hists.root","READ");
-  TFile* f_hists = new TFile("/depot/cms/top/miacobuc/hists.root","READ");
+  TFile* f_hists = new TFile("~/FCCAn/hists.root","READ");
+  //TFile* f_hists = new TFile("/depot/cms/top/miacobuc/hists.root","READ");
 
   string output_dir = "FinalPlots";
   system(("mkdir -p "+output_dir).c_str());
@@ -320,13 +347,19 @@ void MkPlots(){
 	
 	TH1F* arr[2];
 	
-	reBin1D(h_Reco, h_Gen, 100, 2, arr);
+	//BELOW
+	//First arg is the hist that is checked and bins tailord for
+	//Second arg is a second hist that will also be fit to the binning
+	//Third arg is what max of entries qualifies as part of the tailord
+	//Fourth arg is min entries the rebinning will try to put together, may overshoot i.e. arg 3 is 100 arg 4 is 300, 99 + 98 + 97 + 96 is > 300
+	//Fifth arg is where the hists are stored in the end, can be retrieved easily such as h1 = arr[0]
+	reBin1D(h_Reco, h_Gen, 100, 300, arr);
 	
 	h_Reco = arr[0];
 	h_Gen = arr[1];
 	
-	h_Reco = (TH1F*)h_Reco->Rebin(10, h_Reco->GetTitle());
-	h_Gen = (TH1F*)h_Gen->Rebin(10, h_Gen->GetTitle());
+	//h_Reco = (TH1F*)h_Reco->Rebin(10, h_Reco->GetTitle());
+	//h_Gen = (TH1F*)h_Gen->Rebin(10, h_Gen->GetTitle());
 	
 	h_Reco->Sumw2();
 	h_Gen->Sumw2();
