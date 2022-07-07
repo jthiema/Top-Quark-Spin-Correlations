@@ -33,7 +33,9 @@ using namespace std;
 
 /// Functions
 
-void setPad(TPad *p, bool hasGridX_ = true) {
+void setPad(TPad *p, bool hasGridX_ = true, bool uselogy = false) {
+
+  if (uselogy) p->SetLogy();
 
   p->SetLeftMargin(0.12);
   p->SetRightMargin(0.05);
@@ -102,7 +104,7 @@ void draw_FCC_ch() {
   tex_ch.SetTextAlign(31);
   tex_ch.SetTextSize(0.06);
 
-  tex_ch.DrawLatexNDC(0.25,0.8,"e#mu");
+  tex_ch.DrawLatexNDC(0.75,0.925,"e#mu");
  
 }
 
@@ -135,7 +137,7 @@ void draw1DHists(TH1F *h1, TH1F *h2, string yAxisTitle_, double xMin_, double xM
   h2->SetMarkerColor(kRed);
   h2->Draw("SAME");
 
-  TLegend *leg = new TLegend(0.68,0.78,0.93,0.88);  
+  TLegend *leg = new TLegend(0.83,0.78,0.93,0.88);  
 
   leg->AddEntry(h1,"Reco", "lep");
   leg->AddEntry(h2,"Gen", "lep");
@@ -214,6 +216,60 @@ void draw2DHists(TH2F *h, string multivariablesxAxisTitles_, string multivariabl
 
 }
 
+void reBin1D(TH1F *hfirst, TH1F *hsecond, float minamount, float tailratio, TH1F* arr[])
+{
+	float count = 0;
+	int nbins = 0;
+	for(int i = 0; i <= hfirst->GetBin(1000000); i++)
+	{
+		if(hfirst->GetBinContent(i) >= minamount)
+		{
+			count = 0;
+			nbins++;
+		}
+		else if(hfirst->GetBinContent(i) < minamount)
+		{
+			count = count + hfirst->GetBinContent(i);
+			if(count >= tailratio * minamount)
+			{
+				count = 0;
+				nbins++;
+			}
+		}
+	}
+	
+	cout << to_string(nbins) << endl;
+	
+	double* newbins = new double[nbins + 2];
+	count = 0;
+	int currentbin = 0;
+	for(int i = 0; i <= hfirst->GetBin(1000000); i++)
+	{
+		if(hfirst->GetBinContent(i) >= minamount)
+		{
+			count = 0;
+			newbins[currentbin] = i;
+			currentbin++;
+		}
+		else if(hfirst->GetBinContent(i) < minamount)
+		{
+			count = count + hfirst->GetBinContent(i);
+			if(count >= tailratio * minamount)
+			{
+				count = 0;
+				newbins[currentbin] = i;
+				currentbin++;
+			}
+		}
+	}
+	newbins[nbins-1] = hfirst->GetBin(1000000)-1;
+	newbins[nbins] = hfirst->GetBin(1000000);
+	
+	arr[0] = (TH1F*)hfirst->Rebin(nbins, hfirst->GetTitle(), newbins);
+	arr[1] = (TH1F*)hsecond->Rebin(nbins, hsecond->GetTitle(), newbins);
+	
+}
+
 
 
 /// Main Function                                                                                                                                                               
@@ -222,7 +278,7 @@ void MkPlots(){
 
   TH1::SetDefaultSumw2();
 
-  TFile* f_hists = new TFile("/depot/cms/top/miacobuc/hists.root","READ");
+  TFile* f_hists = new TFile("~/FCCAn/hists.root","READ");
 
   string output_dir = "FinalPlots";
   system(("mkdir -p "+output_dir).c_str());
@@ -251,11 +307,34 @@ void MkPlots(){
 
         cout << variables[j] << endl;
 
-	TH1F *h_Reco = (TH1F*)f_hists->Get((variables[j]).c_str());
-	h_Reco->Sumw2();
+	
+	
 
+
+	TH1F *h_Reco = (TH1F*)f_hists->Get((variables[j]).c_str());
 	TH1F *h_Gen = (TH1F*)f_hists->Get(("gen_"+variables[j]).c_str());
+	
+	
+	//cout << to_string(h_Gen1->GetXaxis()->GetXmax()) << endl;
+	
+	TH1F* arr[2];
+	
+	reBin1D(h_Reco, h_Gen, 100, 2, arr);
+	
+	h_Reco = arr[0];
+	h_Gen = arr[1];
+	
+	h_Reco = (TH1F*)h_Reco->Rebin(10, h_Reco->GetTitle());
+	h_Gen = (TH1F*)h_Gen->Rebin(10, h_Gen->GetTitle());
+	
+	h_Reco->Sumw2();
 	h_Gen->Sumw2();
+
+	
+	
+	
+	
+	
 
 
 	// To Get Ratio
@@ -266,12 +345,12 @@ void MkPlots(){
 
 	TCanvas *c = new TCanvas(("c_"+variables[j]).c_str(), "", 1000., 1000.);
 	TPad *p = new TPad(("p_"+variables[j]).c_str(), "", 0, 0.15, 1, 1.0); 
-	setPad(p);
+	setPad(p, true, true);
 	draw1DHists(h_Reco,h_Gen,"Entries", xMins[j], xMaxs[j]);
 	c->cd();
 	TPad *p_ratio = new TPad(("p_ratio_"+variables[j]).c_str(), "", 0, 0.05, 1, 0.3);  
 	setPad(p_ratio, false);
-	drawRatio(h_Ratio, xAxisTitles[j], xMins[j], xMaxs[j], "Reco/Gen", 0.5, 1.5);
+	drawRatio(h_Ratio, xAxisTitles[j], xMins[j], xMaxs[j], "Reco/Gen", 0.5, 2.5);
 	
 	c->SaveAs((output_dir+"/h_"+variables[j]+".pdf").c_str());      
 	c->SaveAs((output_dir+"/h_"+variables[j]+".C").c_str());      
