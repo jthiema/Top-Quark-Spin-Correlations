@@ -256,7 +256,8 @@ void reBin1D(TH1F *hfirst, TH1F *hsecond, float tailstart, float targetquantity,
 	
 	int currentbin = 1;
 	double* newbins = new double[nbins + 1];
-	newbins[0] = hfirst->GetBinLowEdge(1);
+	int lowbin = -1;
+	//newbins[0] = hfirst->GetBinLowEdge(0);
 	//cout << to_string(hfirst->GetBinLowEdge(1)) << endl;
 	//cout << "-" << endl;
 	
@@ -267,6 +268,10 @@ void reBin1D(TH1F *hfirst, TH1F *hsecond, float tailstart, float targetquantity,
 			newbins[currentbin] = hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i);
 			currentbin++;
 			count = 0;
+			if(lowbin < 0)
+			{
+				lowbin = i;
+			}
 			//cout << to_string( hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i)) << endl;
 			//cout << "-" << endl;
 		}
@@ -278,18 +283,26 @@ void reBin1D(TH1F *hfirst, TH1F *hsecond, float tailstart, float targetquantity,
 				newbins[currentbin] =  hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i);
 				currentbin++;
 				count = 0;
+				if(lowbin < 0)
+				{
+					lowbin = i;
+				}
 			}
 			else if(i == hfirst->GetBin(1000000) - 1)
 			{
 				newbins[currentbin] =  hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i);
 				currentbin++;
 				count = 0;
+				if(lowbin < 0)
+				{
+					lowbin = i;
+				}
 				//cout << to_string( hfirst->GetBinLowEdge(i) + hfirst->GetBinWidth(i)) << endl;
 				//cout << "-" << endl;
 			}
 		}
 	}
-	
+	newbins[0] = hfirst->GetBinLowEdge(lowbin);
 	arr[0] = (TH1F*)hfirst->Rebin(nbins, hfirst->GetTitle(), newbins);
 	arr[1] = (TH1F*)hsecond->Rebin(nbins, hsecond->GetTitle(), newbins);
 	
@@ -305,8 +318,8 @@ void MkPlots(){
 
   TH1::SetDefaultSumw2();
 
-  TFile* f_hists = new TFile("~/FCCAn/hists.root","READ");
-  //TFile* f_hists = new TFile("/depot/cms/top/miacobuc/hists.root","READ");
+  //TFile* f_hists = new TFile("~/hists.root","READ");
+  TFile* f_hists = new TFile("/depot/cms/top/miacobuc/hists.root","READ");
 
   string output_dir = "FinalPlots";
   system(("mkdir -p "+output_dir).c_str());
@@ -315,14 +328,79 @@ void MkPlots(){
 
   vector<string> channels = {"emu"};
 
-  vector<string> variables = {"t_pt"}; 
-  vector<string> xAxisTitles = {"Top pT (GeV)"};
-  vector<double> xMins = {0.};
-  vector<double> xMaxs = {1200.};
+  vector<string> variables = {
+	  "lep_pt", "lep_eta", "lep_phi",
+	  "alep_pt", "alep_eta", "alep_phi",
+	  "met_pt", "met_phi",
+	  "b_pt", "b_eta", "b_phi",
+	  "ab_pt", "ab_eta", "ab_phi",
+	  "neu_pt", "neu_eta", "neu_phi",
+	  "aneu_pt", "aneu_eta", "aneu_phi",
+	  "t_pt", "t_eta", "t_phi",
+	  "at_pt", "at_eta", "at_phi",
+	  "tat_mass",
+	  "ckk", "crr", "cnn", "crk", "ckr",
+	  "cP_rk", "cM_rk", "c_hel"
+	  }; 
+  vector<string> xAxisTitles = {
+	  "Lep pT (GeV)", "Lep eta", "Lep phi",
+	  "aLep pT (GeV)", "aLep eta", "aLep phi",
+	  "MET pT (GeV)", "MET phi",
+	  "Bot pT (GeV)", "Bot eta", "Bot phi",
+	  "aBot pT (GeV)", "aBot eta", "aBot phi",
+	  "Neu pT (GeV)", "Neu eta", "Neu phi",
+	  "aNeu pT (GeV)", "aNeu eta", "aNeu phi",
+	  "Top pT (GeV)", "Top eta", "Top phi",
+	  "aTop pT (GeV)", "aTop eta", "aTop phi",
+	  "Top aTop mass",
+	  "ckk", "crr", "cnn", "crk", "ckr",
+	  "cP_rk", "cM_rk", "c_hel"
+	  };
+  //vector<double> xMins = {0.};
+  //vector<double> xMaxs = {1200.};
 
-  vector<string> multivariables = {"rvg_t_pt"} ;
-  vector<string> multivariablesxAxisTitles = {"Reco Top pT (GeV)"};
-  vector<string> multivariablesyAxisTitles = {"Gen Top pT (GeV)"};
+  vector<string> multivariables = {
+	  "rvg_lep_pt", "rvg_lep_eta", "rvg_lep_phi",
+	  "rvg_alep_pt", "rvg_alep_eta", "rvg_alep_phi",
+	  "rvg_met_pt", "rvg_met_phi",
+	  "rvg_b_pt", "rvg_b_eta", "rvg_b_phi",
+	  "rvg_ab_pt", "rvg_ab_eta", "rvg_ab_phi",
+	  "rvg_neu_pt", "rvg_neu_eta", "rvg_neu_phi",
+	  "rvg_aneu_pt", "rvg_aneu_eta", "rvg_aneu_phi",
+	  "rvg_t_pt", "rvg_t_eta", "rvg_t_phi",
+	  "rvg_at_pt", "rvg_at_eta", "rvg_at_phi",
+	  "rvg_tat_m",
+	  "rvg_ckk", "rvg_crr", "rvg_cnn", "rvg_crk", "rvg_ckr",
+	  "rvg_cPrk", "rvg_cMrk", "rvg_c_hel"
+	  } ;
+  vector<string> multivariablesxAxisTitles = {
+	  "Reco Lep pT (GeV)", "Reco Lep eta", "Reco Lep phi",
+	  "Reco aLep pT (GeV)", "Reco aLep eta", "Reco aLep phi",
+	  "Reco MET pT (GeV)", "Reco MET phi",
+	  "Reco Bot pT (GeV)", "Reco Bot eta", "Reco Bot phi",
+	  "Reco aBot pT (GeV)", "Reco aBot eta", "Reco aBot phi",
+	  "Reco Neu pT (GeV)", "Reco Neu eta", "Reco Neu phi",
+	  "Reco aNeu pT (GeV)", "Reco aNeu eta", "Reco aNeu phi",
+	  "Reco Top pT (GeV)", "Reco Top eta", "Reco Top phi",
+	  "Reco aTop pT (GeV)", "Reco aTop eta", "Reco aTop phi",
+	  "Reco Top aTop mass",
+	  "Reco ckk", "Reco crr", "Reco cnn", "Reco crk", "Reco ckr",
+	  "Reco cP_rk", "Reco cM_rk", "Reco c_hel"
+	  };
+  vector<string> multivariablesyAxisTitles = {
+	  "Gen Lep pT (GeV)", "Gen Lep eta", "Gen Lep phi",
+	  "Gen aLep pT (GeV)", "Gen aLep eta", "Gen aLep phi",
+	  "Gen MET pT (GeV)", "Gen MET phi",
+	  "Gen Bot pT (GeV)", "Gen Bot eta", "Gen Bot phi",
+	  "Gen aBot pT (GeV)", "Gen aBot eta", "Gen aBot phi",
+	  "Gen Neu pT (GeV)", "Gen Neu eta", "Gen Neu phi",
+	  "Gen aNeu pT (GeV)", "Gen aNeu eta", "Gen aNeu phi",
+	  "Gen Top pT (GeV)", "Gen Top eta", "Gen Top phi",
+	  "Gen aTop pT (GeV)", "Gen aTop eta", "Gen aTop phi",
+	  "Gen Top aTop mass",
+	  "Gen ckk", "Gen crr", "Gen cnn", "Gen crk", "Gen ckr",
+	  "Gen cP_rk", "Gen cM_rk", "Gen c_hel"
+	  };
 
 
   for (UInt_t i = 0; i < channels.size(); i++) {
@@ -348,7 +426,9 @@ void MkPlots(){
 	
 	//cout << to_string(h_Gen1->GetXaxis()->GetXmax()) << endl;
 	
-	TH1F* arr[2];
+	
+	h_Reco = (TH1F*)h_Reco->Rebin(24, h_Reco->GetTitle());
+	h_Gen = (TH1F*)h_Gen->Rebin(24, h_Gen->GetTitle());
 	
 	//BELOW
 	//First arg is the hist that is checked and bins tailord for
@@ -356,8 +436,8 @@ void MkPlots(){
 	//Third arg is what max of entries qualifies as part of the tailord
 	//Fourth arg is min entries the rebinning will try to put together, may overshoot i.e. arg 3 is 100 arg 4 is 300, 99 + 98 + 97 + 96 is > 300
 	//Fifth arg is where the hists are stored in the end, can be retrieved easily such as h1 = arr[0]
-	h_Reco = (TH1F*)h_Reco->Rebin(24, h_Reco->GetTitle());
-	h_Gen = (TH1F*)h_Gen->Rebin(24, h_Gen->GetTitle());
+	/* uncomment this bit to do non uniform binning
+	TH1F* arr[2];
 	
 	reBin1D(h_Reco, h_Gen, 300, 1000000, arr);
 	h_Reco = arr[0];
@@ -366,6 +446,7 @@ void MkPlots(){
 	reBin1D(h_Gen, h_Reco, 300, 1000000, arr);
 	h_Reco = arr[1];
 	h_Gen = arr[0];
+	*/
 	
 	
 	
@@ -387,11 +468,13 @@ void MkPlots(){
 	TCanvas *c = new TCanvas(("c_"+variables[j]).c_str(), "", 1000., 1000.);
 	TPad *p = new TPad(("p_"+variables[j]).c_str(), "", 0, 0.15, 1, 1.0); 
 	setPad(p, true, true);
-	draw1DHists(h_Reco,h_Gen,"Entries", xMins[j], xMaxs[j]);
+	//draw1DHists(h_Reco,h_Gen,"Entries", xMins[j], xMaxs[j]);
+	draw1DHists(h_Reco,h_Gen,"Entries", h_Reco->GetXaxis()->GetXmin(), h_Reco->GetXaxis()->GetXmax());
 	c->cd();
 	TPad *p_ratio = new TPad(("p_ratio_"+variables[j]).c_str(), "", 0, 0.05, 1, 0.3);  
 	setPad(p_ratio, false);
-	drawRatio(h_Ratio, xAxisTitles[j], xMins[j], xMaxs[j], "Reco/Gen", 0.5, 2.5);
+	//drawRatio(h_Ratio, xAxisTitles[j], xMins[j], xMaxs[j], "Reco/Gen", 0.5, 2.5);
+	drawRatio(h_Ratio, xAxisTitles[j], h_Reco->GetXaxis()->GetXmin(), h_Reco->GetXaxis()->GetXmax(), "Reco/Gen", 0.5, 2.5);
 	
 	c->SaveAs((output_dir+"/h_"+variables[j]+".pdf").c_str());      
 	c->SaveAs((output_dir+"/h_"+variables[j]+".C").c_str());      
