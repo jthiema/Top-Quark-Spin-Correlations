@@ -1,7 +1,7 @@
 void h_alep_phi()
 {
 //=========Macro generated from canvas: c_alep_phi/
-//=========  (Sat Jul  9 01:42:54 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:42 2022) by ROOT version 6.24/02
    TCanvas *c_alep_phi = new TCanvas("c_alep_phi", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_alep_phi()
    TPad *p_alep_phi = new TPad("p_alep_phi", "",0,0.15,1,1);
    p_alep_phi->Draw();
    p_alep_phi->cd();
-   p_alep_phi->Range(-8.10001,3.272085,7.040196,4.553457);
+   p_alep_phi->Range(-8.10001,-4215.914,7.040196,16863.66);
    p_alep_phi->SetFillColor(0);
    p_alep_phi->SetBorderMode(0);
    p_alep_phi->SetBorderSize(2);
-   p_alep_phi->SetLogy();
    p_alep_phi->SetGridx();
    p_alep_phi->SetGridy();
    p_alep_phi->SetTickx(1);

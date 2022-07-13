@@ -1,7 +1,7 @@
 void h_tat_mass()
 {
 //=========Macro generated from canvas: c_tat_mass/
-//=========  (Sat Jul  9 01:42:55 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:43 2022) by ROOT version 6.24/02
    TCanvas *c_tat_mass = new TCanvas("c_tat_mass", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_tat_mass()
    TPad *p_tat_mass = new TPad("p_tat_mass", "",0,0.15,1,1);
    p_tat_mass->Draw();
    p_tat_mass->cd();
-   p_tat_mass->Range(-173.494,2.206377,1272.289,5.102136);
+   p_tat_mass->Range(-173.494,-10283.29,1272.289,41133.17);
    p_tat_mass->SetFillColor(0);
    p_tat_mass->SetBorderMode(0);
    p_tat_mass->SetBorderSize(2);
-   p_tat_mass->SetLogy();
    p_tat_mass->SetGridx();
    p_tat_mass->SetGridy();
    p_tat_mass->SetTickx(1);

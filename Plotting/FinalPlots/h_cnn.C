@@ -1,7 +1,7 @@
 void h_cnn()
 {
 //=========Macro generated from canvas: c_cnn/
-//=========  (Sat Jul  9 01:42:55 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:43 2022) by ROOT version 6.24/02
    TCanvas *c_cnn = new TCanvas("c_cnn", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_cnn()
    TPad *p_cnn = new TPad("p_cnn", "",0,0.15,1,1);
    p_cnn->Draw();
    p_cnn->cd();
-   p_cnn->Range(-1.289157,0.833424,1.120482,5.212014);
+   p_cnn->Range(-1.289157,-9412.991,1.120482,37651.96);
    p_cnn->SetFillColor(0);
    p_cnn->SetBorderMode(0);
    p_cnn->SetBorderSize(2);
-   p_cnn->SetLogy();
    p_cnn->SetGridx();
    p_cnn->SetGridy();
    p_cnn->SetTickx(1);

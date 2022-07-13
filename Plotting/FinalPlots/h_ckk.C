@@ -1,7 +1,7 @@
 void h_ckk()
 {
 //=========Macro generated from canvas: c_ckk/
-//=========  (Sat Jul  9 01:42:55 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:43 2022) by ROOT version 6.24/02
    TCanvas *c_ckk = new TCanvas("c_ckk", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_ckk()
    TPad *p_ckk = new TPad("p_ckk", "",0,0.15,1,1);
    p_ckk->Draw();
    p_ckk->cd();
-   p_ckk->Range(-1.289157,0.8446643,1.120482,5.146746);
+   p_ckk->Range(-1.289157,-8243.48,1.120482,32973.92);
    p_ckk->SetFillColor(0);
    p_ckk->SetBorderMode(0);
    p_ckk->SetBorderSize(2);
-   p_ckk->SetLogy();
    p_ckk->SetGridx();
    p_ckk->SetGridy();
    p_ckk->SetTickx(1);

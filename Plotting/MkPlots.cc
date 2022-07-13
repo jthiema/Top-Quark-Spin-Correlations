@@ -186,6 +186,32 @@ void drawRatio(TH1F *h, string xAxisTitle_, double xMin_, double xMax_, string y
 
 void draw2DHists(TH2F *h, string multivariablesxAxisTitles_, string multivariablesyAxisTitles_) {
 
+	if (multivariablesxAxisTitles_ == "leading lepton pT (GeV)")
+	{
+		float AxisMin = 1000000000;
+		float AxisMax = 0.00;
+
+		int nbins_X = h->GetXaxis()->GetNbins();
+		int nbins_Y = h->GetYaxis()->GetNbins();
+
+		for (Int_t nbin_X = 0; nbin_X < nbins_X; nbin_X++)
+		{
+
+			for (Int_t nbin_Y = 0; nbin_Y < nbins_Y; nbin_Y++)
+			{
+
+				double binContent = h->GetBinContent(nbin_X+1,nbin_Y+1);
+
+				if (binContent < AxisMin && binContent > 0.0) AxisMin = binContent;
+				if (binContent > AxisMax) AxisMax = binContent;
+
+			}
+		}
+
+		h->SetMinimum(AxisMin);
+		h->SetMaximum(AxisMax);
+	}
+
   gStyle->SetPalette(1);
 
   h->GetXaxis()->SetLabelFont(42);
@@ -401,7 +427,66 @@ void MkPlots(){
 	  "Gen ckk", "Gen crr", "Gen cnn", "Gen crk", "Gen ckr",
 	  "Gen cP_rk", "Gen cM_rk", "Gen c_hel"
 	  };
-
+  vector<double> tailstarts = { //-1 for let it do its default -2 for off, other nums are actual inputs
+	-1, -2, -2,
+	-2, -2, -2,
+	-2, -2,
+	-2, -2, -2,
+	-2, -2, -2,
+	-2, -2, -2,
+	-2, -2, -2,
+	-2, -2, -2,
+	-2, -2, -2,
+	-2,
+	-2, -2, -2, -2, -2,
+	-2, -2, -2
+	
+  };
+  
+  vector<double> mininbin = { //-1 for default, other nums are actual inputs
+	-1, -1, -1,
+	-1, -1, -1,
+	-1, -1,
+	-1, -1, -1,
+	-1, -1, -1,
+	-1, -1, -1,
+	-1, -1, -1,
+	-1, -1, -1,
+	-1, -1, -1,
+	-1,
+	-1, -1, -1, -1, -1,
+	-1, -1, -1
+  };
+  
+  vector<int> prebinning = { // -1 for default, -2 for off, other nums for actual vals
+	-1, -1, -1,  //lep pt,eta,phi
+	-1, -1, -1,  //alep pt,eta,phi
+	-1, -1,  //met pt,phi
+	-1, -1, -1,  //bot pt,eta,phi
+	-1, -1, -1,  //abot pt,eta,phi
+	-1, -1, -1,  //neu pt,eta,phi
+	-1, -1, -1,  //aneu pt,eta,phi
+	-1, -1, -1,  //top pt,eta,phi
+	-1, -1, -1,  //atop pt,eta,phi
+	-1,  //top atop mass
+	-1, -1, -1, -1, -1,  //ckk crr cnn crk ckr
+	-1, -1, -1  //cprk cmrk chel
+  };
+  
+  vector<bool> uselogforscale = {
+	  true, false, false,
+	  true, false, false,
+	  true, false,
+	  true, false, false,
+	  true, false, false,
+	  true, false, false,
+	  true, false, false,
+	  true, false, false,
+	  true, false, false,
+	  false,
+	  false, false, false, false, false,
+	  false, false, false
+  };
 
   for (UInt_t i = 0; i < channels.size(); i++) {
 
@@ -427,8 +512,15 @@ void MkPlots(){
 	//cout << to_string(h_Gen1->GetXaxis()->GetXmax()) << endl;
 	
 	
-	h_Reco = (TH1F*)h_Reco->Rebin(24, h_Reco->GetTitle());
-	h_Gen = (TH1F*)h_Gen->Rebin(24, h_Gen->GetTitle());
+	if(prebinning[j] != -2)
+	{
+		if(prebinning[j] == -1)
+		{
+			prebinning[j] = 24;
+		}
+		h_Reco = (TH1F*)h_Reco->Rebin(prebinning[j], h_Reco->GetTitle());
+		h_Gen = (TH1F*)h_Gen->Rebin(prebinning[j], h_Gen->GetTitle());
+	}
 	
 	//BELOW
 	//First arg is the hist that is checked and bins tailord for
@@ -436,17 +528,27 @@ void MkPlots(){
 	//Third arg is what max of entries qualifies as part of the tailord
 	//Fourth arg is min entries the rebinning will try to put together, may overshoot i.e. arg 3 is 100 arg 4 is 300, 99 + 98 + 97 + 96 is > 300
 	//Fifth arg is where the hists are stored in the end, can be retrieved easily such as h1 = arr[0]
-	/* uncomment this bit to do non uniform binning
-	TH1F* arr[2];
 	
-	reBin1D(h_Reco, h_Gen, 300, 1000000, arr);
-	h_Reco = arr[0];
-	h_Gen = arr[1];
+	if(tailstarts[j] != -2) //nonuniform binning is not off
+	{
+		TH1F* arr[2];
+		if(tailstarts[j] == -1)
+		{
+			tailstarts[j] = 300;
+		}
+		if(mininbin[j] == -1)
+		{
+			mininbin[j] = 1000000;
+		}
+		reBin1D(h_Reco, h_Gen, tailstarts[j], mininbin[j], arr);
+		h_Reco = arr[0];
+		h_Gen = arr[1];
+		
+		reBin1D(h_Gen, h_Reco, tailstarts[j], mininbin[j], arr);
+		h_Reco = arr[1];
+		h_Gen = arr[0];
+	}
 	
-	reBin1D(h_Gen, h_Reco, 300, 1000000, arr);
-	h_Reco = arr[1];
-	h_Gen = arr[0];
-	*/
 	
 	
 	
@@ -467,7 +569,7 @@ void MkPlots(){
 
 	TCanvas *c = new TCanvas(("c_"+variables[j]).c_str(), "", 1000., 1000.);
 	TPad *p = new TPad(("p_"+variables[j]).c_str(), "", 0, 0.15, 1, 1.0); 
-	setPad(p, true, true);
+	setPad(p, true, uselogforscale[j]);
 	//draw1DHists(h_Reco,h_Gen,"Entries", xMins[j], xMaxs[j]);
 	draw1DHists(h_Reco,h_Gen,"Entries", h_Reco->GetXaxis()->GetXmin(), h_Reco->GetXaxis()->GetXmax());
 	c->cd();

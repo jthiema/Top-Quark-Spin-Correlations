@@ -1,7 +1,7 @@
 void h_alep_eta()
 {
 //=========Macro generated from canvas: c_alep_eta/
-//=========  (Sat Jul  9 01:42:54 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:42 2022) by ROOT version 6.24/02
    TCanvas *c_alep_eta = new TCanvas("c_alep_eta", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_alep_eta()
    TPad *p_alep_eta = new TPad("p_alep_eta", "",0,0.15,1,1);
    p_alep_eta->Draw();
    p_alep_eta->cd();
-   p_alep_eta->Range(-8.10001,1.465991,7.040196,4.872386);
+   p_alep_eta->Range(-8.10001,-5386.65,7.040196,21546.6);
    p_alep_eta->SetFillColor(0);
    p_alep_eta->SetBorderMode(0);
    p_alep_eta->SetBorderSize(2);
-   p_alep_eta->SetLogy();
    p_alep_eta->SetGridx();
    p_alep_eta->SetGridy();
    p_alep_eta->SetTickx(1);

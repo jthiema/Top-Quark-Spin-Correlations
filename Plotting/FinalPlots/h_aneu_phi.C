@@ -1,7 +1,7 @@
 void h_aneu_phi()
 {
 //=========Macro generated from canvas: c_aneu_phi/
-//=========  (Sat Jul  9 01:42:55 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:42 2022) by ROOT version 6.24/02
    TCanvas *c_aneu_phi = new TCanvas("c_aneu_phi", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_aneu_phi()
    TPad *p_aneu_phi = new TPad("p_aneu_phi", "",0,0.15,1,1);
    p_aneu_phi->Draw();
    p_aneu_phi->cd();
-   p_aneu_phi->Range(-8.10001,3.269572,7.040196,4.555182);
+   p_aneu_phi->Range(-8.10001,-4228.567,7.040196,16914.27);
    p_aneu_phi->SetFillColor(0);
    p_aneu_phi->SetBorderMode(0);
    p_aneu_phi->SetBorderSize(2);
-   p_aneu_phi->SetLogy();
    p_aneu_phi->SetGridx();
    p_aneu_phi->SetGridy();
    p_aneu_phi->SetTickx(1);

@@ -1,7 +1,7 @@
 void h_c_hel()
 {
 //=========Macro generated from canvas: c_c_hel/
-//=========  (Sat Jul  9 01:42:55 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:43 2022) by ROOT version 6.24/02
    TCanvas *c_c_hel = new TCanvas("c_c_hel", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_c_hel()
    TPad *p_c_hel = new TPad("p_c_hel", "",0,0.15,1,1);
    p_c_hel->Draw();
    p_c_hel->cd();
-   p_c_hel->Range(-1.289157,3.205618,1.120482,4.410492);
+   p_c_hel->Range(-1.289157,3877.859,1.120482,11277.57);
    p_c_hel->SetFillColor(0);
    p_c_hel->SetBorderMode(0);
    p_c_hel->SetBorderSize(2);
-   p_c_hel->SetLogy();
    p_c_hel->SetGridx();
    p_c_hel->SetGridy();
    p_c_hel->SetTickx(1);

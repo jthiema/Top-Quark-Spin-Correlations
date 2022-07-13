@@ -1,7 +1,7 @@
 void h_ckr()
 {
 //=========Macro generated from canvas: c_ckr/
-//=========  (Sat Jul  9 01:42:55 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:43 2022) by ROOT version 6.24/02
    TCanvas *c_ckr = new TCanvas("c_ckr", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_ckr()
    TPad *p_ckr = new TPad("p_ckr", "",0,0.15,1,1);
    p_ckr->Draw();
    p_ckr->cd();
-   p_ckr->Range(-1.289157,0.9048834,1.120482,5.156403);
+   p_ckr->Range(-1.289157,-8527.53,1.120482,34110.12);
    p_ckr->SetFillColor(0);
    p_ckr->SetBorderMode(0);
    p_ckr->SetBorderSize(2);
-   p_ckr->SetLogy();
    p_ckr->SetGridx();
    p_ckr->SetGridy();
    p_ckr->SetTickx(1);

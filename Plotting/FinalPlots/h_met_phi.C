@@ -1,7 +1,7 @@
 void h_met_phi()
 {
 //=========Macro generated from canvas: c_met_phi/
-//=========  (Sat Jul  9 01:42:54 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:42 2022) by ROOT version 6.24/02
    TCanvas *c_met_phi = new TCanvas("c_met_phi", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_met_phi()
    TPad *p_met_phi = new TPad("p_met_phi", "",0,0.15,1,1);
    p_met_phi->Draw();
    p_met_phi->cd();
-   p_met_phi->Range(-8.10001,3.31338,7.040196,4.594906);
+   p_met_phi->Range(-8.10001,-4637.952,7.040196,18551.81);
    p_met_phi->SetFillColor(0);
    p_met_phi->SetBorderMode(0);
    p_met_phi->SetBorderSize(2);
-   p_met_phi->SetLogy();
    p_met_phi->SetGridx();
    p_met_phi->SetGridy();
    p_met_phi->SetTickx(1);

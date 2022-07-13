@@ -1,7 +1,7 @@
 void h_t_eta()
 {
 //=========Macro generated from canvas: c_t_eta/
-//=========  (Sat Jul  9 01:42:55 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:42 2022) by ROOT version 6.24/02
    TCanvas *c_t_eta = new TCanvas("c_t_eta", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_t_eta()
    TPad *p_t_eta = new TPad("p_t_eta", "",0,0.15,1,1);
    p_t_eta->Draw();
    p_t_eta->cd();
-   p_t_eta->Range(-8.10001,0.9450933,7.040196,4.765337);
+   p_t_eta->Range(-8.10001,-3827.235,7.040196,15308.94);
    p_t_eta->SetFillColor(0);
    p_t_eta->SetBorderMode(0);
    p_t_eta->SetBorderSize(2);
-   p_t_eta->SetLogy();
    p_t_eta->SetGridx();
    p_t_eta->SetGridy();
    p_t_eta->SetTickx(1);

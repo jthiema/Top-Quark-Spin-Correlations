@@ -1,7 +1,7 @@
 void h_t_phi()
 {
 //=========Macro generated from canvas: c_t_phi/
-//=========  (Sat Jul  9 01:42:55 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:42 2022) by ROOT version 6.24/02
    TCanvas *c_t_phi = new TCanvas("c_t_phi", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_t_phi()
    TPad *p_t_phi = new TPad("p_t_phi", "",0,0.15,1,1);
    p_t_phi->Draw();
    p_t_phi->cd();
-   p_t_phi->Range(-8.10001,3.268034,7.040196,4.552975);
+   p_t_phi->Range(-8.10001,-4207.78,7.040196,16831.12);
    p_t_phi->SetFillColor(0);
    p_t_phi->SetBorderMode(0);
    p_t_phi->SetBorderSize(2);
-   p_t_phi->SetLogy();
    p_t_phi->SetGridx();
    p_t_phi->SetGridy();
    p_t_phi->SetTickx(1);

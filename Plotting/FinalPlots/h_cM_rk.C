@@ -1,7 +1,7 @@
 void h_cM_rk()
 {
 //=========Macro generated from canvas: c_cM_rk/
-//=========  (Sat Jul  9 01:42:55 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 10:50:43 2022) by ROOT version 6.24/02
    TCanvas *c_cM_rk = new TCanvas("c_cM_rk", "",0,0,1000,1000);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -15,11 +15,10 @@ void h_cM_rk()
    TPad *p_cM_rk = new TPad("p_cM_rk", "",0,0.15,1,1);
    p_cM_rk->Draw();
    p_cM_rk->cd();
-   p_cM_rk->Range(-1.289157,2.324891,1.120482,4.538576);
+   p_cM_rk->Range(-1.289157,-2400.216,1.120482,13011);
    p_cM_rk->SetFillColor(0);
    p_cM_rk->SetBorderMode(0);
    p_cM_rk->SetBorderSize(2);
-   p_cM_rk->SetLogy();
    p_cM_rk->SetGridx();
    p_cM_rk->SetGridy();
    p_cM_rk->SetTickx(1);
