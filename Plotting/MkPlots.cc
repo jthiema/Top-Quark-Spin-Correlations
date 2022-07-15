@@ -517,7 +517,7 @@ void MkPlots(){
 	-1, -1, -1,  //abot pt,eta,phi
 	-1, -1, -1,  //neu pt,eta,phi
 	-1, -1, -1,  //aneu pt,eta,phi
-	-1, -1, 8,  //top pt,eta,phi
+	-1, -1, -1,  //top pt,eta,phi
 	-1, -1, -1,  //atop pt,eta,phi
 	-1,  //top atop mass
 	-1, -1, -1, -1, -1,  //ckk crr cnn crk ckr
@@ -567,7 +567,7 @@ void MkPlots(){
 	{
 		if(prebinning[j] == -1)
 		{
-			prebinning[j] = 24;
+			prebinning[j] = 40;
 		}
 		h_Reco = (TH1F*)h_Reco->Rebin(prebinning[j], h_Reco->GetTitle());
 		h_Gen = (TH1F*)h_Gen->Rebin(prebinning[j], h_Gen->GetTitle());

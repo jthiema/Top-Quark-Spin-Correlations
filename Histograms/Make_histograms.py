@@ -76,7 +76,7 @@ hateta = ROOT.TH1D('at_eta', 'at_eta', 2000, -2*np.pi, 2*np.pi)
 hatphi = ROOT.TH1D('at_phi', 'at_phi', 2000, -np.pi, np.pi)
 hatrap = ROOT.TH1D("at_rap", "at_rap", 2000, -1000, 1000)
 
-htatmass = ROOT.TH1D('tat_mass', 'tat_mass', 2000, 0, 1200)
+htatmass = ROOT.TH1D('tat_mass', 'tat_mass', 2000, 300, 1200)
 htatpt = ROOT.TH1D("tat_pt", "tat_pt", 2000, 0 ,1200)
 htateta = ROOT.TH1D("tat_eta", "tat_eta", 2000, -2*np.pi ,2*np.pi)
 htatphi = ROOT.TH1D("tat_phi", "tat_phi", 2000, -np.pi, np.pi)
@@ -136,7 +136,7 @@ hgenateta = ROOT.TH1D('gen_at_eta', 'gen_at_eta', 2000, -2*np.pi, 2*np.pi)
 hgenatphi = ROOT.TH1D('gen_at_phi', 'gen_at_phi', 2000, -np.pi, np.pi)
 hgenatrap = ROOT.TH1D("gen_at_rap", "gen_at_rap", 2000, -1000, 1000)
 
-hgentatmass = ROOT.TH1D('gen_tat_mass', 'gen_tat_mass', 2000, 0, 1200)
+hgentatmass = ROOT.TH1D('gen_tat_mass', 'gen_tat_mass', 2000, 300, 1200)
 hgentatpt = ROOT.TH1D("gen_tat_pt", "gen_tat_pt", 2000, 0 ,1200)
 hgentateta = ROOT.TH1D("gen_tat_eta", "gen_tat_eta", 2000, -2*np.pi ,2*np.pi)
 hgentatphi = ROOT.TH1D("gen_tat_phi", "gen_tat_phi", 2000, -np.pi, np.pi)
@@ -197,7 +197,7 @@ hrvgateta = ROOT.TH2D('rvg_at_eta', 'reco vs gen at eta', 2000, -2*np.pi, 2*np.p
 hrvgatphi = ROOT.TH2D('rvg_at_phi', 'reco vs gen at phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
 hrvgatrap = ROOT.TH2D('rvg_at_rap', 'reco vs gen at rap', 2000, -1000, 1000, 2000, -1000, 1000)
 
-htvgtatm = ROOT.TH2D('rvg_tat_m', "reco vs gen tat mass", 1400, 0, 1400, 1400, 0, 1400)
+htvgtatm = ROOT.TH2D('rvg_tat_m', "reco vs gen tat mass", 1400, 300, 1400, 1400, 300, 1400)
 
 hrvgckk = ROOT.TH2D("rvg_ckk", "reco vs gen ckk", 2000, -1, 1, 2000, -1, 1)
 hrvgcrr = ROOT.TH2D("rvg_crr", "reco vs gen crr", 2000, -1, 1, 2000, -1, 1)
