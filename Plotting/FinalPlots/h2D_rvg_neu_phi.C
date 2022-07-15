@@ -1,7 +1,7 @@
 void h2D_rvg_neu_phi()
 {
 //=========Macro generated from canvas: c_2D_rvg_neu_phi/
-//=========  (Wed Jul 13 10:51:06 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 12:22:18 2022) by ROOT version 6.24/02
    TCanvas *c_2D_rvg_neu_phi = new TCanvas("c_2D_rvg_neu_phi", "",0,0,1200,800);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -26,18 +26,20 @@ void h2D_rvg_neu_phi()
    p_2D_rvg_neu_phi->SetFrameBorderMode(0);
    p_2D_rvg_neu_phi->SetFrameBorderMode(0);
    
-   TH2D *rvg_neu_phi = new TH2D("rvg_neu_phi","reco vs gen neu phi",1200,-6.283185,6.283185,1200,-6.283185,6.283185);
+   TH2D *rvg_neu_phi = new TH2D("rvg_neu_phi","reco vs gen neu phi",50,-6.283185,6.283185,50,-6.283185,6.283185);
 
    Int_t ci;      // for color index setting
    TColor *color; // for color definition with alpha
    ci = TColor::GetColor("#000099");
    rvg_neu_phi->SetLineColor(ci);
    rvg_neu_phi->GetXaxis()->SetTitle("Reco Neu phi");
+   rvg_neu_phi->GetXaxis()->SetRange(1,1200);
    rvg_neu_phi->GetXaxis()->SetLabelFont(42);
    rvg_neu_phi->GetXaxis()->SetLabelOffset(0.01);
    rvg_neu_phi->GetXaxis()->SetTitleOffset(1.3);
    rvg_neu_phi->GetXaxis()->SetTitleFont(42);
    rvg_neu_phi->GetYaxis()->SetTitle("Gen Neu phi");
+   rvg_neu_phi->GetYaxis()->SetRange(1,1200);
    rvg_neu_phi->GetYaxis()->SetLabelFont(42);
    rvg_neu_phi->GetYaxis()->SetLabelOffset(0.01);
    rvg_neu_phi->GetYaxis()->SetTitleOffset(1.3);

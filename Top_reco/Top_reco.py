@@ -136,6 +136,7 @@ step7_jet_pt    = fileptr['jet_pt'].array()
 step7_jet_eta   = fileptr['jet_eta'].array()
 step7_jet_phi   = fileptr['jet_phi'].array()
 step7_jet_mass  = fileptr['jet_mass'].array()
+step7_jet_size = fileptr['jet_size'].array()
 
 step7_weight    = fileptr['weight'].array()
 
@@ -187,11 +188,22 @@ step8_atop_mass = []
 step8_atop_rap = []
 
 step8_tt_mass  = []
+step8_tt_pt = []
+step8_tt_eta = []
+step8_tt_phi = []
+step8_tt_rap = []
+
+step8_met_pt = []
+step8_met_phi = []
 
 
 # Gen as arrays
 
 step8_gen_tt_mass = []
+step8_gen_tt_pt = []
+step8_gen_tt_eta = []
+step8_gen_tt_phi = []
+step8_gen_tt_rap = []
 
 step8_gen_top_pt  = []
 step8_gen_top_eta = []
@@ -304,7 +316,6 @@ for i in range(len(step7_jet_pt)):
 
             # 2-Btag scenario
             if (step7_jet_btag[i][j] != 0 and step7_jet_btag[i][k] != 0):
-
                 m_tt_1, top_p4_1, atop_p4_1, nu_p4_1, nubar_p4_1, sw_1 = try_smear(jet1, jet2, alep, lep, met_x, met_y, i)
                 m_tt_2, top_p4_2, atop_p4_2, nu_p4_2, nubar_p4_2, sw_2 = try_smear(jet2, jet1, alep, lep, met_x, met_y, i)
 
@@ -406,6 +417,9 @@ for i in range(len(step7_jet_pt)):
     if m_tt_final == 0:
         continue
 
+
+    rcom = top_p4_final + atop_p4_final
+
     gen_top = ROOT.TLorentzVector()
     gen_top.SetPtEtaPhiM(step7_gen_top_pt[i], step7_gen_top_eta[i], step7_gen_top_phi[i], step7_gen_top_mass[i])
 
@@ -417,6 +431,10 @@ for i in range(len(step7_jet_pt)):
 
 
     step8_tt_mass.append(m_tt_final)
+    step8_tt_pt.append(rcom.Pt())
+    step8_tt_eta.append(rcom.Eta())
+    step8_tt_phi.append(rcom.Phi())
+    step8_tt_rap.append(rcom.Rapidity())
 
     step8_top_pt.append(top_p4_final.Pt())
     step8_top_eta.append(top_p4_final.Eta())
@@ -460,8 +478,15 @@ for i in range(len(step7_jet_pt)):
     step8_ab_phi.append(bbar_p4_final.Phi())
     step8_ab_mass.append(bbar_p4_final.M())
 
+    step8_met_pt.append(step7_MET[i])
+    step8_met_phi.append(step7_MET_phi[i])
+
 
     step8_gen_tt_mass.append(com.M())
+    step8_gen_tt_pt.append(com.Pt())
+    step8_gen_tt_eta.append(com.Eta())
+    step8_gen_tt_phi.append(com.Phi())
+    step8_gen_tt_rap.append(com.Rapidity())
 
     step8_gen_top_pt.append(gen_top.Pt())
     step8_gen_top_eta.append(gen_top.Eta())
@@ -586,6 +611,13 @@ atop_mass_arr = array('f', [0.])
 atop_rap_arr = array('f', [0.])
 
 m_ttbar_arr   = array('f', [0.])
+ttbar_pt_arr   = array('f', [0.])
+ttbar_eta_arr   = array('f', [0.])
+ttbar_phi_arr   = array('f', [0.])
+ttbar_rap_arr   = array('f', [0.])
+
+met_pt_arr = array('f', [0.])
+met_phi_arr= array('f', [0.])
 
 # Weights 
 maxn    = 9999
@@ -594,6 +626,10 @@ weight_arr      = array('f', maxn*[0.])
 
 # Gen entries
 gen_m_ttbar_arr = array('f', [0.])
+gen_ttbar_pt_arr   = array('f', [0.])
+gen_ttbar_eta_arr   = array('f', [0.])
+gen_ttbar_phi_arr   = array('f', [0.])
+gen_ttbar_rap_arr   = array('f', [0.])
 
 gen_top_pt_arr = array('f', [0.])
 gen_top_eta_arr = array('f', [0.])
@@ -704,6 +740,13 @@ tree.Branch("atop_mass", atop_mass_arr, 'atop_mass/F')
 tree.Branch("atop_rapidity", atop_rap_arr, 'atop_rapidity/F')
 
 tree.Branch("tt_mass", m_ttbar_arr, 'tt_mass/F')
+tree.Branch("tt_pt", ttbar_pt_arr, 'tt_pt/F')
+tree.Branch("tt_eta", ttbar_eta_arr, 'tt_eta/F')
+tree.Branch("tt_phi", ttbar_phi_arr, 'tt_phi/F')
+tree.Branch("tt_rap", ttbar_rap_arr, 'tt_rap/F')
+
+tree.Branch("met_pt"    , met_pt_arr    , 'met_pt/F')
+tree.Branch("met_phi"   , met_phi_arr   , 'met_phi/F')
 
 # Weights
 #tree.Branch("sc_weight", sc_weight_arr, "sc_weight/F")
@@ -712,6 +755,10 @@ tree.Branch("weight", weight_arr, "weight[weight_size]/F")
 
 # Gen branches
 tree.Branch("gen_tt_mass", gen_m_ttbar_arr, 'gen_tt_mass/F')
+tree.Branch("gen_tt_pt", gen_ttbar_pt_arr, 'gen_tt_pt/F')
+tree.Branch("gen_tt_eta", gen_ttbar_eta_arr, 'gen_tt_eta/F')
+tree.Branch("gen_tt_phi", gen_ttbar_phi_arr, 'gen_tt_phi/F')
+tree.Branch("gen_tt_rap", gen_ttbar_rap_arr, 'gen_tt_rap/F')
 
 tree.Branch("gen_top_pt",  gen_top_pt_arr, 'gen_top_pt/F')
 tree.Branch("gen_top_eta", gen_top_eta_arr, 'gen_top_eta/F')
@@ -818,9 +865,20 @@ for i in range(len(step8_top_pt)):
     atop_rap_arr[0] = step8_atop_rap[i]
 
     m_ttbar_arr[0]   = step8_tt_mass[i]
+    ttbar_pt_arr[0] = step8_tt_pt[i]
+    ttbar_eta_arr[0] = step8_tt_eta[i]
+    ttbar_phi_arr[0] = step8_tt_phi[i]
+    ttbar_rap_arr[0] = step8_tt_rap[i]
+
+    met_pt_arr[0] = step8_met_pt[i]
+    met_phi_arr[0] =step8_met_phi[i]
     
 
     gen_m_ttbar_arr[0] = step8_gen_tt_mass[i]
+    gen_ttbar_pt_arr[0] = step8_gen_tt_pt[i]
+    gen_ttbar_eta_arr[0] = step8_gen_tt_eta[i]
+    gen_ttbar_phi_arr[0] = step8_gen_tt_phi[i]
+    gen_ttbar_rap_arr[0] = step8_gen_tt_rap[i]
 
     gen_top_pt_arr[0] = step8_gen_top_pt[i]
     gen_top_eta_arr[0] = step8_gen_top_eta[i]

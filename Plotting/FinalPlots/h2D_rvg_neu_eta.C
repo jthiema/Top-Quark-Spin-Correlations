@@ -1,7 +1,7 @@
 void h2D_rvg_neu_eta()
 {
 //=========Macro generated from canvas: c_2D_rvg_neu_eta/
-//=========  (Wed Jul 13 10:51:06 2022) by ROOT version 6.24/02
+//=========  (Wed Jul 13 12:22:18 2022) by ROOT version 6.24/02
    TCanvas *c_2D_rvg_neu_eta = new TCanvas("c_2D_rvg_neu_eta", "",0,0,1200,800);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -26,18 +26,20 @@ void h2D_rvg_neu_eta()
    p_2D_rvg_neu_eta->SetFrameBorderMode(0);
    p_2D_rvg_neu_eta->SetFrameBorderMode(0);
    
-   TH2D *rvg_neu_eta = new TH2D("rvg_neu_eta","reco vs gen neu eta",1200,-6.283185,6.283185,1200,-6.283185,6.283185);
+   TH2D *rvg_neu_eta = new TH2D("rvg_neu_eta","reco vs gen neu eta",50,-6.283185,6.283185,50,-6.283185,6.283185);
 
    Int_t ci;      // for color index setting
    TColor *color; // for color definition with alpha
    ci = TColor::GetColor("#000099");
    rvg_neu_eta->SetLineColor(ci);
    rvg_neu_eta->GetXaxis()->SetTitle("Reco Neu eta");
+   rvg_neu_eta->GetXaxis()->SetRange(1,1200);
    rvg_neu_eta->GetXaxis()->SetLabelFont(42);
    rvg_neu_eta->GetXaxis()->SetLabelOffset(0.01);
    rvg_neu_eta->GetXaxis()->SetTitleOffset(1.3);
    rvg_neu_eta->GetXaxis()->SetTitleFont(42);
    rvg_neu_eta->GetYaxis()->SetTitle("Gen Neu eta");
+   rvg_neu_eta->GetYaxis()->SetRange(1,1200);
    rvg_neu_eta->GetYaxis()->SetLabelFont(42);
    rvg_neu_eta->GetYaxis()->SetLabelOffset(0.01);
    rvg_neu_eta->GetYaxis()->SetTitleOffset(1.3);

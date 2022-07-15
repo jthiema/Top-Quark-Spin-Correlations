@@ -244,6 +244,57 @@ void draw2DHists(TH2F *h, string multivariablesxAxisTitles_, string multivariabl
 
 void reBin1D(TH1F *hfirst, TH1F *hsecond, float tailstart, float targetquantity, TH1F* arr[])
 {
+	/*
+	int minx = 0;
+	int miny = 0;
+	int maxx = 0;
+	int maxy = 0;
+	bool posx = false;
+	bool posy = false;
+	int nbins_X = hfirst->GetNbinsX();
+	int nbins_Y = hsecond->GetNbinsX();
+	for(int i = 1; i <= nbins_X; i++)
+	{
+		if(posx != true & hfirst->GetBinContent(i) > 0)
+		{
+			posx = true;
+			minx = i;
+		}
+		else if(hfirst->GetBinContent(i) == 0)
+		{
+			posx = false;
+			maxx = i - 1;
+			break;
+		}
+		else if(i == nbins_X)
+		{
+			maxx = i;
+		}
+	}
+	for(int i = 1; i <= nbins_Y; i++)
+	{
+		if(posy != true & hsecond->GetBinContent(i) > 0)
+		{
+			posy = true;
+			miny = i;
+		}
+		else if(hsecond->GetBinContent(i) == 0)
+		{
+			posy = false;
+			maxy = i - 1;
+			break;
+		}
+		else if(i == nbins_Y)
+		{
+			maxy = i;
+		}
+	}
+	int templower = min(minx, miny);
+	int tempupper = max(maxx, maxy);
+	hfirst->GetXaxis()->SetLimits(hfirst->GetBinLowEdge(templower), hfirst->GetBinLowEdge(tempupper) + hfirst->GetBinWidth(tempupper)); 
+	hsecond->GetXaxis()->SetLimits(hfirst->GetBinLowEdge(templower), hfirst->GetBinLowEdge(tempupper) + hfirst->GetBinWidth(tempupper));
+	*/
+	
 	float count = 0;
 	int nbins = 0;
 	int totbins = 0;
@@ -428,7 +479,7 @@ void MkPlots(){
 	  "Gen cP_rk", "Gen cM_rk", "Gen c_hel"
 	  };
   vector<double> tailstarts = { //-1 for let it do its default -2 for off, other nums are actual inputs
-	-1, -2, -2,
+	-2, -2, -2,
 	-2, -2, -2,
 	-2, -2,
 	-2, -2, -2,
@@ -461,12 +512,12 @@ void MkPlots(){
   vector<int> prebinning = { // -1 for default, -2 for off, other nums for actual vals
 	-1, -1, -1,  //lep pt,eta,phi
 	-1, -1, -1,  //alep pt,eta,phi
-	-1, -1,  //met pt,phi
+	-1, -2,  //met pt,phi
 	-1, -1, -1,  //bot pt,eta,phi
 	-1, -1, -1,  //abot pt,eta,phi
 	-1, -1, -1,  //neu pt,eta,phi
 	-1, -1, -1,  //aneu pt,eta,phi
-	-1, -1, -1,  //top pt,eta,phi
+	-1, -1, 8,  //top pt,eta,phi
 	-1, -1, -1,  //atop pt,eta,phi
 	-1,  //top atop mass
 	-1, -1, -1, -1, -1,  //ckk crr cnn crk ckr
@@ -590,6 +641,14 @@ void MkPlots(){
     for (UInt_t j = 0; j < multivariables.size(); j++) {
 	
 	TH2F *h2D_RecovGen = (TH2F*)f_hists->Get((multivariables[j]).c_str());
+	if(prebinning[j] != -2)
+	{
+		if(prebinning[j] == -1)
+		{
+			prebinning[j] = 24;
+		}
+		h2D_RecovGen = (TH2F*)h2D_RecovGen->Rebin2D(prebinning[j], prebinning[j]);
+	}
 
 	TCanvas *c_2D = new TCanvas(("c_2D_"+multivariables[j]).c_str(), "", 1200., 800.);
 	TPad *p_2D = new TPad(("p_2D_"+multivariables[j]).c_str(), "", 0, 0, 1, 1); 
