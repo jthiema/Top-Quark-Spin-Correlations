@@ -40,47 +40,47 @@ opfile = ROOT.TFile(outputFile, 'recreate')
 
 # Step 8 RECO hists
 hleppt = ROOT.TH1D('lep_pt', 'lep_pt', 2000, 0, 1200)
-hlepeta = ROOT.TH1D('lep_eta', 'lep_eta', 2000, -2*np.pi, 2*np.pi)
+hlepeta = ROOT.TH1D('lep_eta', 'lep_eta', 2000, -7, 7)
 hlepphi = ROOT.TH1D('lep_phi', 'lep_phi', 2000, -np.pi, np.pi)
 
 haleppt = ROOT.TH1D('alep_pt', 'alep_pt', 2000, 0, 1200)
-halepeta = ROOT.TH1D('alep_eta', 'alep_eta', 2000, -2*np.pi, 2*np.pi)
+halepeta = ROOT.TH1D('alep_eta', 'alep_eta', 2000, -7, 7)
 halepphi = ROOT.TH1D('alep_phi', 'alep_phi', 2000, -np.pi, np.pi)
 
 hmetpt = ROOT.TH1D('met_pt', 'met_pt', 2000, 0, 1200)
 hmetphi = ROOT.TH1D('met_phi', 'met_phi', 2000, -np.pi, np.pi)
 
 hbpt = ROOT.TH1D('b_pt', 'b_pt', 2000, 0, 1200)
-hbeta = ROOT.TH1D('b_eta', 'b_eta', 2000, -2*np.pi, 2*np.pi)
+hbeta = ROOT.TH1D('b_eta', 'b_eta', 2000, -7, 7)
 hbphi = ROOT.TH1D('b_phi', 'b_phi', 2000, -np.pi, np.pi)
 
 habpt = ROOT.TH1D('ab_pt', 'ab_pt', 2000, 0, 1200)
-habeta = ROOT.TH1D('ab_eta', 'ab_eta', 2000, -2*np.pi, 2*np.pi)
+habeta = ROOT.TH1D('ab_eta', 'ab_eta', 2000, -7, 7)
 habphi = ROOT.TH1D('ab_phi', 'ab_phi', 2000, -np.pi, np.pi)
 
 hneupt = ROOT.TH1D('neu_pt', 'neu_pt', 2000, 0, 1200)
-hneueta = ROOT.TH1D('neu_eta', 'neu_eta', 2000, -2*np.pi, 2*np.pi)
+hneueta = ROOT.TH1D('neu_eta', 'neu_eta', 2000, -7, 7)
 hneuphi = ROOT.TH1D('neu_phi', 'neu_phi', 2000, -np.pi, np.pi)
 
 haneupt = ROOT.TH1D('aneu_pt', 'aneu_pt', 2000, 0, 1200)
-haneueta = ROOT.TH1D('aneu_eta', 'aneu_eta', 2000, -2*np.pi, 2*np.pi)
+haneueta = ROOT.TH1D('aneu_eta', 'aneu_eta', 2000, -7, 7)
 haneuphi = ROOT.TH1D('aneu_phi', 'aneu_phi', 2000, -np.pi, np.pi)
 
 htpt = ROOT.TH1D('t_pt', 't_pt', 2000, 0, 1200)
-hteta = ROOT.TH1D('t_eta', 't_eta', 2000, -2*np.pi, 2*np.pi)
+hteta = ROOT.TH1D('t_eta', 't_eta', 2000, -7, 7)
 htphi = ROOT.TH1D('t_phi', 't_phi', 2000, -np.pi, np.pi)
-htrap = ROOT.TH1D("t_rap", "t_rap", 2000, -1000, 1000)
+htrap = ROOT.TH1D("t_rap", "t_rap", 2000, -7, 7)
 
 hatpt = ROOT.TH1D('at_pt', 'at_pt', 2000, 0, 1200)
-hateta = ROOT.TH1D('at_eta', 'at_eta', 2000, -2*np.pi, 2*np.pi)
+hateta = ROOT.TH1D('at_eta', 'at_eta', 2000, -7, 7)
 hatphi = ROOT.TH1D('at_phi', 'at_phi', 2000, -np.pi, np.pi)
-hatrap = ROOT.TH1D("at_rap", "at_rap", 2000, -1000, 1000)
+hatrap = ROOT.TH1D("at_rap", "at_rap", 2000, -7, 7)
 
-htatmass = ROOT.TH1D('tat_mass', 'tat_mass', 2000, 300, 1200)
+htatmass = ROOT.TH1D('tat_mass', 'tat_mass', 2000, 340, 1200)
 htatpt = ROOT.TH1D("tat_pt", "tat_pt", 2000, 0 ,1200)
-htateta = ROOT.TH1D("tat_eta", "tat_eta", 2000, -2*np.pi ,2*np.pi)
+htateta = ROOT.TH1D("tat_eta", "tat_eta", 2000, -7 ,7)
 htatphi = ROOT.TH1D("tat_phi", "tat_phi", 2000, -np.pi, np.pi)
-htatrap = ROOT.TH1D("tat_rap", "tat_rap", 2000, -1000, 1000)
+htatrap = ROOT.TH1D("tat_rap", "tat_rap", 2000, -7, 7)
 
 hckk = ROOT.TH1D("ckk", "ckk", 2000, -1, 1)
 hcrr = ROOT.TH1D("crr", "crr", 2000, -1, 1)
@@ -94,53 +94,53 @@ hcMrk = ROOT.TH1D("cM_rk", "cM_rk", 2000, -1, 1)
 
 hchel = ROOT.TH1D("c_hel", "c_hel", 2000, -1, 1)
 
-hlldeta = ROOT.TH1D("ll_deta", "ll_deta", 2000, -2*np.pi ,2*np.pi)
-hlldphi = ROOT.TH1D("ll_dphi", "ll_dphi", 2000, -np.pi ,np.pi)
-hlldr = ROOT.TH1D("ll_dr", "ll_dr", 2000, 0, 1000)
+hlldeta = ROOT.TH1D("ll_deta", "ll_deta", 2000, 0 ,7)
+hlldphi = ROOT.TH1D("ll_dphi", "ll_dphi", 2000, 0 ,np.pi)
+hlldr = ROOT.TH1D("ll_dr", "ll_dr", 2000, 0, 7)
 
 # Step 8 GEN hists
 hgenleppt = ROOT.TH1D('gen_lep_pt', 'gen_lep_pt', 2000, 0, 1200)
-hgenlepeta = ROOT.TH1D('gen_lep_eta', 'gen_lep_eta', 2000, -2*np.pi, 2*np.pi)
+hgenlepeta = ROOT.TH1D('gen_lep_eta', 'gen_lep_eta', 2000, -7, 7)
 hgenlepphi = ROOT.TH1D('gen_lep_phi', 'gen_lep_phi', 2000, -np.pi, np.pi)
 
 hgenaleppt = ROOT.TH1D('gen_alep_pt', 'gen_alep_pt', 2000, 0, 1200)
-hgenalepeta = ROOT.TH1D('gen_alep_eta', 'gen_alep_eta', 2000, -2*np.pi, 2*np.pi)
+hgenalepeta = ROOT.TH1D('gen_alep_eta', 'gen_alep_eta', 2000, -7, 7)
 hgenalepphi = ROOT.TH1D('gen_alep_phi', 'gen_alep_phi', 2000, -np.pi, np.pi)
 
 hgenmetpt = ROOT.TH1D('gen_met_pt', 'gen_met_pt', 2000, 0, 1200)
 hgenmetphi = ROOT.TH1D('gen_met_phi', 'gen_met_phi', 2000, -np.pi, np.pi)
 
 hgenbpt = ROOT.TH1D('gen_b_pt', 'gen_b_pt', 2000, 0, 1200)
-hgenbeta = ROOT.TH1D('gen_b_eta', 'gen_b_eta', 2000, -2*np.pi, 2*np.pi)
+hgenbeta = ROOT.TH1D('gen_b_eta', 'gen_b_eta', 2000, -7, 7)
 hgenbphi = ROOT.TH1D('gen_b_phi', 'gen_b_phi', 2000, -np.pi, np.pi)
 
 hgenabpt = ROOT.TH1D('gen_ab_pt', 'gen_ab_pt', 2000, 0, 1200)
-hgenabeta = ROOT.TH1D('gen_ab_eta', 'gen_ab_eta', 2000, -2*np.pi, 2*np.pi)
+hgenabeta = ROOT.TH1D('gen_ab_eta', 'gen_ab_eta', 2000, -7, 7)
 hgenabphi = ROOT.TH1D('gen_ab_phi', 'gen_ab_phi', 2000, -np.pi, np.pi)
 
 hgenneupt = ROOT.TH1D('gen_neu_pt', 'gen_neu_pt', 2000, 0, 1200)
-hgenneueta = ROOT.TH1D('gen_neu_eta', 'gen_neu_eta', 2000, -2*np.pi, 2*np.pi)
+hgenneueta = ROOT.TH1D('gen_neu_eta', 'gen_neu_eta', 2000, -7, 7)
 hgenneuphi = ROOT.TH1D('gen_neu_phi', 'gen_neu_phi', 2000, -np.pi, np.pi)
 
 hgenaneupt = ROOT.TH1D('gen_aneu_pt', 'gen_aneu_pt', 2000, 0, 1200)
-hgenaneueta = ROOT.TH1D('gen_aneu_eta', 'gen_aneu_eta', 2000, -2*np.pi, 2*np.pi)
+hgenaneueta = ROOT.TH1D('gen_aneu_eta', 'gen_aneu_eta', 2000, -7, 7)
 hgenaneuphi = ROOT.TH1D('gen_aneu_phi', 'gen_aneu_phi', 2000, -np.pi, np.pi)
 
 hgentpt = ROOT.TH1D('gen_t_pt', 'gen_t_pt', 2000, 0, 1200)
-hgenteta = ROOT.TH1D('gen_t_eta', 'gen_t_eta', 2000, -2*np.pi, 2*np.pi)
+hgenteta = ROOT.TH1D('gen_t_eta', 'gen_t_eta', 2000, -7, 7)
 hgentphi = ROOT.TH1D('gen_t_phi', 'gen_t_phi', 2000, -np.pi, np.pi)
-hgentrap = ROOT.TH1D("gen_t_rap", "gen_t_rap", 2000, -1000, 1000)
+hgentrap = ROOT.TH1D("gen_t_rap", "gen_t_rap", 2000, -7, 7)
 
 hgenatpt = ROOT.TH1D('gen_at_pt', 'gen_at_pt', 2000, 0, 1200)
-hgenateta = ROOT.TH1D('gen_at_eta', 'gen_at_eta', 2000, -2*np.pi, 2*np.pi)
+hgenateta = ROOT.TH1D('gen_at_eta', 'gen_at_eta', 2000, -7, 7)
 hgenatphi = ROOT.TH1D('gen_at_phi', 'gen_at_phi', 2000, -np.pi, np.pi)
-hgenatrap = ROOT.TH1D("gen_at_rap", "gen_at_rap", 2000, -1000, 1000)
+hgenatrap = ROOT.TH1D("gen_at_rap", "gen_at_rap", 2000, -7, 7)
 
-hgentatmass = ROOT.TH1D('gen_tat_mass', 'gen_tat_mass', 2000, 300, 1200)
+hgentatmass = ROOT.TH1D('gen_tat_mass', 'gen_tat_mass', 2000, 340, 1200)
 hgentatpt = ROOT.TH1D("gen_tat_pt", "gen_tat_pt", 2000, 0 ,1200)
-hgentateta = ROOT.TH1D("gen_tat_eta", "gen_tat_eta", 2000, -2*np.pi ,2*np.pi)
+hgentateta = ROOT.TH1D("gen_tat_eta", "gen_tat_eta", 2000, -7 ,7)
 hgentatphi = ROOT.TH1D("gen_tat_phi", "gen_tat_phi", 2000, -np.pi, np.pi)
-hgentatrap = ROOT.TH1D("gen_tat_rap", "gen_tat_rap", 2000, -1000, 1000)
+hgentatrap = ROOT.TH1D("gen_tat_rap", "gen_tat_rap", 2000, -7, 7)
 
 hgenckk = ROOT.TH1D("gen_ckk", "gen_ckk", 2000, -1, 1)
 hgencrr = ROOT.TH1D("gen_crr", "gen_crr", 2000, -1, 1)
@@ -154,50 +154,50 @@ hgencMrk = ROOT.TH1D("gen_cM_rk", "gen_cM_rk", 2000, -1, 1)
 
 hgenchel = ROOT.TH1D("gen_c_hel", "gen_c_hel", 2000, -1, 1)
 
-hgenlldeta = ROOT.TH1D("gen_ll_deta", "gen_ll_deta", 2000, -2*np.pi ,2*np.pi)
-hgenlldphi = ROOT.TH1D("gen_ll_dphi", "gen_ll_dphi", 2000, -np.pi ,np.pi)
-hgenlldr = ROOT.TH1D("gen_ll_dr", "gen_ll_dr", 2000, 0, 1000)
+hgenlldeta = ROOT.TH1D("gen_ll_deta", "gen_ll_deta", 2000, 0 ,7)
+hgenlldphi = ROOT.TH1D("gen_ll_dphi", "gen_ll_dphi", 2000, 0 ,np.pi)
+hgenlldr = ROOT.TH1D("gen_ll_dr", "gen_ll_dr", 2000, 0, 7)
 
 #2D hists
 
 hrvgleppt = ROOT.TH2D('rvg_lep_pt', 'reco vs gen lep pt', 2000, 0, 1200, 2000, 0, 1200)
-hrvglepeta = ROOT.TH2D('rvg_lep_eta', 'reco vs gen lep eta', 2000, -2*np.pi, 2*np.pi, 2000, -2*np.pi, 2*np.pi)
+hrvglepeta = ROOT.TH2D('rvg_lep_eta', 'reco vs gen lep eta', 2000, -7, 7, 2000, -7, 7)
 hrvglepphi = ROOT.TH2D('rvg_lep_phi', 'reco vs gen lep phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
 
 hrvgaleppt = ROOT.TH2D('rvg_alep_pt', 'reco vs gen alep pt', 2000, 0, 1200, 2000, 0, 1200)
-hrvgalepeta = ROOT.TH2D('rvg_alep_eta', 'reco vs gen alep eta', 2000, -2*np.pi, 2*np.pi, 2000, -2*np.pi, 2*np.pi)
+hrvgalepeta = ROOT.TH2D('rvg_alep_eta', 'reco vs gen alep eta', 2000, -7, 7, 2000, -7, 7)
 hrvgalepphi = ROOT.TH2D('rvg_alep_phi', 'reco vs gen alep phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
 
 hrvgmetpt = ROOT.TH2D('rvg_met_pt', 'reco vs gen met pt', 2000, 0, 1200, 2000, 0, 1200)
 hrvgmetphi = ROOT.TH2D('rvg_met_phi', 'reco vs gen met phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
 
 hrvgbpt = ROOT.TH2D('rvg_b_pt', 'reco vs gen b pt', 2000, 0, 1200, 2000, 0, 1200)
-hrvgbeta = ROOT.TH2D('rvg_b_eta', 'reco vs gen b eta', 2000, -2*np.pi, 2*np.pi, 2000, -2*np.pi, 2*np.pi)
+hrvgbeta = ROOT.TH2D('rvg_b_eta', 'reco vs gen b eta', 2000, -7, 7, 2000, -7, 7)
 hrvgbphi = ROOT.TH2D('rvg_b_phi', 'reco vs gen b phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
 
 hrvgabpt = ROOT.TH2D('rvg_ab_pt', 'reco vs gen ab pt', 2000, 0, 1200, 2000, 0, 1200)
-hrvgabeta = ROOT.TH2D('rvg_ab_eta', 'reco vs gen ab eta', 2000, -2*np.pi, 2*np.pi, 2000, -2*np.pi, 2*np.pi)
+hrvgabeta = ROOT.TH2D('rvg_ab_eta', 'reco vs gen ab eta', 2000, -7, 7, 2000, -7, 7)
 hrvgabphi = ROOT.TH2D('rvg_ab_phi', 'reco vs gen ab phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
 
 hrvgneupt = ROOT.TH2D('rvg_neu_pt', 'reco vs gen neu pt', 2000, 0, 1200, 2000, 0, 1200)
-hrvgneueta = ROOT.TH2D('rvg_neu_eta', 'reco vs gen neu eta', 2000, -2*np.pi, 2*np.pi, 2000, -2*np.pi, 2*np.pi)
+hrvgneueta = ROOT.TH2D('rvg_neu_eta', 'reco vs gen neu eta', 2000, -7, 7, 2000, -7, 7)
 hrvgneuphi = ROOT.TH2D('rvg_neu_phi', 'reco vs gen neu phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
 
 hrvganeupt = ROOT.TH2D('rvg_aneu_pt', 'reco vs gen aneu pt', 2000, 0, 1200, 2000, 0, 1200)
-hrvganeueta = ROOT.TH2D('rvg_aneu_eta', 'reco vs gen aneu eta', 2000, -2*np.pi, 2*np.pi, 2000, -2*np.pi, 2*np.pi)
+hrvganeueta = ROOT.TH2D('rvg_aneu_eta', 'reco vs gen aneu eta', 2000, -7, 7, 2000, -7, 7)
 hrvganeuphi = ROOT.TH2D('rvg_aneu_phi', 'reco vs gen aneu phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
 
 hrvgtpt = ROOT.TH2D('rvg_t_pt', 'reco vs gen t pt', 2000, 0, 1200, 2000, 0, 1200)
-hrvgteta = ROOT.TH2D('rvg_t_eta', 'reco vs gen t eta', 2000, -2*np.pi, 2*np.pi, 2000, -2*np.pi, 2*np.pi)
+hrvgteta = ROOT.TH2D('rvg_t_eta', 'reco vs gen t eta', 2000, -7, 7, 2000, -7, 7)
 hrvgtphi = ROOT.TH2D('rvg_t_phi', 'reco vs gen t phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
-hrvgtrap = ROOT.TH2D('rvg_t_rap', 'reco vs gen t rap', 2000, -1000, 1000, 2000, -1000, 1000)
+hrvgtrap = ROOT.TH2D('rvg_t_rap', 'reco vs gen t rap', 2000, -7, 7, 2000, -7, 7)
 
 hrvgatpt = ROOT.TH2D('rvg_at_pt', 'reco vs gen at pt', 2000, 0, 1200, 2000, 0, 1200)
-hrvgateta = ROOT.TH2D('rvg_at_eta', 'reco vs gen at eta', 2000, -2*np.pi, 2*np.pi, 2000, -2*np.pi, 2*np.pi)
+hrvgateta = ROOT.TH2D('rvg_at_eta', 'reco vs gen at eta', 2000, -7, 7, 2000, -7, 7)
 hrvgatphi = ROOT.TH2D('rvg_at_phi', 'reco vs gen at phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
-hrvgatrap = ROOT.TH2D('rvg_at_rap', 'reco vs gen at rap', 2000, -1000, 1000, 2000, -1000, 1000)
+hrvgatrap = ROOT.TH2D('rvg_at_rap', 'reco vs gen at rap', 2000, -7, 7, 2000, -7, 7)
 
-htvgtatm = ROOT.TH2D('rvg_tat_m', "reco vs gen tat mass", 1400, 300, 1400, 1400, 300, 1400)
+htvgtatm = ROOT.TH2D('rvg_tat_m', "reco vs gen tat mass", 2000, 300, 1400, 2000, 300, 1400)
 
 hrvgckk = ROOT.TH2D("rvg_ckk", "reco vs gen ckk", 2000, -1, 1, 2000, -1, 1)
 hrvgcrr = ROOT.TH2D("rvg_crr", "reco vs gen crr", 2000, -1, 1, 2000, -1, 1)
@@ -211,9 +211,9 @@ hrvgcMrk = ROOT.TH2D("rvg_cMrk", "reco vs gen cMrk", 2000, -1, 1, 2000, -1, 1)
 
 hrvgchel = ROOT.TH2D("rvg_c_hel", "reco vs gen c_hel", 2000, -1, 1, 2000, -1, 1)
 
-hrvglldeta = ROOT.TH2D("rvg_ll_deta", "reco vs gen ll deta", 2000, -2*np.pi ,2*np.pi, 2000, -2*np.pi ,2*np.pi)
-hrvglldphi = ROOT.TH2D("rvg_ll_dphi", "reco vs gen ll dphi", 2000, -np.pi ,np.pi, 2000, -np.pi ,np.pi)
-hrvglldr = ROOT.TH2D("rvg_ll_dr", "reco vs gen ll dr", 2000, 0, 1000, 2000, 0, 1000)
+hrvglldeta = ROOT.TH2D("rvg_ll_deta", "reco vs gen ll deta", 2000, 0 ,7, 2000, 0 ,7)
+hrvglldphi = ROOT.TH2D("rvg_ll_dphi", "reco vs gen ll dphi", 2000, 0 ,np.pi, 2000, 0 ,np.pi)
+hrvglldr = ROOT.TH2D("rvg_ll_dr", "reco vs gen ll dr", 2000, 0, 7, 2000, 0, 7)
 
 # Step 7 hists
 
@@ -535,14 +535,14 @@ for i in range(len(t_pt)):
     gen_cM_nk = ifOk(gen_cnk - gen_ckn)
 
     # Find also the opening angles of the lepton
-    ll_dEta = ifOk(b4_aLep.Eta() - b4_pLep.Eta())
-    ll_dPhi = ifOk(b4_aLep.DeltaPhi(b4_pLep))
-    ll_dR = ifOk(b4_aLep.DeltaR(b4_pLep))
+    ll_dEta = abs(ifOk(b4_aLep.Eta() - b4_pLep.Eta()))
+    ll_dPhi = abs(ifOk(b4_aLep.DeltaPhi(b4_pLep))()
+    ll_dR = abs(ifOk(b4_aLep.DeltaR(b4_pLep)))
     cHel = ifOk(b4_aLep.Vect().Unit().Dot(b4_pLep.Vect().Unit()))
 
-    gen_ll_dEta = ifOk(gen_b4_aLep.Eta() - gen_b4_pLep.Eta())
-    gen_ll_dPhi = ifOk(gen_b4_aLep.DeltaPhi(gen_b4_pLep))
-    gen_ll_dR = ifOk(gen_b4_aLep.DeltaR(gen_b4_pLep))
+    gen_ll_dEta = abs(ifOk(gen_b4_aLep.Eta() - gen_b4_pLep.Eta()))
+    gen_ll_dPhi = abs(ifOk(gen_b4_aLep.DeltaPhi(gen_b4_pLep)))
+    gen_ll_dR = abs(ifOk(gen_b4_aLep.DeltaR(gen_b4_pLep)))
     gen_cHel = ifOk(gen_b4_aLep.Vect().Unit().Dot(gen_b4_pLep.Vect().Unit()))
 
 
