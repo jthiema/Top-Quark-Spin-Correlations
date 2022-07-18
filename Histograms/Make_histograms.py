@@ -536,7 +536,7 @@ for i in range(len(t_pt)):
 
     # Find also the opening angles of the lepton
     ll_dEta = abs(ifOk(b4_aLep.Eta() - b4_pLep.Eta()))
-    ll_dPhi = abs(ifOk(b4_aLep.DeltaPhi(b4_pLep))()
+    ll_dPhi = abs(ifOk(b4_aLep.DeltaPhi(b4_pLep)))
     ll_dR = abs(ifOk(b4_aLep.DeltaR(b4_pLep)))
     cHel = ifOk(b4_aLep.Vect().Unit().Dot(b4_pLep.Vect().Unit()))
 
