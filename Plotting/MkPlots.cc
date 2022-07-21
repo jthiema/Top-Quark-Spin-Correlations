@@ -448,7 +448,7 @@ void MkPlots(){
 	  "rvg_aneu_pt", "rvg_aneu_eta", "rvg_aneu_phi",
 	  "rvg_t_pt", "rvg_t_eta", "rvg_t_phi", "rvg_t_rap",
 	  "rvg_at_pt", "rvg_at_eta", "rvg_at_phi", "rvg_at_rap",
-	  "rvg_tat_m",// "rvg_tat_pt", "rvg_tat_eta", "rvg_tat_phi", "rvg_tat_rap",
+	  "rvg_tat_m", "rvg_tat_pt", "rvg_tat_eta", "rvg_tat_phi", "rvg_tat_rap",
 	  "rvg_ckk", "rvg_crr", "rvg_cnn", "rvg_crk", "rvg_ckr",
 	  "rvg_cPrk", "rvg_cMrk", "rvg_c_hel",
 	  "rvg_ll_deta", "rvg_ll_dphi", "rvg_ll_dr"
@@ -463,7 +463,7 @@ void MkPlots(){
 	  "Reco aNeu pT (GeV)", "Reco aNeu eta", "Reco aNeu phi",
 	  "Reco Top pT (GeV)", "Reco Top eta", "Reco Top phi", "Reco Top rapidity",
 	  "Reco aTop pT (GeV)", "Reco aTop eta", "Reco aTop phi", "Reco aTop rapidity",
-	  "Reco Top aTop mass",// "Reco Top aTop pT (GeV)", "Reco Top aTop eta", "Reco Top aTop phi", "Reco Top aTop rapidity",
+	  "Reco Top aTop mass", "Reco Top aTop pT (GeV)", "Reco Top aTop eta", "Reco Top aTop phi", "Reco Top aTop rapidity",
 	  "Reco ckk", "Reco crr", "Reco cnn", "Reco crk", "Reco ckr",
 	  "Reco cP_rk", "Reco cM_rk", "Reco c_hel",
 	  "Reco ll deta", "Reco ll dphi", "Reco ll dr"
@@ -478,7 +478,7 @@ void MkPlots(){
 	  "Gen aNeu pT (GeV)", "Gen aNeu eta", "Gen aNeu phi",
 	  "Gen Top pT (GeV)", "Gen Top eta", "Gen Top phi", "Gen Top rapidity",
 	  "Gen aTop pT (GeV)", "Gen aTop eta", "Gen aTop phi", "Gen aTop rapidity",
-	  "Gen Top aTop mass",// "Gen Top aTop pT (GeV)", "Gen Top aTop eta", "Gen Top aTop phi", "Gen Top aTop rapidity",
+	  "Gen Top aTop mass", "Gen Top aTop pT (GeV)", "Gen Top aTop eta", "Gen Top aTop phi", "Gen Top aTop rapidity",
 	  "Gen ckk", "Gen crr", "Gen cnn", "Gen crk", "Gen ckr",
 	  "Gen cP_rk", "Gen cM_rk", "Gen c_hel",
 	  "Gen ll deta", "Gen ll dphi", "Gen ll dr"
