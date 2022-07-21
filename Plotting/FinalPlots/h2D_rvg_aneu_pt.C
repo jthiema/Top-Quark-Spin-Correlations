@@ -1,7 +1,7 @@
 void h2D_rvg_aneu_pt()
 {
 //=========Macro generated from canvas: c_2D_rvg_aneu_pt/
-//=========  (Wed Jul 13 12:22:18 2022) by ROOT version 6.24/02
+//=========  (Thu Jul 21 14:33:20 2022) by ROOT version 6.24/02
    TCanvas *c_2D_rvg_aneu_pt = new TCanvas("c_2D_rvg_aneu_pt", "",0,0,1200,800);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -33,13 +33,13 @@ void h2D_rvg_aneu_pt()
    ci = TColor::GetColor("#000099");
    rvg_aneu_pt->SetLineColor(ci);
    rvg_aneu_pt->GetXaxis()->SetTitle("Reco aNeu pT (GeV)");
-   rvg_aneu_pt->GetXaxis()->SetRange(1,1200);
+   rvg_aneu_pt->GetXaxis()->SetRange(1,2000);
    rvg_aneu_pt->GetXaxis()->SetLabelFont(42);
    rvg_aneu_pt->GetXaxis()->SetLabelOffset(0.01);
    rvg_aneu_pt->GetXaxis()->SetTitleOffset(1.3);
    rvg_aneu_pt->GetXaxis()->SetTitleFont(42);
    rvg_aneu_pt->GetYaxis()->SetTitle("Gen aNeu pT (GeV)");
-   rvg_aneu_pt->GetYaxis()->SetRange(1,1200);
+   rvg_aneu_pt->GetYaxis()->SetRange(1,2000);
    rvg_aneu_pt->GetYaxis()->SetLabelFont(42);
    rvg_aneu_pt->GetYaxis()->SetLabelOffset(0.01);
    rvg_aneu_pt->GetYaxis()->SetTitleOffset(1.3);

@@ -413,11 +413,12 @@ void MkPlots(){
 	  "ab_pt", "ab_eta", "ab_phi",
 	  "neu_pt", "neu_eta", "neu_phi",
 	  "aneu_pt", "aneu_eta", "aneu_phi",
-	  "t_pt", "t_eta", "t_phi",
-	  "at_pt", "at_eta", "at_phi",
-	  "tat_mass",
+	  "t_pt", "t_eta", "t_phi", "t_rap",
+	  "at_pt", "at_eta", "at_phi", "at_rap",
+	  "tat_mass", "tat_pt", "tat_eta", "tat_phi", "tat_rap",
 	  "ckk", "crr", "cnn", "crk", "ckr",
-	  "cP_rk", "cM_rk", "c_hel"
+	  "cP_rk", "cM_rk", "c_hel",
+	  "ll_deta", "ll_dphi", "ll_dr"
 	  }; 
   vector<string> xAxisTitles = {
 	  "Lep pT (GeV)", "Lep eta", "Lep phi",
@@ -427,11 +428,12 @@ void MkPlots(){
 	  "aBot pT (GeV)", "aBot eta", "aBot phi",
 	  "Neu pT (GeV)", "Neu eta", "Neu phi",
 	  "aNeu pT (GeV)", "aNeu eta", "aNeu phi",
-	  "Top pT (GeV)", "Top eta", "Top phi",
-	  "aTop pT (GeV)", "aTop eta", "aTop phi",
-	  "Top aTop mass",
+	  "Top pT (GeV)", "Top eta", "Top phi", "Top rapidity",
+	  "aTop pT (GeV)", "aTop eta", "aTop phi", "aTop rapidity",
+	  "Top aTop mass", "Top aTop pT (GeV)", "Top aTop eta", "Top aTop phi", "Top aTop rapidity",
 	  "ckk", "crr", "cnn", "crk", "ckr",
-	  "cP_rk", "cM_rk", "c_hel"
+	  "cP_rk", "cM_rk", "c_hel",
+	  "ll deta", "ll dphi", "ll dr"
 	  };
   //vector<double> xMins = {0.};
   //vector<double> xMaxs = {1200.};
@@ -444,11 +446,12 @@ void MkPlots(){
 	  "rvg_ab_pt", "rvg_ab_eta", "rvg_ab_phi",
 	  "rvg_neu_pt", "rvg_neu_eta", "rvg_neu_phi",
 	  "rvg_aneu_pt", "rvg_aneu_eta", "rvg_aneu_phi",
-	  "rvg_t_pt", "rvg_t_eta", "rvg_t_phi",
-	  "rvg_at_pt", "rvg_at_eta", "rvg_at_phi",
-	  "rvg_tat_m",
+	  "rvg_t_pt", "rvg_t_eta", "rvg_t_phi", "rvg_t_rap",
+	  "rvg_at_pt", "rvg_at_eta", "rvg_at_phi", "rvg_at_rap",
+	  "rvg_tat_m",// "rvg_tat_pt", "rvg_tat_eta", "rvg_tat_phi", "rvg_tat_rap",
 	  "rvg_ckk", "rvg_crr", "rvg_cnn", "rvg_crk", "rvg_ckr",
-	  "rvg_cPrk", "rvg_cMrk", "rvg_c_hel"
+	  "rvg_cPrk", "rvg_cMrk", "rvg_c_hel",
+	  "rvg_ll_deta", "rvg_ll_dphi", "rvg_ll_dr"
 	  } ;
   vector<string> multivariablesxAxisTitles = {
 	  "Reco Lep pT (GeV)", "Reco Lep eta", "Reco Lep phi",
@@ -458,11 +461,12 @@ void MkPlots(){
 	  "Reco aBot pT (GeV)", "Reco aBot eta", "Reco aBot phi",
 	  "Reco Neu pT (GeV)", "Reco Neu eta", "Reco Neu phi",
 	  "Reco aNeu pT (GeV)", "Reco aNeu eta", "Reco aNeu phi",
-	  "Reco Top pT (GeV)", "Reco Top eta", "Reco Top phi",
-	  "Reco aTop pT (GeV)", "Reco aTop eta", "Reco aTop phi",
-	  "Reco Top aTop mass",
+	  "Reco Top pT (GeV)", "Reco Top eta", "Reco Top phi", "Reco Top rapidity",
+	  "Reco aTop pT (GeV)", "Reco aTop eta", "Reco aTop phi", "Reco aTop rapidity",
+	  "Reco Top aTop mass",// "Reco Top aTop pT (GeV)", "Reco Top aTop eta", "Reco Top aTop phi", "Reco Top aTop rapidity",
 	  "Reco ckk", "Reco crr", "Reco cnn", "Reco crk", "Reco ckr",
-	  "Reco cP_rk", "Reco cM_rk", "Reco c_hel"
+	  "Reco cP_rk", "Reco cM_rk", "Reco c_hel",
+	  "Reco ll deta", "Reco ll dphi", "Reco ll dr"
 	  };
   vector<string> multivariablesyAxisTitles = {
 	  "Gen Lep pT (GeV)", "Gen Lep eta", "Gen Lep phi",
@@ -472,11 +476,12 @@ void MkPlots(){
 	  "Gen aBot pT (GeV)", "Gen aBot eta", "Gen aBot phi",
 	  "Gen Neu pT (GeV)", "Gen Neu eta", "Gen Neu phi",
 	  "Gen aNeu pT (GeV)", "Gen aNeu eta", "Gen aNeu phi",
-	  "Gen Top pT (GeV)", "Gen Top eta", "Gen Top phi",
-	  "Gen aTop pT (GeV)", "Gen aTop eta", "Gen aTop phi",
-	  "Gen Top aTop mass",
+	  "Gen Top pT (GeV)", "Gen Top eta", "Gen Top phi", "Gen Top rapidity",
+	  "Gen aTop pT (GeV)", "Gen aTop eta", "Gen aTop phi", "Gen aTop rapidity",
+	  "Gen Top aTop mass",// "Gen Top aTop pT (GeV)", "Gen Top aTop eta", "Gen Top aTop phi", "Gen Top aTop rapidity",
 	  "Gen ckk", "Gen crr", "Gen cnn", "Gen crk", "Gen ckr",
-	  "Gen cP_rk", "Gen cM_rk", "Gen c_hel"
+	  "Gen cP_rk", "Gen cM_rk", "Gen c_hel",
+	  "Gen ll deta", "Gen ll dphi", "Gen ll dr"
 	  };
   vector<double> tailstarts = { //-1 for let it do its default -2 for off, other nums are actual inputs
 	-2, -2, -2,
@@ -486,11 +491,12 @@ void MkPlots(){
 	-2, -2, -2,
 	-2, -2, -2,
 	-2, -2, -2,
-	-2, -2, -2,
-	-2, -2, -2,
-	-2,
+	-2, -2, -2, -2,
+	-2, -2, -2, -2,
 	-2, -2, -2, -2, -2,
-	-2, -2, -2
+	-2, -2, -2, -2, -2,
+	-2, -2, -2,
+	-2, -2, -2,
 	
   };
   
@@ -502,26 +508,28 @@ void MkPlots(){
 	-1, -1, -1,
 	-1, -1, -1,
 	-1, -1, -1,
-	-1, -1, -1,
-	-1, -1, -1,
-	-1,
+	-1, -1, -1, -1,
+	-1, -1, -1, -1,
 	-1, -1, -1, -1, -1,
+	-1, -1, -1, -1, -1,
+	-1, -1, -1,
 	-1, -1, -1
   };
   
   vector<int> prebinning = { // -1 for default, -2 for off, other nums for actual vals
 	-1, -1, -1,  //lep pt,eta,phi
 	-1, -1, -1,  //alep pt,eta,phi
-	-1, -2,  //met pt,phi
+	-1, -1,  //met pt,phi
 	-1, -1, -1,  //bot pt,eta,phi
 	-1, -1, -1,  //abot pt,eta,phi
 	-1, -1, -1,  //neu pt,eta,phi
 	-1, -1, -1,  //aneu pt,eta,phi
-	-1, -1, -1,  //top pt,eta,phi
-	-1, -1, -1,  //atop pt,eta,phi
-	-1,  //top atop mass
+	-1, -1, -1, -1,  //top pt,eta,phi, rap
+	-1, -1, -1, -1,  //atop pt,eta,phi, rap
+	-1, -1, -1, -1, -1,  //top atop mass, pt, eta, phi, rap
 	-1, -1, -1, -1, -1,  //ckk crr cnn crk ckr
-	-1, -1, -1  //cprk cmrk chel
+	-1, -1, -1,  //cprk cmrk chel
+	-1, -1, -1 //ll deta,dphi,dr
   };
   
   vector<bool> uselogforscale = {
@@ -532,10 +540,11 @@ void MkPlots(){
 	  true, false, false,
 	  true, false, false,
 	  true, false, false,
-	  true, false, false,
-	  true, false, false,
-	  false,
+	  true, false, false, false,
+	  true, false, false, false,
+	  false, true, false, false, false,
 	  false, false, false, false, false,
+	  false, false, false,
 	  false, false, false
   };
 
@@ -645,7 +654,7 @@ void MkPlots(){
 	{
 		if(prebinning[j] == -1)
 		{
-			prebinning[j] = 24;
+			prebinning[j] = 20;
 		}
 		h2D_RecovGen = (TH2F*)h2D_RecovGen->Rebin2D(prebinning[j], prebinning[j]);
 	}

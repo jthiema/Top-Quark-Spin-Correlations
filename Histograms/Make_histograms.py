@@ -197,7 +197,11 @@ hrvgateta = ROOT.TH2D('rvg_at_eta', 'reco vs gen at eta', 2000, -7, 7, 2000, -7,
 hrvgatphi = ROOT.TH2D('rvg_at_phi', 'reco vs gen at phi', 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
 hrvgatrap = ROOT.TH2D('rvg_at_rap', 'reco vs gen at rap', 2000, -7, 7, 2000, -7, 7)
 
-htvgtatm = ROOT.TH2D('rvg_tat_m', "reco vs gen tat mass", 2000, 300, 1400, 2000, 300, 1400)
+hrvgtatm = ROOT.TH2D('rvg_tat_m', "reco vs gen tat mass", 2000, 300, 1400, 2000, 300, 1400)
+hrvgtatpt = ROOT.TH2D("rvg_tat_pt", "reco vs gen tat pt", 2000, 0 ,1200, 2000, 0 ,1200)
+hrvgtateta = ROOT.TH2D("rvg_tat_eta", "reco vs gen tat eta", 2000, -7 ,7, 2000, -7 ,7)
+hrvgtatphi = ROOT.TH2D("rvg_tat_phi", "reco vs gen tat phi", 2000, -np.pi, np.pi, 2000, -np.pi, np.pi)
+hrvgtatrap = ROOT.TH2D("rvg_tat_rap", "reco vs gen tat rap", 2000, -7, 7, 2000, -7, 7)
 
 hrvgckk = ROOT.TH2D("rvg_ckk", "reco vs gen ckk", 2000, -1, 1, 2000, -1, 1)
 hrvgcrr = ROOT.TH2D("rvg_crr", "reco vs gen crr", 2000, -1, 1, 2000, -1, 1)
@@ -700,7 +704,11 @@ for i in range(len(t_pt)):
     hrvgatphi.Fill(fileptr['atop_phi'].array()[i], fileptr['gen_atop_phi'].array()[i])
     hrvgatrap.Fill(fileptr['atop_rapidity'].array()[i], fileptr['gen_atop_rapidity'].array()[i])
 
-    htvgtatm.Fill(tt_mass[i], fileptr['gen_tt_mass'].array()[i])
+    hrvgtatm.Fill(tt_mass[i], fileptr['gen_tt_mass'].array()[i])
+    hrvgtatpt.Fill(fileptr['tt_pt'].array()[i], fileptr['gen_tt_pt'].array()[i])
+    hrvgtateta.Fill(fileptr['tt_eta'].array()[i], fileptr['gen_tt_eta'].array()[i])
+    hrvgtatphi.Fill(fileptr['tt_phi'].array()[i], fileptr['gen_tt_phi'].array()[i])
+    hrvgtatrap.Fill(fileptr['tt_rap'].array()[i], fileptr['gen_tt_rap'].array()[i])
 
     hrvgckk.Fill(ckk, gen_ckk)
     hrvgcrr.Fill(crr, gen_crr)

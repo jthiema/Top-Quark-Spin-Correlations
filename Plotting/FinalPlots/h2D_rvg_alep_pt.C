@@ -1,7 +1,7 @@
 void h2D_rvg_alep_pt()
 {
 //=========Macro generated from canvas: c_2D_rvg_alep_pt/
-//=========  (Wed Jul 13 12:22:18 2022) by ROOT version 6.24/02
+//=========  (Thu Jul 21 14:33:19 2022) by ROOT version 6.24/02
    TCanvas *c_2D_rvg_alep_pt = new TCanvas("c_2D_rvg_alep_pt", "",0,0,1200,800);
    gStyle->SetOptStat(0);
    gStyle->SetOptTitle(0);
@@ -28,7 +28,7 @@ void h2D_rvg_alep_pt()
    
    TH2D *rvg_alep_pt = new TH2D("rvg_alep_pt","reco vs gen alep pt",50,0,1200,50,0,1200);
    rvg_alep_pt->SetBinContent(53,14631);
-   rvg_alep_pt->SetBinContent(54,4643);
+   rvg_alep_pt->SetBinContent(54,4644);
    rvg_alep_pt->SetBinContent(55,1936);
    rvg_alep_pt->SetBinContent(56,836);
    rvg_alep_pt->SetBinContent(57,406);
@@ -460,7 +460,7 @@ void h2D_rvg_alep_pt()
    rvg_alep_pt->SetBinContent(2279,1);
    rvg_alep_pt->SetBinContent(2290,1);
    rvg_alep_pt->SetBinContent(2657,1);
-   rvg_alep_pt->SetEntries(344038);
+   rvg_alep_pt->SetEntries(344039);
    rvg_alep_pt->SetContour(20);
    rvg_alep_pt->SetContourLevel(0,0);
    rvg_alep_pt->SetContourLevel(1,5339.9);
@@ -501,13 +501,13 @@ void h2D_rvg_alep_pt()
    ci = TColor::GetColor("#000099");
    rvg_alep_pt->SetLineColor(ci);
    rvg_alep_pt->GetXaxis()->SetTitle("Reco aLep pT (GeV)");
-   rvg_alep_pt->GetXaxis()->SetRange(1,1200);
+   rvg_alep_pt->GetXaxis()->SetRange(1,2000);
    rvg_alep_pt->GetXaxis()->SetLabelFont(42);
    rvg_alep_pt->GetXaxis()->SetLabelOffset(0.01);
    rvg_alep_pt->GetXaxis()->SetTitleOffset(1.3);
    rvg_alep_pt->GetXaxis()->SetTitleFont(42);
    rvg_alep_pt->GetYaxis()->SetTitle("Gen aLep pT (GeV)");
-   rvg_alep_pt->GetYaxis()->SetRange(1,1200);
+   rvg_alep_pt->GetYaxis()->SetRange(1,2000);
    rvg_alep_pt->GetYaxis()->SetLabelFont(42);
    rvg_alep_pt->GetYaxis()->SetLabelOffset(0.01);
    rvg_alep_pt->GetYaxis()->SetTitleOffset(1.3);
