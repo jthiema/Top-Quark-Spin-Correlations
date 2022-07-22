@@ -539,15 +539,15 @@ for i in range(len(t_pt)):
     gen_cM_nk = ifOk(gen_cnk - gen_ckn)
 
     # Find also the opening angles of the lepton
-    ll_dEta = abs(ifOk(aLep.Eta() - pLep.Eta()))
-    ll_dPhi = abs(ifOk(aLep.DeltaPhi(pLep)))
-    ll_dR = abs(ifOk(aLep.DeltaR(pLep)))
-    cHel = ifOk(aLep.Vect().Unit().Dot(pLep.Vect().Unit()))
+    ll_dEta = abs(ifOk(alep.Eta() - lep.Eta()))
+    ll_dPhi = abs(ifOk(alep.DeltaPhi(lep)))
+    ll_dR = abs(ifOk(alep.DeltaR(lep)))
+    cHel = ifOk(b4_aLep.Vect().Unit().Dot(b4_pLep.Vect().Unit()))
 
-    gen_ll_dEta = abs(ifOk(gen_aLep.Eta() - gen_pLep.Eta()))
-    gen_ll_dPhi = abs(ifOk(gen_aLep.DeltaPhi(gen_pLep)))
-    gen_ll_dR = abs(ifOk(gen_aLep.DeltaR(gen_pLep)))
-    gen_cHel = ifOk(gen_aLep.Vect().Unit().Dot(gen_pLep.Vect().Unit()))
+    gen_ll_dEta = abs(ifOk(gen_alep.Eta() - gen_lep.Eta()))
+    gen_ll_dPhi = abs(ifOk(gen_alep.DeltaPhi(gen_lep)))
+    gen_ll_dR = abs(ifOk(gen_alep.DeltaR(gen_lep)))
+    gen_cHel = ifOk(gen_b4_aLep.Vect().Unit().Dot(gen_b4_pLep.Vect().Unit()))
 
 
 
