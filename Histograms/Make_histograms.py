@@ -158,6 +158,9 @@ hgenlldeta = ROOT.TH1D("gen_ll_deta", "gen_ll_deta", 2000, 0 ,7)
 hgenlldphi = ROOT.TH1D("gen_ll_dphi", "gen_ll_dphi", 2000, 0 ,np.pi)
 hgenlldr = ROOT.TH1D("gen_ll_dr", "gen_ll_dr", 2000, 0, 7)
 
+#htestdphi = ROOT.TH1D("test_ll_dphi", "test_ll_dphi", 2000, 0 ,np.pi)
+#hgentestdphi = ROOT.TH1D("gen_test_ll_dphi", "gen_test_ll_dphi", 2000, 0 ,np.pi)
+
 #2D hists
 
 hrvgleppt = ROOT.TH2D('rvg_lep_pt', 'reco vs gen lep pt', 2000, 0, 1200, 2000, 0, 1200)
@@ -348,6 +351,23 @@ for i in range(len(t_pt)):
     gen_b4_aTop.Boost(gen_b4_TT)
 
     # Maybe need to be careful with the signs here ?? Check how the pairings are implemented in the FW
+
+    ll_dEta = abs(ifOk(alep.Eta() - lep.Eta()))
+    ll_dPhi = abs(ifOk(alep.DeltaPhi(lep)))
+    ll_dR = abs(ifOk(alep.DeltaR(lep)))
+
+    gen_ll_dEta = abs(ifOk(gen_alep.Eta() - gen_lep.Eta()))
+    gen_ll_dPhi = abs(ifOk(gen_alep.DeltaPhi(gen_lep)))
+    gen_ll_dR = abs(ifOk(gen_alep.DeltaR(gen_lep)))
+
+    hlldeta.Fill(ll_dEta)
+    hlldphi.Fill(ll_dPhi)
+    hlldr.Fill(ll_dR)
+
+    hgenlldeta.Fill(gen_ll_dEta)
+    hgenlldphi.Fill(gen_ll_dPhi)
+    hgenlldr.Fill(gen_ll_dR)
+
     b4_aLep = alep
     b4_aLep.Boost(b4_TT)
     b4_aLep.Boost(-1. * b4_pTop.BoostVector())
@@ -539,15 +559,15 @@ for i in range(len(t_pt)):
     gen_cM_nk = ifOk(gen_cnk - gen_ckn)
 
     # Find also the opening angles of the lepton
-    ll_dEta = abs(ifOk(alep.Eta() - lep.Eta()))
-    ll_dPhi = abs(ifOk(alep.DeltaPhi(lep)))
-    ll_dR = abs(ifOk(alep.DeltaR(lep)))
+
     cHel = ifOk(b4_aLep.Vect().Unit().Dot(b4_pLep.Vect().Unit()))
 
-    gen_ll_dEta = abs(ifOk(gen_alep.Eta() - gen_lep.Eta()))
-    gen_ll_dPhi = abs(ifOk(gen_alep.DeltaPhi(gen_lep)))
-    gen_ll_dR = abs(ifOk(gen_alep.DeltaR(gen_lep)))
+    #testdphi = abs(ifOk(b4_aLep.DeltaPhi(b4_pLep)))
+
+
     gen_cHel = ifOk(gen_b4_aLep.Vect().Unit().Dot(gen_b4_pLep.Vect().Unit()))
+
+    #gentestdphi = abs(ifOk(gen_b4_aLep.DeltaPhi(gen_b4_pLep)))
 
 
 
@@ -608,9 +628,7 @@ for i in range(len(t_pt)):
     
     hchel.Fill(cHel)
 
-    hlldeta.Fill(ll_dEta)
-    hlldphi.Fill(ll_dPhi)
-    hlldr.Fill(ll_dR)
+
 
     # Fill GEN
 
@@ -669,9 +687,11 @@ for i in range(len(t_pt)):
 
     hgenchel.Fill(gen_cHel)
 
-    hgenlldeta.Fill(gen_ll_dEta)
-    hgenlldphi.Fill(gen_ll_dPhi)
-    hgenlldr.Fill(gen_ll_dR)
+
+
+
+    #htestdphi.Fill(testdphi)
+    #hgentestdphi.Fill(gentestdphi)
 
     # Fill RECO vs GEN
 
