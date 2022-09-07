@@ -107,6 +107,11 @@ for i in range(len(genpt)) :
     or  (dR (genphi[i][al_index], geneta[i][al_index], genphi[i][bbar_index], geneta[i][bbar_index] ) < 0.4) ) : continue 
     '''
 
+    #DR cut
+    if(dR(genphi[i][l_index], geneta[i][l_index], genphi[i][al_index], geneta[i][al_index]) < 0.4):
+        continue
+
+
     #ltons
     gen_l_pt.append(genpt[i][l_index])
     gen_l_phi.append(genphi[i][l_index])

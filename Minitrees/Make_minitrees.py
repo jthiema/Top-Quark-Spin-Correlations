@@ -370,7 +370,7 @@ def main():
             or (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)):
                 continue
 
-            if ((jet_pt[i][j] < 30)):
+            if ((jet_pt[i][j] < 40)): ##Increase from 30 to 40
                 continue
 
             if ((abs(jet_eta[i][j]) > 5.0)):
