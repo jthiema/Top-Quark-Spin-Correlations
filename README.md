@@ -18,7 +18,7 @@ squeue -u <username>
 slist
 ```
 
-# Ling's Recommended Method: How to Get Started w/ the Future Circular Coillder (https://en.wikipedia.org/wiki/Future_Circular_Collider)  
+## Ling's Recommended Method: How to Get Started w/ the Future Circular Coillder (https://en.wikipedia.org/wiki/Future_Circular_Collider)  
 - The FCC project is listed on another branch of the git repository
 
 - First of all, everyone should have a Linux-like shell environment (Ubuntu17/18/19/20/22, CentOS7/8, ScientificLinux6/7, LinuxMint, WSL on Windows etc.) to work on.
