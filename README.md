@@ -30,7 +30,7 @@ $ mkdir CMS/FCC
 - Then go to that directory: <br>
 $ cd CMS/FCC
 - Copy the .root file from the CMS Tier-2 server: <br>
-$ scp <purdue username>@hammer.rcac.purdue.edu:/mnt/hadoop/store/user/hyeonseo/mgp8_pp_tt012j_5f/events_000012600.root ~
+$ scp <purdue username>@hammer.rcac.purdue.edu:/mnt/hadoop/store/user/hyeonseo/mgp8_pp_tt012j_5f/events_000012600.root ~/CMS/FCC
 - This will ask for the boilerkey for the permission. 
 - Now we need a data analysis software called ROOT to do the analysis. Simply, install the prerequisites first (https://root.cern/install/dependencies/). 
 - Then install ROOT: <br>
