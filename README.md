@@ -55,6 +55,6 @@ $ root[] events->Draw("electrons.core.p4.px")
 $ root[] events->Draw("electrons.core.p4.px", "electrons.core.p4.px<50 && electrons.core.p4.px>-50")
 - Notice that the default TCanvas is called "c1" (More in https://root.cern.ch/doc/master/classTCanvas.html), so you can store the plot you drew by: <br>
 $ root[] c1->SaveAs("~/CMS/FCC/'name_of_the_file'.png")
-- Now, here's a bigger toy to play with, that is this framework developed for FCC. It includes not only the particle physics event selection and also the physical reconstructions. Try to clone the FCC branch of this repo to your computer:
+- Now, here's a bigger toy to play with, that is this framework developed for FCC. It includes not only the particle physics event selection and also the physical reconstructions. Try to clone the FCC branch of this repo to your computer: <br>
 $ git clone -b FCC https://github.com/jthiema/Top-Quark-Spin-Correlations.git
 - It will ask you for your github username and the "password". But the "password" nowdays is not the password anymore. You need to go to the "Settings→Developer Settings" to generate classical personal tokens. Remember to select most of the options associated with the token and use the token as the password. 
