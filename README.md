@@ -24,7 +24,7 @@ slist
 - First of all, everyone should have a Linux-like shell environment (Ubuntu17/18/19/20/22, CentOS7/8, ScientificLinux6/7, LinuxMint, WSL on Windows etc.) to work on.
 - If you are on Windows10/11 machines, run powershell as administrator and type ... (you may need to restart the computer after installing WSL via "wsl --install" if you don't have it already) <br>
 $ wsl --install -d ubuntu
-- Once you are on Linux, make a prefered directory (let's say, starting from the home directory) on your local Linux machine using the following command lines:
+- Once you are on Linux, make a prefered directory (let's say, starting from the home directory) on your local Linux machine using the following command lines: <br>
 $ cd ~ <br>
 $ mkdir CMS/FCC
 - Then go to that directory: <br>
