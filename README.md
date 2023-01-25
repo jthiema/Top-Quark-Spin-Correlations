@@ -30,7 +30,7 @@ $ mkdir CMS/FCC
 - Then go to that directory: <br>
 $ cd CMS/FCC
 - Copy the .root file from the CMS Tier-2 server: <br>
-$ scp [purdue_username]@hammer.rcac.purdue.edu:/mnt/hadoop/store/user/hyeonseo/mgp8_pp_tt012j_5f/events_000012600.root ~/CMS/FCC
+$ scp 'purdue_username'@hammer.rcac.purdue.edu:/mnt/hadoop/store/user/hyeonseo/mgp8_pp_tt012j_5f/events_000012600.root ~/CMS/FCC
 - This will ask for the boilerkey for the permission. 
 - Now we need a data analysis software called ROOT to do the analysis. Simply, install the prerequisites first (https://root.cern/install/dependencies/). 
 - Then install ROOT: <br>
@@ -54,4 +54,4 @@ $ root[] events->Draw("electrons.core.p4.px")
 - To select the P_x values within -50<P_x<50: <br>
 $ root[] events->Draw("electrons.core.p4.px", "electrons.core.p4.px<50 && electrons.core.p4.px>-50")
 - Notice that the default TCanvas is called "c1" (More in https://root.cern.ch/doc/master/classTCanvas.html), so you can store the plot you drew by: <br>
-$ root[] c1->SaveAs("~/CMS/FCC/[name_of_the_file].png")
+$ root[] c1->SaveAs("~/CMS/FCC/'name_of_the_file'.png")
