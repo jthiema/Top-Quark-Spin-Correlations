@@ -60,3 +60,8 @@ $ ssh -Y 'purdue_username'@hammer.rcac.purdue.edu
 - Try to clone the FCC branch of this repo to the folder of your choice on the T2 cluster: <br>
 $ git clone -b FCC https://github.com/jthiema/Top-Quark-Spin-Correlations.git
 - It will ask you for your github username and the "password". But the "password" nowdays is not the password anymore. You need to login to the github website, then go to "Settings→Developer Settings" to generate classical personal tokens. Remember to select most of the options associated with the token and use the token as the password. 
+- To start the project, call the initialization shell commands: <br>
+```
+$ source init.sh
+```
+- Then select the commands you want to run from Minitrees_Commands.sh. 
