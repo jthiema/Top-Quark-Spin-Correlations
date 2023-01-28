@@ -19,6 +19,7 @@ slist
 ```
 
 ## Ling's Recommended Method: How to Get Started w/ the Future Circular Coillder (https://en.wikipedia.org/wiki/Future_Circular_Collider)  
+### Updated on 01/27/2023
 - The FCC project is listed on another branch of the git repository
 
 - First of all, everyone should have a Linux-like shell environment (Ubuntu17/18/19/20/22, CentOS7/8, ScientificLinux6/7, LinuxMint, WSL on Windows etc.) to work on.
@@ -80,5 +81,5 @@ $ root -l -b MkPlots.cc++("")
 ```
 - To view the results (the following command shows one of them, ex. the Missing Transverse Momentum associated with the unseen neutrinos), do: <br>
 ```
-display FinalPlots/h_met_pt.pdf
+$ display FinalPlots/h_met_pt.pdf
 ```
