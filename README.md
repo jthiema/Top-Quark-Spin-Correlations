@@ -64,4 +64,21 @@ $ git clone -b FCC https://github.com/jthiema/Top-Quark-Spin-Correlations.git
 ```
 $ source init.sh
 ```
-- Then select the commands you want to run from Minitrees_Commands.sh. 
+- Then select the commands you want to run from Minitrees_Commands.sh. For example, for events_000012600.root (1/9000 events): <br>
+```
+$ python Minitrees/Make_minitrees.py -i /mnt/hadoop/store/user/hyeonseo/mgp8_pp_tt012j_5f/events_000012600.root -o MiniTreeOutput/minitree_000012600.root 
+$ python Top_reco/Top_reco.py -i MiniTreeOutput/minitree_000012600.root
+$ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_000012600.root -o HistogramOutput/hstogram_000012600.root
+```
+- Modify /Plotting/MkPlots.cc:line 378 to <br>
+```
+TFile* f_hists = new TFile("../HistogramOutput/histogram_000012600.root","READ"); 
+```
+- And <br>
+```
+$ root -l -b MkPlots.cc++("")
+```
+- To view the results (the following command shows one of them, ex. the Missing Transverse Momentum associated with the unseen neutrinos), do: <br>
+```
+display FinalPlots/h_met_pt.pdf
+```
