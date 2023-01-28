@@ -65,6 +65,11 @@ $ git clone -b FCC https://github.com/jthiema/Top-Quark-Spin-Correlations.git
 ```
 $ source init.sh
 ```
+- Do these to create the necessary folders (MiniTreeOutput & HistogramOutput):
+```
+$ python Make_Minitrees_Commands.py
+$ python Make_Histograms_Commands.py
+```
 - Then select the commands you want to run from Minitrees_Commands.sh. For example, for events_000012600.root (1/9000 events): <br>
 ```
 $ python Minitrees/Make_minitrees.py -i /mnt/hadoop/store/user/hyeonseo/mgp8_pp_tt012j_5f/events_000012600.root -o MiniTreeOutput/minitree_000012600.root 
