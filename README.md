@@ -19,7 +19,7 @@ slist
 ```
 
 ## Ling's Recommended Method: How to Get Started w/ the Future Circular Coillder (https://en.wikipedia.org/wiki/Future_Circular_Collider)  
-### Updated on 01/27/2023
+### Updated on 01/28/2023
 - The FCC project is listed on another branch of the git repository
 
 - First of all, everyone should have a Linux-like shell environment (Ubuntu17/18/19/20/22, CentOS7/8, ScientificLinux6/7, LinuxMint, WSL on Windows etc.) to work on.
@@ -56,7 +56,7 @@ $ root[] events->Draw("electrons.core.p4.px")
 $ root[] events->Draw("electrons.core.p4.px", "electrons.core.p4.px<50 && electrons.core.p4.px>-50")
 - Notice that the default TCanvas is called "c1" (More in https://root.cern.ch/doc/master/classTCanvas.html), so you can store the plot you drew by: <br>
 $ root[] c1->SaveAs("~/CMS/FCC/'name_of_the_file'.png")
-- The idea of opening ROOT on your local machine is to avoid xforwarding the graphical user interface (GUI) from the server to your desktop because the xforwarded TBrowser or the RBrowser behave extremely slowly; it also allow you to install the tools you want to use despite you don't have the administrator permission to download stuffs to the T2 cluster. However, it is sometimes useful to graph the plots on the interactive interface. Now, here's a bigger toy to play with, and it requires a decent skill set to operate through the Purdue CMS Tier-2 cluster, that is this framework developed for FCC. It includes not only the particle physics event selection and also the physical reconstructions. To login to the T2 cluster, obtain the access to the clusters from Stefan (spiperov@purdue.edu). Once you are granted with the acess, then you can connect one of the cluster (Hammer, Brown, and more), for example (-Y or -X to enable the xforwarding software, you need to have them installed before opening a terminal): <br>
+- The idea of opening ROOT on your local machine is to avoid xforwarding the graphical user interface (GUI) from the server to your desktop because the xforwarded TBrowser or the RBrowser behaves extremely slowly; it also allow you to install the tools you want to use despite you don't have the administrator permission to download stuffs to the T2 cluster. However, it is sometimes useful to graph the plots on the interactive interface. Now, here's a bigger toy to play with, and it requires a decent skill set to operate through the Purdue CMS Tier-2 cluster, that is this framework developed for FCC. It includes not only the particle physics event selection and also the physical reconstructions. To login to the T2 cluster, obtain the access to the clusters from Stefan (spiperov@purdue.edu). Once you are granted with the acess, then you can connect one of the cluster (Hammer, Brown, and more), for example (-Y or -X to enable the xforwarding software, you need to have them installed before opening a terminal): <br>
 $ ssh -Y 'purdue_username'@hammer.rcac.purdue.edu
 - Try to clone the FCC branch of this repo to the folder of your choice on the T2 cluster: <br>
 $ git clone -b FCC https://github.com/jthiema/Top-Quark-Spin-Correlations.git
