@@ -86,5 +86,5 @@ $ root -l -b MkPlots.cc++("")
 ```
 - To view the results (the following command shows one of them, ex. the Missing Transverse Momentum associated with the unseen neutrinos), do: <br>
 ```
-$ display FinalPlots/h_met_pt.pdf
+$ display Plotting/FinalPlots/h_met_pt.pdf
 ```
