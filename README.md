@@ -74,7 +74,7 @@ $ python Make_Histograms_Commands.py
 ```
 $ python Minitrees/Make_minitrees.py -i /mnt/hadoop/store/user/hyeonseo/mgp8_pp_tt012j_5f/events_000012600.root -o MiniTreeOutput/minitree_000012600.root 
 $ python Top_reco/Top_reco.py -i MiniTreeOutput/minitree_000012600.root
-$ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_000012600.root -o HistogramOutput/hstogram_000012600.root
+$ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_000012600.root -o HistogramOutput/histogram_000012600.root
 ```
 - Modify /Plotting/MkPlots.cc:line 378 to <br>
 ```
