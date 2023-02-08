@@ -1,5 +1,15 @@
 # Top-Quark-Spin-Correlations
-
+## Forking the Repository
+- It's important to duplicate this repository to your own github repository so that the modifications only apply to your repository. 
+- Click "Fork" button on the github webpage on top right. 
+- Unselect "Forking the master branch only".
+- Copy the url in the green "<> Code" button. Then do 
+```
+$ git clone <url>
+$ git remote add origin git@github.com:<Your Github Username>/Top-Quark-Spin-Correlations.git
+$ git remote add jason git@github.com:jthiema/Top-Quark-Spin-Correlations.git
+```
+##
 My FW for the study of top quark spin correlations at the LHC, this is just a repository meant for the storage of scripts.
 To list all files in the hadoop directory perform :
 ```
