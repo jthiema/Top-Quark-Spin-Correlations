@@ -8,9 +8,10 @@
 $ git clone <url>
 $ git remote add origin git@github.com:<Your Github Username>/Top-Quark-Spin-Correlations.git
 $ git remote add ling git@github.com:holytpk/Top-Quark-Spin-Correlations.git
+$ git remote -v 
 ```
 ##
-My FW for the study of top quark spin correlations at the LHC, this is just a repository meant for the storage of scripts.
+Amandeep's FW for the study of top quark spin correlations at the LHC, this is just a repository meant for the storage of scripts.
 To list all files in the hadoop directory perform :
 ```
 ls /mnt/hadoop/store/user/<username>/TTBar_Delphes > filelist_mnt
