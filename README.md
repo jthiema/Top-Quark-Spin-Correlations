@@ -99,3 +99,9 @@ $ root -l -b MkPlots.cc++("")
 ```
 $ display Plotting/FinalPlots/h_met_pt.pdf
 ```
+
+### For Those Who Had Trouble Building ROOT Locally
+Open Jupyterhub on Hammer (does not require VPN): notebook.hammer.rcac.purdue.edu
+Open the script and modify it as you want, you can perform all the interactive steps by switching to a proper kernel, ex. Coffea 
+If you want to view directories above your home directory, ask Jason for help, XD. 
+You can also open a terminal to execute commands by clicking the "new" dropdown list which is right next to the "upload" button. 
