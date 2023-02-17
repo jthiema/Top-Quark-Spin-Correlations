@@ -50,7 +50,7 @@ $ cd ~/CMS <br>
 $ wget https://root.cern/download/root_v6.26.10.Linux-centos8-x86_64-gcc8.5.tar.gz <br>
 $ tar -xzvf root_v6.26.10.Linux-centos8-x86_64-gcc8.5.tar.gz <br>
 $ source root/bin/thisroot.sh
-- Then you have the access to ROOT6 altough ROOT7 is available as of 2023. You might need to build ROOT from source (https://root.cern/install/build_from_source/) to avoid conflicts with the libraries, linux dependencies and custom C++ classes. 
+- Then you have the access to ROOT6 although ROOT7 is available as of 2023. You might need to build ROOT from source (https://root.cern/install/build_from_source/) to avoid conflicts with the libraries, linux dependencies and custom C++ classes. 
 - Open ROOT by: <br>
 $ root -l
 - Close ROOT by (the root[] sign means that you are in ROOT, type the stuff following the sign): <br>
