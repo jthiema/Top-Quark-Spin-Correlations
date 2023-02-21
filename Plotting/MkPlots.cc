@@ -396,7 +396,7 @@ void MkPlots(){
   TH1::SetDefaultSumw2();
 
   TFile* f_hists = new TFile("~/hists.root","READ");
-  //TFile* f_hists = new TFile("/depot/cms/top/miacobuc/hists.root","READ");
+  //TFile* f_hists = new TFile("../HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root","READ");
 
   string output_dir = "FinalPlots";
   system(("mkdir -p "+output_dir).c_str());
