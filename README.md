@@ -93,7 +93,7 @@ TFile* f_hists = new TFile("../HistogramOutput/histogram_000012600.root","READ")
 ```
 - And <br>
 ```
-$ root -l -b Plotting/FinalMkPlots.cc++("")
+$ root -l -b Plotting/MkPlots.cc++("")
 ```
 - To view the results (the following command shows one of them, ex. the Missing Transverse Momentum associated with the unseen neutrinos), do: <br>
 ```
