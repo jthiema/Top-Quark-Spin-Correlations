@@ -18,6 +18,12 @@ $ git remote -v
 ```
 $ source init.sh
 ```
+- For HL-LHC, we need to convert the delphes files into ntuples.
+```
+$ mkdir Ntuples
+$ python Ntuplizer/Delphes_Ntuplizer_custom.py -i /mnt/hadoop/store/user/abakshi/TTBar_Delphes/TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o Ntuples/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
+
+```
 - Do these to create the necessary folders (MiniTreeOutput & HistogramOutput):
 ```
 $ python Make_Minitrees_Commands.py
@@ -25,7 +31,7 @@ $ python Make_Histograms_Commands.py
 ```
 - Then select the commands you want to run from Minitrees_Commands.sh. For example, for events_000012600.root (1/9000 events): <br>
 ```
-$ python Minitrees/Make_minitrees.py -i Ntuplizer/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
+$ python Minitrees/Make_minitrees.py -i Ntuples/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
 $ python Top_reco/Top_reco.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
 $ python Histograms/Make_histograms.py -i MiniTreeOutput/minitre_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o HistogramOutput/hstogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
 ```
