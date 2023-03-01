@@ -21,41 +21,6 @@ def dR(e_phi, e_eta, m_phi, m_eta):
     d_phi = deltaphi(e_phi, m_phi)
     return np.sqrt(d_phi**2 + d_eta**2)
 
-
-def CalcE(px,py,pz,m):
-	E = np.sqrt(px**2 + py**2 + pz**2 + m**2)
-	return E
-
-
-# This function converts the cartesian momentum (as branch arrays) to pT, eta, phi coordinates
-def ptetaphiarray(mass, px, py, pz, nevents):
-    pt = []
-    eta = []
-    phi = []
-    for i in range(nevents):
-        if (i % 1000 == 0):
-            print('Processing event ' + str(i) + ' of ' + str(nevents))
-        pt.append([])
-        eta.append([])
-        phi.append([])
-        for v in range(len(px[i])):
-            pxi = px[i][v]
-            pyi = py[i][v]
-            pzi = pz[i][v]
-            massi = mass[i][v]
-            Ei = CalcE(pxi, pyi, pzi, massi)
-            l  = ROOT.TLorentzVector()
-            l.SetPxPyPzE(pxi, pyi, pzi, Ei)
-            pti = l.Pt()
-            phii = l.Phi()
-            etai = l.Eta()
-            pt[i].append(pti)
-            eta[i].append(etai)
-            phi[i].append(phii)
-    return (ak.Array(pt), ak.Array(eta), ak.Array(phi))
-
-
-
 def main():
 
     parser = argparse.ArgumentParser()
@@ -66,62 +31,53 @@ def main():
     inputFile = args.input
     outputFile = args.output
 
-    fileptr = uproot.open(inputFile)['events']
+    fileptr = uproot.open(inputFile)['Delphes_Ntuples']
     
-    # These are the branch arrays from the input file
-
     # Jet MET
-    jet_px   = fileptr['pfjets04.core.p4.px'].array()
-    jet_py  = fileptr['pfjets04.core.p4.py'].array()
-    jet_pz  = fileptr['pfjets04.core.p4.pz'].array()
-    jet_mass = fileptr['pfjets04.core.p4.mass'].array()
-    jet_btag = fileptr['pfbTags04.tag'].array()
+    jet_pt   = fileptr['jet_pt'].array()
+    jet_eta  = fileptr['jet_eta'].array()
+    jet_phi  = fileptr['jet_phi'].array()
+    jet_mass = fileptr['jet_mass'].array()
+    jet_btag = fileptr['jet_btag'].array()
+    
+    NEvents = len(jet_pt)
 
-    NEvents = len(jet_px)
-
-    (jet_pt, jet_eta, jet_phi) = ptetaphiarray(jet_mass, jet_px, jet_py, jet_pz, NEvents)
-
-    met_pt    = fileptr['met.magnitude'].array()
-    met_phi   = fileptr['met.phi'].array()
-    weight    = fileptr['mcEventWeights.value'].array()
-    scalar_ht = fileptr['met.scalarSum'].array()
+    met_pt    = fileptr['met_pt'].array()
+    met_phi   = fileptr['met_phi'].array()
+    weight    = fileptr['weight'].array()
+    scalar_ht = fileptr['scalar_ht'].array()
 
     # Electrons
-    elec_px     = fileptr['electrons.core.p4.px'].array()
-    elec_py    = fileptr['electrons.core.p4.py'].array()
-    elec_pz    = fileptr['electrons.core.p4.pz'].array()
-    elec_mass   = fileptr['electrons.core.p4.mass'].array()
-    elec_charge = fileptr['electrons.core.charge'].array()
-    (elec_pt, elec_eta, elec_phi) = ptetaphiarray(elec_mass, elec_px, elec_py, elec_pz, NEvents)
-#    elec_reliso = fileptr['elec_reliso'].array()
+    elec_pt     = fileptr['elec_pt'].array()
+    elec_eta    = fileptr['elec_eta'].array()
+    elec_phi    = fileptr['elec_phi'].array()
+    elec_mass   = fileptr['elec_mass'].array()
+    elec_charge = fileptr['elec_charge'].array()
+    elec_reliso = fileptr['elec_reliso'].array()
 
     # Muons
-    muon_px = fileptr['muons.core.p4.px'].array()
-    muon_py = fileptr['muons.core.p4.py'].array()
-    muon_pz = fileptr['muons.core.p4.pz'].array()
-    muon_mass   = fileptr['muons.core.p4.mass'].array()
-    muon_charge = fileptr['muons.core.charge'].array()
-    (muon_pt, muon_eta, muon_phi) = ptetaphiarray(muon_mass, muon_px, muon_py, muon_pz, NEvents)
-#    muon_reliso = fileptr['muon_reliso'].array()
+    muon_pt     = fileptr['muon_pt'].array()
+    muon_eta    = fileptr['muon_eta'].array()
+    muon_phi    = fileptr['muon_phi'].array()
+    muon_mass   = fileptr['muon_mass'].array()
+    muon_charge = fileptr['muon_charge'].array()
+    muon_reliso = fileptr['muon_reliso'].array()
 
     # Gen level jets
-    #genjet_px   = fileptr['genjets04.core.p4.px'].array()
-    #genjet_py  = fileptr['genjets04.core.p4.py'].array()
-    #genjet_pz  = fileptr['genjets04.core.p4.pz'].array()
-    #genjet_mass = fileptr['genjets04.core.p4.mass'].array()
-    #(genjet_pt, genjet_eta, genjet_phi) = ptetaphiarray(genjet_mass, genjet_px, genjet_py, genjet_pz)
-    #genjet_btag = fileptr['genjetsFlavor04.tag'].array() #maybe a fix
-    #genjet_btag = fileptr['genjets'].array()
+    genjet_pt   = fileptr['genjet_pt'].array()
+    genjet_eta  = fileptr['genjet_eta'].array()
+    genjet_phi  = fileptr['genjet_phi'].array()
+    genjet_mass = fileptr['genjet_mass'].array()
+    #genjet_btag = fileptr['genjet_btag'].array()
 
     # Gen level data
-    genpart_px     = fileptr['skimmedGenParticles.core.p4.px'].array()
-    genpart_py    = fileptr['skimmedGenParticles.core.p4.py'].array()
-    genpart_pz    = fileptr['skimmedGenParticles.core.p4.pz'].array()
-    genpart_mass   = fileptr['skimmedGenParticles.core.p4.mass'].array()
-    genpart_pid    = fileptr['skimmedGenParticles.core.pdgId'].array()
-    genpart_status = fileptr['skimmedGenParticles.core.status'].array()
-    genpart_charge = fileptr['skimmedGenParticles.core.charge'].array()
-    (genpart_pt, genpart_eta, genpart_phi) = ptetaphiarray(genpart_mass, genpart_px, genpart_py, genpart_pz, NEvents)
+    genpart_pt     = fileptr['genpart_pt'].array()
+    genpart_eta    = fileptr['genpart_eta'].array()
+    genpart_phi    = fileptr['genpart_phi'].array()
+    genpart_mass   = fileptr['genpart_mass'].array()
+    genpart_pid    = fileptr['genpart_pid'].array()
+    genpart_status = fileptr['genpart_status'].array()
+    genpart_charge = fileptr['genpart_charge'].array()
 
 
     # These empty arrays are the branch arrays for the output file
@@ -268,9 +224,9 @@ def main():
 
     gen_met_pt     = []
     gen_met_phi     = []
-
+    
     # Let's create a mask
-    selection = np.zeros(len(jet_pt))
+    selection = np.zeros(len(jet_pt)) 
 
     # Loop over the events
     for i in range(NEvents):
@@ -298,99 +254,6 @@ def main():
 
         gen_neu_4vec  = ROOT.TLorentzVector()
         gen_aneu_4vec = ROOT.TLorentzVector()
-
-        ########## Electrons ##########
-
-        # Ensure pt > 20 GeV and eta < 5.0 and isolation
-        for j in range(len(elec_pt[i])):
-            if (elec_pt[i][j] < 20):
-                continue
-
-            if ( abs(elec_eta[i][j]) > 5.0 ):
-                continue
-
-            #if (elec_reliso[i][j] > 0.0588):
-                #continue
-
-            e_idx.append(j)
-
-        ###########  Muons ############
-
-        # Ensure pt > 20 GeV and eta < 5.0 and isolation
-        for j in range(len(muon_pt[i])):
-            if (muon_pt[i][j] < 20):
-                continue
-
-            if (abs(muon_eta[i][j]) > 5.0):       # Should be 4?
-                continue
-
-            #if (muon_reliso[i][j] > 0.15):
-                #continue
-
-            mu_idx.append(j)
-
-        # Ensure exactly one muon and one electron
-        if (len(e_idx) != 1 or len(mu_idx) != 1):
-            continue
-
-        # Check for opp sign charge pairings
-        for j in range(len(e_idx)):
-            for k in range(len(mu_idx)):
-                # e_idx and mu_idx have the list of valid electron and muon indices
-                tmp_e_idx  = e_idx[j]
-                tmp_mu_idx = mu_idx[k]
-
-                if (elec_charge[i][tmp_e_idx] * muon_charge[i][tmp_mu_idx] == -1):
-                    ef_idx.append(tmp_e_idx)
-                    muf_idx.append(tmp_mu_idx)
-
-        # Ensure such a pairing exists
-        if (len(ef_idx) == 0 or len(muf_idx) == 0):
-            continue
-
-        # Assign leading indices to e and mu
-        e_index = ef_idx[0]
-        mu_index = muf_idx[0]
-
-        # Defining the 4 vectors
-        e_4vec.SetPtEtaPhiM(elec_pt[i][e_index]  , elec_eta[i][e_index] , elec_phi[i][e_index] , elec_mass[i][e_index])
-        mu_4vec.SetPtEtaPhiM(muon_pt[i][mu_index], muon_eta[i][mu_index], muon_phi[i][mu_index],  muon_mass[i][mu_index])
-
-        # Mll cut (Step 3 according to the FW)
-        if ((e_4vec + mu_4vec).M() < 20):
-            continue
-
-        ###########  Jets ###############
-
-        for j in range(len(jet_pt[i])):
-
-            # Ensure pt > 30 GeV and eta < 5.0 isolation
-
-            if ((dR(elec_phi[i][e_index],  elec_eta[i][e_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)
-            or (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)):
-                continue
-
-            if ((jet_pt[i][j] < 40)): ##Increase from 30 to 40
-                continue
-
-            if ((abs(jet_eta[i][j]) > 5.0)):
-                continue
-
-            if (jet_btag[i][j] != 0):
-                btag_cnt += 1
-
-            jet_idx.append(j)
-
-        # 2 Jets (Step 5 according to the FW)
-        if(len(jet_idx) < 2):
-            continue
-
-        # Atleast one b-tag (Step 6 according to the FW)
-        if (btag_cnt == 0):
-            continue
-
-        ljet_idx = jet_idx[0]
-        sljet_idx = jet_idx[1]
 
         ###########  GEN  ###########
 
@@ -507,8 +370,102 @@ def main():
         # Calculate gen met from gen neutrino and anti-neutrino
 
         gen_met_pt.append((gen_neu_4vec + gen_aneu_4vec).Pt())
-        gen_met_phi.append((gen_neu_4vec + gen_aneu_4vec).Phi())
+        gen_met_phi.append((gen_neu_4vec + gen_aneu_4vec).Phi())   
+    
+    ###########  RECO  ###########
+        
+        ########## Electrons ##########
 
+        # Ensure pt > 20 GeV and eta < 5.0 and isolation
+        for j in range(len(elec_pt[i])):
+            if (elec_pt[i][j] < 20):
+                continue
+
+            if ( abs(elec_eta[i][j]) > 5.0 ):
+                continue
+
+            #if (elec_reliso[i][j] > 0.0588):
+                #continue
+
+            e_idx.append(j)
+
+        ###########  Muons ############
+
+        # Ensure pt > 20 GeV and eta < 5.0 and isolation
+        for j in range(len(muon_pt[i])):
+            if (muon_pt[i][j] < 20):
+                continue
+
+            if (abs(muon_eta[i][j]) > 5.0):       # Should be 4?
+                continue
+
+            #if (muon_reliso[i][j] > 0.15):
+                #continue
+
+            mu_idx.append(j)
+
+        # Ensure exactly one muon and one electron
+        if (len(e_idx) != 1 or len(mu_idx) != 1):
+            continue
+
+        # Check for opp sign charge pairings
+        for j in range(len(e_idx)):
+            for k in range(len(mu_idx)):
+                # e_idx and mu_idx have the list of valid electron and muon indices
+                tmp_e_idx  = e_idx[j]
+                tmp_mu_idx = mu_idx[k]
+
+                if (elec_charge[i][tmp_e_idx] * muon_charge[i][tmp_mu_idx] == -1):
+                    ef_idx.append(tmp_e_idx)
+                    muf_idx.append(tmp_mu_idx)
+
+        # Ensure such a pairing exists
+        if (len(ef_idx) == 0 or len(muf_idx) == 0):
+            continue
+
+        # Assign leading indices to e and mu
+        e_index = ef_idx[0]
+        mu_index = muf_idx[0]
+
+        # Defining the 4 vectors
+        e_4vec.SetPtEtaPhiM(elec_pt[i][e_index]  , elec_eta[i][e_index] , elec_phi[i][e_index] , elec_mass[i][e_index])
+        mu_4vec.SetPtEtaPhiM(muon_pt[i][mu_index], muon_eta[i][mu_index], muon_phi[i][mu_index],  muon_mass[i][mu_index])
+
+        # Mll cut (Step 3 according to the FW)
+        if ((e_4vec + mu_4vec).M() < 20):
+            continue
+
+        ###########  Jets ###############
+
+        for j in range(len(jet_pt[i])):
+
+            # Ensure pt > 30 GeV and eta < 5.0 isolation
+
+            if ((dR(elec_phi[i][e_index],  elec_eta[i][e_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)
+            or (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)):
+                continue
+
+            if ((jet_pt[i][j] < 40)): ##Increase from 30 to 40
+                continue
+
+            if ((abs(jet_eta[i][j]) > 5.0)):
+                continue
+
+            if (jet_btag[i][j] != 0):
+                btag_cnt += 1
+
+            jet_idx.append(j)
+
+        # 2 Jets (Step 5 according to the FW)
+        if(len(jet_idx) < 2):
+            continue
+
+        # Atleast one b-tag (Step 6 according to the FW)
+        if (btag_cnt == 0):
+            continue
+
+        ljet_idx = jet_idx[0]
+        sljet_idx = jet_idx[1]
 
         # Search for gen leptons that are closer to the reco lepton than the method used above
 
@@ -592,10 +549,7 @@ def main():
         gen_alep_nearest_pdgid.append(genpart_pid[i][gen_alep_nearest_index])
         gen_alep_nearest_status.append(genpart_status[i][gen_alep_nearest_index])
 
-
-
         ####### Fill the RECO arrays ##########
-
 
         # Find the nearest reco jets to the gen b quarks
 
@@ -830,7 +784,7 @@ def main():
     gen_phi_sel    = genpart_phi[selection == 1]
     gen_mass_sel   = genpart_mass[selection == 1]
     gen_status_sel = genpart_status[selection == 1]
-    gen_charge_sel = genpart_charge[selection == 1]
+    #gen_charge_sel = genpart_charge[selection == 1]
 
     #genjet_pt_sel   = genjet_pt[selection == 1]
     #genjet_eta_sel  = genjet_eta[selection == 1]
@@ -943,7 +897,7 @@ def main():
     genpart_pid_arr  = array('i', maxn*[0])
     genpart_mass_arr = array('f', maxn*[0.])
     genpart_status_arr = array('i', maxn*[0])
-    genpart_charge_arr = array('f', maxn*[0])
+    #genpart_charge_arr = array('f', maxn*[0])
 
     #genjet_size_arr = array('i', [0])
 
@@ -1136,7 +1090,7 @@ def main():
     Step7tree.Branch("genpart_eta", genpart_eta_arr, "genpart_eta[genpart_size]/F")
     Step7tree.Branch("genpart_phi", genpart_phi_arr, "genpart_phi[genpart_size]/F")
     Step7tree.Branch("genpart_mass", genpart_mass_arr,"genpart_mass[genpart_size]/F")
-    Step7tree.Branch("genpart_charge", genpart_charge_arr,"genpart_charge[genpart_size]/F")
+    #Step7tree.Branch("genpart_charge", genpart_charge_arr,"genpart_charge[genpart_size]/F")
 
     #Gen particle branches
     # By flavor
@@ -1382,7 +1336,7 @@ def main():
             genpart_phi_arr[j]  = gen_phi_sel[i][j]
             genpart_mass_arr[j] = gen_mass_sel[i][j]
             genpart_status_arr[j] = gen_status_sel[i][j]
-            genpart_charge_arr[j] = gen_charge_sel[i][j]
+            #genpart_charge_arr[j] = gen_charge_sel[i][j]
 
         for k in range(weight_size_arr[0]):
             weight_arr[k] = weight_sel[i][k]
