@@ -29,7 +29,7 @@ $ python Ntuplizer/Delphes_Ntuplizer_custom.py -i /mnt/hadoop/store/user/abakshi
 $ python Make_Minitrees_Commands.py
 $ python Make_Histograms_Commands.py
 ```
-- Then select the commands you want to run from Minitrees_Commands.sh. For example, for events_000012600.root (1/9000 events): <br>
+- Then select the commands you want to run from Minitrees_Commands.sh. Ex: <br>
 ```
 $ python Minitrees/Make_minitrees.py -i Ntuples/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
 $ python Top_reco/Top_reco.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
