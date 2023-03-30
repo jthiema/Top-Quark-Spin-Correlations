@@ -79,7 +79,6 @@ def main():
     genpart_status = fileptr['genpart_status'].array()
     genpart_charge = fileptr['genpart_charge'].array()
 
-
     # These empty arrays are the branch arrays for the output file
  
     # RECO
@@ -275,7 +274,7 @@ def main():
 
                 if( (gen_lep_4vec + gen_aneu_4vec).M() < 70.4 or (gen_lep_4vec + gen_aneu_4vec).M() > 90.4  ): continue
 
-                gen_lep_index = j
+                gen_lep_index = j # a flag to check for lepton 
 
             if( ( (genpart_pid[i][j] == -11 and genpart_pid[i][j+1] == 12) or (genpart_pid[i][j] == -13 and genpart_pid[i][j+1] == 14) or (genpart_pid[i][j] == -15 and genpart_pid[i][j+1] == 16) ) and gen_alep_index == -1 ):
 
@@ -284,8 +283,7 @@ def main():
 
                 if ( (gen_alep_4vec + gen_neu_4vec).M() < 70.4 or (gen_alep_4vec + gen_neu_4vec).M() > 90.4  ): continue
 
-                gen_alep_index = j
-
+                gen_alep_index = j # a flag for anti-leptons 
 
             # gen top quarks with status 62
 
@@ -310,7 +308,7 @@ def main():
 
         if ( gen_lep_index == -1 or gen_alep_index == -1):
                 
-            continue
+            continue # ensures that there's at least one dilepton pair 
 
         ####### Fill the GEN arrays ##########
 
@@ -757,10 +755,9 @@ def main():
         ST.append(St)
         HT_check.append(scalar_ht[i][0])
 
-
         # Create a mask for selection
-        selection[i] = 1
-
+        selection[i] = 1        
+        
     # Other variables that we need
     llbar_deta = abs(np.array(l_eta) - np.array(sl_eta))
     llbar_dphi = abs(abs(abs(np.array(l_phi) - np.array(sl_phi)) - np.pi) - np.pi)
@@ -791,15 +788,10 @@ def main():
     #genjet_phi_sel  = genjet_phi[selection == 1]
     #genjet_mass_sel = genjet_mass[selection == 1]
     #genjet_btag_sel = genjet_btag[selection == 1]
-
-    # Make new root file with new tree
-    opfile = ROOT.TFile(outputFile, 'recreate')
-    Step7tree   = ROOT.TTree("Step7", "Step7")
-    hist   = ROOT.TH1F('Nevents', 'Nevents', 1, 0.5, 1.5)
-
+   
     # Request arrays for branches
-
     maxn    = 9999
+
     HT_arr  = array('f', [0.])
     ST_arr  = array('f', [0.])
     MET_arr = array('f', [0.])
@@ -886,8 +878,190 @@ def main():
     jet_phi_arr  = array('f', maxn*[0.])
     jet_mass_arr = array('f', maxn*[0.])
     jet_btag_arr = array('i', maxn*[0])
+    
+    genpart_size_arr_0 = array('i', [0])
+    genpart_pt_arr_0 = array('f', maxn*[0.])
+    gen_lep_pt_arr_0 = array('f', [0.])
 
-    # GEN
+    #step0_file = 'preminitree_test.root'
+    opfile = ROOT.TFile(outputFile, 'recreate')
+    Step0tree = ROOT.TTree("Step0", "Step0")
+    
+    gen_top_pt_arr_0      = array('f', [0.])
+    gen_top_eta_arr_0     = array('f', [0.])
+    gen_top_phi_arr_0     = array('f', [0.])
+    gen_top_mass_arr_0     = array('f', [0.])
+    gen_top_status_arr_0  = array('f', [0.])
+
+    gen_atop_pt_arr_0     = array('f', [0.])
+    gen_atop_eta_arr_0    = array('f', [0.])
+    gen_atop_phi_arr_0    = array('f', [0.])
+    gen_atop_mass_arr_0    = array('f', [0.])
+    gen_atop_status_arr_0  = array('f', [0.])
+
+    gen_b_pt_arr_0      = array('f', [0.])
+    gen_b_eta_arr_0     = array('f', [0.])
+    gen_b_phi_arr_0     = array('f', [0.])
+    gen_b_mass_arr_0     = array('f', [0.])
+    gen_b_status_arr_0  = array('f', [0.])
+
+    gen_ab_pt_arr_0     = array('f', [0.])
+    gen_ab_eta_arr_0    = array('f', [0.])
+    gen_ab_phi_arr_0    = array('f', [0.])
+    gen_ab_mass_arr_0    = array('f', [0.])
+    gen_ab_status_arr_0  = array('f', [0.])
+
+    gen_lep_pt_arr_0      = array('f', [0.])
+    gen_lep_eta_arr_0     = array('f', [0.])
+    gen_lep_phi_arr_0     = array('f', [0.])
+    gen_lep_mass_arr_0     = array('f', [0.])
+    gen_lep_pdgid_arr_0  = array('f', [0.])
+    gen_lep_status_arr_0  = array('f', [0.])
+
+    gen_alep_pt_arr_0     = array('f', [0.])
+    gen_alep_eta_arr_0    = array('f', [0.])
+    gen_alep_phi_arr_0    = array('f', [0.])
+    gen_alep_mass_arr_0    = array('f', [0.])
+    gen_alep_pdgid_arr_0 = array('f', [0.])
+    gen_alep_status_arr_0  = array('f', [0.])
+
+    gen_lep_nearest_pt_arr_0      = array('f', [0.])
+    gen_lep_nearest_eta_arr_0     = array('f', [0.])
+    gen_lep_nearest_phi_arr_0     = array('f', [0.])
+    gen_lep_nearest_mass_arr_0     = array('f', [0.])
+    gen_lep_nearest_pdgid_arr_0  = array('f', [0.])
+    gen_lep_nearest_status_arr_0  = array('f', [0.])
+
+    gen_alep_nearest_pt_arr_0     = array('f', [0.])
+    gen_alep_nearest_eta_arr_0    = array('f', [0.])
+    gen_alep_nearest_phi_arr_0    = array('f', [0.])
+    gen_alep_nearest_mass_arr_0    = array('f', [0.])
+    gen_alep_nearest_pdgid_arr_0 = array('f', [0.])
+    gen_alep_nearest_status_arr_0  = array('f', [0.])
+
+    gen_neu_pt_arr_0      = array('f', [0.])
+    gen_neu_eta_arr_0     = array('f', [0.])
+    gen_neu_phi_arr_0     = array('f', [0.])
+    gen_neu_mass_arr_0     = array('f', [0.])
+    gen_neu_pdgid_arr_0  = array('f', [0.])
+    gen_neu_status_arr_0  = array('f', [0.])
+
+    gen_aneu_pt_arr_0     = array('f', [0.])
+    gen_aneu_eta_arr_0    = array('f', [0.])
+    gen_aneu_phi_arr_0    = array('f', [0.])
+    gen_aneu_mass_arr_0    = array('f', [0.])
+    gen_aneu_pdgid_arr_0 = array('f', [0.])
+    gen_aneu_status_arr_0  = array('f', [0.])
+
+    gen_met_pt_arr_0     = array('f', [0.])
+    gen_met_phi_arr_0    = array('f', [0.])
+    
+    # Gen jets
+    #Step0tree.Branch("genjet_size_0", genjet_size_arr_0, "genjet_size_0/I")
+    #Step0tree.Branch("genjet_btag_0", genjet_btag_arr_0, "genjet_btag_0[genjet_size_0]/I")
+
+    #Step0tree.Branch("genjet_pt_0"  , genjet_pt_arr_0  , "genjet_pt_0[genjet_size_0]/F")
+    #Step0tree.Branch("genjet_eta_0" , genjet_eta_arr_0 , "genjet_eta_0[genjet_size_0]/F")
+    #Step0tree.Branch("genjet_phi_0" , genjet_phi_arr_0 , "genjet_phi_0[genjet_size_0]/F")
+    #Step0tree.Branch("genjet_mass_0", genjet_mass_arr_0, "genjet_mass_0[genjet_size_0]/F")
+
+    # Gen particles
+    Step0tree.Branch("genpart_size_0", genpart_size_arr_0, "genpart_size_0/I")
+    Step0tree.Branch("genpart_pid_0", genpart_pid_arr_0, "genpart_pid_0[genpart_size_0]/I")
+    Step0tree.Branch("genpart_status_0", genpart_status_arr_0,"genpart_status_0[genpart_size_0]/I")
+
+    Step0tree.Branch("genpart_pt_0", genpart_pt_arr_0, "genpart_pt_0[genpart_size_0]/F")
+    Step0tree.Branch("genpart_eta_0", genpart_eta_arr_0, "genpart_eta_0[genpart_size_0]/F")
+    Step0tree.Branch("genpart_phi_0", genpart_phi_arr_0, "genpart_phi_0[genpart_size_0]/F")
+    Step0tree.Branch("genpart_mass_0", genpart_mass_arr_0,"genpart_mass_0[genpart_size_0]/F")
+    #Step7tree.Branch("genpart_charge", genpart_charge_arr,"genpart_charge[genpart_size]/F")
+
+    #Gen particle branches
+    # By flavor
+    Step0tree.Branch("gen_top_pt_0"    , gen_top_pt_arr_0    , 'gen_top_pt_0/F')
+    Step0tree.Branch("gen_top_eta_0"   , gen_top_eta_arr_0   , 'gen_top_eta_0/F')
+    Step0tree.Branch("gen_top_phi_0"   , gen_top_phi_arr_0   , 'gen_top_phi_0/F')
+    Step0tree.Branch("gen_top_mass_0"   , gen_top_mass_arr_0   , 'gen_top_mass_0/F')
+    Step0tree.Branch("gen_top_status_0", gen_top_status_arr_0, 'gen_top_status_0/F')
+
+    Step0tree.Branch("gen_atop_pt_0"    , gen_atop_pt_arr_0    , 'gen_atop_pt_0/F')
+    Step0tree.Branch("gen_atop_eta_0"   , gen_atop_eta_arr_0   , 'gen_atop_eta_0/F')
+    Step0tree.Branch("gen_atop_phi_0"   , gen_atop_phi_arr_0   , 'gen_atop_phi_0/F')
+    Step0tree.Branch("gen_atop_mass_0"   , gen_atop_mass_arr_0   , 'gen_atop_mass_0/F')
+    Step0tree.Branch("gen_atop_status_0", gen_atop_status_arr_0, 'gen_atop_status_0/F')
+    
+    Step0tree.Branch("gen_b_pt_0"    , gen_b_pt_arr_0    , 'gen_b_pt_0/F')
+    Step0tree.Branch("gen_b_eta_0"   , gen_b_eta_arr_0   , 'gen_b_eta_0/F')
+    Step0tree.Branch("gen_b_phi_0"   , gen_b_phi_arr_0   , 'gen_b_phi_0/F')
+    Step0tree.Branch("gen_b_mass_0"   , gen_b_mass_arr_0   , 'gen_b_mass_0/F')
+    Step0tree.Branch("gen_b_status_0", gen_b_status_arr_0, 'gen_b_status_0/F')
+
+    Step0tree.Branch("gen_ab_pt_0"    , gen_ab_pt_arr_0    , 'gen_ab_pt_0/F')
+    Step0tree.Branch("gen_ab_eta_0"   , gen_ab_eta_arr_0   , 'gen_ab_eta_0/F')
+    Step0tree.Branch("gen_ab_phi_0"   , gen_ab_phi_arr_0   , 'gen_ab_phi_0/F')
+    Step0tree.Branch("gen_ab_mass_0"   , gen_ab_mass_arr_0   , 'gen_ab_mass_0/F')
+    Step0tree.Branch("gen_ab_status_0", gen_ab_status_arr_0, 'gen_ab_status_0/F')
+
+    Step0tree.Branch("gen_lep_nearest_pt_0"    , gen_lep_nearest_pt_arr_0    , 'gen_lep_nearest_pt_0/F')
+    Step0tree.Branch("gen_lep_nearest_eta_0"   , gen_lep_nearest_eta_arr_0   , 'gen_lep_nearest_eta_0/F')
+    Step0tree.Branch("gen_lep_nearest_phi_0"   , gen_lep_nearest_phi_arr_0   , 'gen_lep_nearest_phi_0/F')
+    Step0tree.Branch("gen_lep_nearest_mass_0"   , gen_lep_nearest_mass_arr_0   , 'gen_lep_nearest_mass_0/F')
+    Step0tree.Branch("gen_lep_nearest_pdgid_0", gen_lep_nearest_pdgid_arr_0, 'gen_lep_nearest_pdgid_0/F')
+    Step0tree.Branch("gen_lep_nearest_status_0", gen_lep_nearest_status_arr_0, 'gen_lep_nearest_status_0/F')
+
+    Step0tree.Branch("gen_alep_nearest_pt_0"    , gen_alep_nearest_pt_arr_0    , 'gen_alep_nearest_pt_0/F')
+    Step0tree.Branch("gen_alep_nearest_eta_0"   , gen_alep_nearest_eta_arr_0   , 'gen_alep_nearest_eta_0/F')
+    Step0tree.Branch("gen_alep_nearest_phi_0"   , gen_alep_nearest_phi_arr_0   , 'gen_alep_nearest_phi_0/F')
+    Step0tree.Branch("gen_alep_nearest_mass_0"   , gen_alep_nearest_mass_arr_0   , 'gen_alep_nearest_mass_0/F')
+    Step0tree.Branch("gen_alep_nearest_pdgid_0", gen_alep_nearest_pdgid_arr_0, 'gen_alep_nearest_pdgid_0/F')
+    Step0tree.Branch("gen_alep_nearest_status_0", gen_alep_nearest_status_arr_0, 'gen_alep_nearest_status_0/F')
+
+    Step0tree.Branch("gen_lep_pt_0"    , gen_lep_pt_arr_0    , 'gen_lep_pt_0/F')
+    Step0tree.Branch("gen_lep_eta_0"   , gen_lep_eta_arr_0   , 'gen_lep_eta_0/F')
+    Step0tree.Branch("gen_lep_phi_0"   , gen_lep_phi_arr_0   , 'gen_lep_phi_0/F')
+    Step0tree.Branch("gen_lep_mass_0"   , gen_lep_mass_arr_0   , 'gen_lep_mass_0/F')
+    Step0tree.Branch("gen_lep_pdgid_0", gen_lep_pdgid_arr_0, 'gen_lep_pdgid_0/F')
+    Step0tree.Branch("gen_lep_status_0", gen_lep_status_arr_0, 'gen_lep_status_0/F')
+
+    Step0tree.Branch("gen_alep_pt_0"    , gen_alep_pt_arr_0    , 'gen_alep_pt_0/F')
+    Step0tree.Branch("gen_alep_eta_0"   , gen_alep_eta_arr_0   , 'gen_alep_eta_0/F')
+    Step0tree.Branch("gen_alep_phi_0"   , gen_alep_phi_arr_0   , 'gen_alep_phi_0/F')
+    Step0tree.Branch("gen_alep_mass_0"   , gen_alep_mass_arr_0   , 'gen_alep_mass_0/F')
+    Step0tree.Branch("gen_alep_pdgid_0", gen_alep_pdgid_arr_0, 'gen_alep_pdgid_0/F')
+    Step0tree.Branch("gen_alep_status_0", gen_alep_status_arr_0, 'gen_alep_status_0/F')
+
+    Step0tree.Branch("gen_neu_pt_0"    , gen_neu_pt_arr_0    , 'gen_neu_pt_0/F')
+    Step0tree.Branch("gen_neu_eta_0"   , gen_neu_eta_arr_0   , 'gen_neu_eta_0/F')
+    Step0tree.Branch("gen_neu_phi_0"   , gen_neu_phi_arr_0   , 'gen_neu_phi_0/F')
+    Step0tree.Branch("gen_neu_pdgid_0", gen_neu_pdgid_arr_0, 'gen_neu_pdgid_0/F')
+    Step0tree.Branch("gen_neu_status_0", gen_neu_status_arr_0, 'gen_neu_status_0/F')
+
+    Step0tree.Branch("gen_aneu_pt_0"    , gen_aneu_pt_arr_0    , 'gen_aneu_pt_0/F')
+    Step0tree.Branch("gen_aneu_eta_0"   , gen_aneu_eta_arr_0   , 'gen_aneu_eta_0/F')
+    Step0tree.Branch("gen_aneu_phi_0"   , gen_aneu_phi_arr_0   , 'gen_aneu_phi_0/F')
+    Step0tree.Branch("gen_aneu_pdgid_0", gen_aneu_pdgid_arr_0, 'gen_aneu_pdgid_0/F')
+    Step0tree.Branch("gen_aneu_status_0", gen_aneu_status_arr_0, 'gen_aneu_status_0/F')
+
+    Step0tree.Branch("gen_met_pt_0"    , gen_met_pt_arr_0    , 'gen_met_pt_0/F')
+    Step0tree.Branch("gen_met_phi_0"   , gen_met_phi_arr_0   , 'gen_met_phi_0/F')    
+
+    # Store all gen information into the Step0 tree
+    Step0tree.Branch("gen_lep_pt_0", gen_lep_pt_arr_0, 'gen_lep_pt_0/F')
+
+    for i in range(len(gen_lep_pt)):
+        gen_lep_pt_arr_0[0]     = gen_lep_pt[i]
+        Step0tree.Fill()
+
+    opfile.Write()
+    opfile.Close()    
+    
+    # Make new root file with new tree
+    opfile = ROOT.TFile(outputFile, 'update')
+    #Step0tree = ROOT.TTree("Step0", "Step0") 
+    Step7tree = ROOT.TTree("Step7", "Step7")
+    hist   = ROOT.TH1F('Nevents', 'Nevents', 1, 0.5, 1.5)    
+    
+    # s7 GEN
 
     genpart_size_arr = array('i', [0])
 
@@ -975,7 +1149,6 @@ def main():
 
     gen_met_pt_arr     = array('f', [0.])
     gen_met_phi_arr    = array('f', [0.])
-
 
     # Create the branches and assign the fill-variables to them as floats (F)
 
@@ -1341,15 +1514,19 @@ def main():
         for k in range(weight_size_arr[0]):
             weight_arr[k] = weight_sel[i][k]
 
+        #Step0tree.Fill()
         Step7tree.Fill()
 
     for i in range(len(selection)):
         hist.Fill(i)
     
     print('Number of events that pass selection :: ' + str(len(ljet_pt)))
+    # print('gen_lep_pt_arr :: ' + str(len(gen_lep_pt_arr))) 
+    print('gen_lep_pt_arr :: ' + str(len(gen_lep_pt_arr))) 
+    print('gen_lep_pt :: ' + str(len(gen_lep_pt))) 
+    
     # Write the tree into the output file and close the file
     opfile.Write()
     opfile.Close()
-
 
 main()
