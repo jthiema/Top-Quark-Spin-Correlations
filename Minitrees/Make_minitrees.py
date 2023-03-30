@@ -6,7 +6,6 @@ from   array import array
 import awkward as ak
 import matplotlib.pyplot as plt
 
-
 def deltaphi(e_phi, m_phi):
     d_phi = e_phi - m_phi
     if (d_phi > np.pi):
@@ -879,13 +878,19 @@ def main():
     jet_mass_arr = array('f', maxn*[0.])
     jet_btag_arr = array('i', maxn*[0])
     
-    genpart_size_arr_0 = array('i', [0])
-    genpart_pt_arr_0 = array('f', maxn*[0.])
-    gen_lep_pt_arr_0 = array('f', [0.])
-
     #step0_file = 'preminitree_test.root'
     opfile = ROOT.TFile(outputFile, 'recreate')
     Step0tree = ROOT.TTree("Step0", "Step0")
+    
+    genpart_size_arr_0 = array('i', [0])
+    genpart_pt_arr_0 = array('f', maxn*[0.])
+
+    genpart_eta_arr_0  = array('f', maxn*[0.])
+    genpart_phi_arr_0  = array('f', maxn*[0.])
+    genpart_pid_arr_0  = array('i', maxn*[0])
+    genpart_mass_arr_0 = array('f', maxn*[0.])
+    genpart_status_arr_0 = array('i', maxn*[0])
+    #genpart_charge_arr_0 = array('f', maxn*[0])
     
     gen_top_pt_arr_0      = array('f', [0.])
     gen_top_eta_arr_0     = array('f', [0.])
@@ -1514,7 +1519,6 @@ def main():
         for k in range(weight_size_arr[0]):
             weight_arr[k] = weight_sel[i][k]
 
-        #Step0tree.Fill()
         Step7tree.Fill()
 
     for i in range(len(selection)):
