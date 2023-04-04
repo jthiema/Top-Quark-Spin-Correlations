@@ -402,7 +402,7 @@ def main():
         treeReader.ReadEntry(entry)
 
         if (entry+1)%100 == 0:
-            print ' ... processed {} events ...'.format(entry+1)
+            print(' ... processed {} events ...'.format(entry+1))
 
         treeProducer.processEvent(entry)
         treeProducer.processVertices(branchVertex)

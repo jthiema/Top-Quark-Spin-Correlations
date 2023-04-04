@@ -39,7 +39,8 @@ def main():
     jet_mass = fileptr['jet_mass'].array()
     jet_btag = fileptr['jet_btag'].array()
     
-    NEvents = len(jet_pt)
+   # NEvents = len(jet_pt)
+    NEvents = 100
 
     met_pt    = fileptr['met_pt'].array()
     met_phi   = fileptr['met_phi'].array()
