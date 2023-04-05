@@ -10,7 +10,10 @@ $ git remote add origin git@github.com:<Your Github Username>/Top-Quark-Spin-Cor
 $ git remote add ling git@github.com:holytpk/Top-Quark-Spin-Correlations.git
 $ git remote -v 
 ```
-
+- Switch branch to HLLHC:
+```
+$ git checkout HLLHC
+```
 ## Ling's Recommended Method: How to Get Started w/ the HL-LHC (https://en.wikipedia.org/wiki/Future_Circular_Collider)  
 ### Updated on 02/28/2023
 
