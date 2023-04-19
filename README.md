@@ -44,8 +44,8 @@ TFile* f_hists = new TFile("../HistogramOutput/histogram_TTJets_DiLept_TuneCUETP
 ```
 - And <br>
 ```
-$ root -l -b MkPlots.cc++("")
 $ cd Plotting
+$ root -l -b MkPlots.cc++("")
 $ root -l -b eff_cut.cc
 ```
 - To view the results (the following command shows one of them, ex. the Missing Transverse Momentum associated with the unseen neutrinos), do: <br>
