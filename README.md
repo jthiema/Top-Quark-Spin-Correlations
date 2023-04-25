@@ -36,21 +36,18 @@ $ python Make_Histograms_Commands.py
 ```
 $ python Minitrees/Make_minitrees.py -i Ntuples/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
 $ python Top_reco/Top_reco.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
-$ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
+$ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1_HLLHC.root
 ```
-- Modify /Plotting/MkPlots.cc:line 378 to <br>
-```
-TFile* f_hists = new TFile("../HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root","READ"); 
-```
-- And <br>
+- Note that the HistogramOutput .root file has a _HLLHC subfix to indicate the name of the collider. 
+- And then <br>
 ```
 $ cd Plotting
-$ root -l -b MkPlots.cc++("")
-$ root -l -b eff_cut.cc
+$ root -l -b MkPlots.cc++'("HLLHC")' 
+$ root -l -b eff_cut.cc++'("HLLHC", "lep_pt", "GeV")'
 ```
 - To view the results (the following command shows one of them, ex. the Missing Transverse Momentum associated with the unseen neutrinos), do: <br>
 ```
-$ display Plotting/FinalPlots/h_met_pt.pdf
+$ display Plotting/FinalPlots/HLLHC_h_met_pt.pdf
 ```
 
 ### For Those Who Had Trouble Building ROOT Locally
