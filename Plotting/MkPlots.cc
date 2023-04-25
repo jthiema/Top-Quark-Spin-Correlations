@@ -26,7 +26,6 @@
 
 using namespace std;
 
-
 // Code to make histograms for trigger efficiencies. To run in root:
 // ex: root -l -b MkPlots.cc++(\"\")
 // ex: root -l -b MkPlots.cc++'("")'
@@ -76,7 +75,7 @@ void set2DPad(TPad *p) {
 }
 
 
-void draw_FCC_ch() {
+void draw_FCC_ch(string collider) {
 
   TPaveText *pt_FCC = new TPaveText(0.13,0.9,0.23,1.0,"brNDC");
   pt_FCC->SetName("");
@@ -85,7 +84,7 @@ void draw_FCC_ch() {
   pt_FCC->SetTextAlign(12);
   pt_FCC->SetTextFont(61);
   pt_FCC->SetTextSize(0.044);
-  pt_FCC->AddText("FCC");
+  pt_FCC->AddText((collider).c_str());
   pt_FCC->Draw("SAME"); 
 
   TPaveText *pt_Projected = new TPaveText(0.23,0.895,0.33,0.995,"brNDC");
@@ -110,7 +109,7 @@ void draw_FCC_ch() {
 
 
 
-void draw1DHists(TH1F *h1, TH1F *h2, string yAxisTitle_, double xMin_, double xMax_) {
+void draw1DHists(TH1F *h1, TH1F *h2, string yAxisTitle_, double xMin_, double xMax_, string collider) {
 
   h1->SetLineWidth(2);
   h1->SetLineColor(kAzure);
@@ -146,7 +145,7 @@ void draw1DHists(TH1F *h1, TH1F *h2, string yAxisTitle_, double xMin_, double xM
   leg->SetFillColor(0);
   leg->Draw("SAME");
 
-  draw_FCC_ch();
+  draw_FCC_ch((collider).c_str());
 
 }
 
@@ -391,11 +390,11 @@ void reBin1D(TH1F *hfirst, TH1F *hsecond, float tailstart, float targetquantity,
 
 /// Main Function                                                                                                                                                               
 
-void MkPlots(){
+void MkPlots(string collider){
 
   TH1::SetDefaultSumw2();
 
-  TFile* f_hists = new TFile("../HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root","READ");
+  TFile* f_hists = new TFile(("../HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1_"+collider+".root").c_str(),"READ");
   //TFile* f_hists = new TFile("../HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root","READ");
 
   string output_dir = "FinalPlots";
@@ -631,15 +630,15 @@ void MkPlots(){
 	TPad *p = new TPad(("p_"+variables[j]).c_str(), "", 0, 0.15, 1, 1.0); 
 	setPad(p, true, uselogforscale[j]);
 	//draw1DHists(h_Reco,h_Gen,"Entries", xMins[j], xMaxs[j]);
-	draw1DHists(h_Reco,h_Gen,"Entries", h_Reco->GetXaxis()->GetXmin(), h_Reco->GetXaxis()->GetXmax());
+	draw1DHists(h_Reco,h_Gen,"Entries", h_Reco->GetXaxis()->GetXmin(), h_Reco->GetXaxis()->GetXmax(), (collider).c_str());
 	c->cd();
 	TPad *p_ratio = new TPad(("p_ratio_"+variables[j]).c_str(), "", 0, 0.05, 1, 0.3);  
 	setPad(p_ratio, false);
 	//drawRatio(h_Ratio, xAxisTitles[j], xMins[j], xMaxs[j], "Reco/Gen", 0.5, 2.5);
 	drawRatio(h_Ratio, xAxisTitles[j], h_Reco->GetXaxis()->GetXmin(), h_Reco->GetXaxis()->GetXmax(), "Reco/Gen", 0.5, 2.5);
 	
-	c->SaveAs((output_dir+"/h_"+variables[j]+".pdf").c_str());      
-	c->SaveAs((output_dir+"/h_"+variables[j]+".C").c_str());      
+	c->SaveAs((output_dir+"/"+collider+"_h_"+variables[j]+".pdf").c_str());      
+	c->SaveAs((output_dir+"/"+collider+"_h_"+variables[j]+".C").c_str());      
 	
 	c->Write();
 
@@ -662,11 +661,12 @@ void MkPlots(){
 	TCanvas *c_2D = new TCanvas(("c_2D_"+multivariables[j]).c_str(), "", 1200., 800.);
 	TPad *p_2D = new TPad(("p_2D_"+multivariables[j]).c_str(), "", 0, 0, 1, 1); 
 	set2DPad(p_2D);
+	gPad->SetLogz(); 
 	draw2DHists(h2D_RecovGen, multivariablesxAxisTitles[j], multivariablesyAxisTitles[j]);
 	h2D_RecovGen->Write();
 
-	c_2D->SaveAs((output_dir+"/h2D_"+multivariables[j]+".pdf").c_str());
-	c_2D->SaveAs((output_dir+"/h2D_"+multivariables[j]+".C").c_str());
+	c_2D->SaveAs((output_dir+"/"+collider+"_h2D_"+multivariables[j]+".pdf").c_str());
+	c_2D->SaveAs((output_dir+"/"+collider+"_h2D_"+multivariables[j]+".C").c_str());
   
 	c_2D->Write();
 
