@@ -1,17 +1,35 @@
-#include "TFile.h"
-#include "TTree.h"
-#include "TAttMarker.h"
-#include <set>
-#include <array>
-#include <string>
+#include <TH1F.h>
+#include <TF1.h>
+#include <TH2F.h>
+#include <TGraphErrors.h>
+#include <TGraphAsymmErrors.h>
+#include <TFile.h>
+#include <TTree.h>
+#include <TBranch.h>
+#include <TChain.h>
+#include <TCanvas.h>
 #include <iostream>
-#include <fstream>
+#include "TLorentzVector.h"
+#include "TMath.h"
+#include <vector>
+#include <TLegend.h>
+#include <TPaveText.h>
+#include <TPaveStats.h>
+#include "TStyle.h"
+#include <string>
+#include "TLatex.h"
+#include "TPaveText.h"
+#include "THStack.h"
+#include <sstream>
+#include <iomanip>
+#include "TSystem.h"
+#include "Math/QuantFuncMathCore.h"
 
-void eff_cut(){
+void eff_cut(string collider, string item, string unit){
     
-    string collider = "HLLHC"; 
-    string item = "lep_pt";
-    string unit = "GeV"; 
+    //string collider = "HLLHC"; 
+    //string item = "lep_pt";
+    //string unit = "GeV"; 
     
     gSystem->Exec("mkdir -p effvscut");
     
@@ -75,5 +93,5 @@ void eff_cut(){
     c1->SaveAs(("effvscut/"+collider+"_effvscut_reco_vs_allgen_"+item+".png").c_str());
     minitree->Close(); 
     
-    return 0;
+    // return 0;
 }
