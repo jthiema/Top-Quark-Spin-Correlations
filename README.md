@@ -10,7 +10,10 @@ $ git remote add origin git@github.com:<Your Github Username>/Top-Quark-Spin-Cor
 $ git remote add ling git@github.com:holytpk/Top-Quark-Spin-Correlations.git
 $ git remote -v 
 ```
-
+- Switch branch to HLLHC:
+```
+$ git checkout HLLHC
+```
 ## Ling's Recommended Method: How to Get Started w/ the HL-LHC (https://en.wikipedia.org/wiki/Future_Circular_Collider)  
 ### Updated on 02/28/2023
 
@@ -33,21 +36,18 @@ $ python Make_Histograms_Commands.py
 ```
 $ python Minitrees/Make_minitrees.py -i Ntuples/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
 $ python Top_reco/Top_reco.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
-$ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
+$ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1_HLLHC.root
 ```
-- Modify /Plotting/MkPlots.cc:line 378 to <br>
+- Note that the HistogramOutput .root file has a _HLLHC subfix to indicate the name of the collider. 
+- And then <br>
 ```
-TFile* f_hists = new TFile("../HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root","READ"); 
-```
-- And <br>
-```
-$ root -l -b MkPlots.cc++("")
 $ cd Plotting
-$ root -l -b eff_lep_pt_cut.cc
+$ root -l -b MkPlots.cc++'("HLLHC")' 
+$ root -l -b eff_cut.cc++'("HLLHC", "lep_pt", "GeV")'
 ```
 - To view the results (the following command shows one of them, ex. the Missing Transverse Momentum associated with the unseen neutrinos), do: <br>
 ```
-$ display Plotting/FinalPlots/h_met_pt.pdf
+$ display Plotting/FinalPlots/HLLHC_h_met_pt.pdf
 ```
 
 ### For Those Who Had Trouble Building ROOT Locally
