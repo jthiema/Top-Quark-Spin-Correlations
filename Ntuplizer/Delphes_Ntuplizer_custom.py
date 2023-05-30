@@ -87,6 +87,16 @@ class TreeProducer:
          self.muon_sum_pt      = array( 'f', self.maxn*[ 0. ] )
          self.muon_reliso      = array( 'f', self.maxn*[ 0. ] )
 
+         #From Tau
+         #self.tau_size        = array( 'i', [ 0 ] )
+         #self.tau_charge      = array( 'i', self.maxn*[ 0 ] )
+         #self.tau_pt          = array( 'f', self.maxn*[ 0. ] )
+         #self.tau_eta         = array( 'f', self.maxn*[ 0. ] )
+         #self.tau_phi         = array( 'f', self.maxn*[ 0. ] )
+         #self.tau_mass        = array( 'f', self.maxn*[ 0. ] )
+         #self.tau_sum_pt      = array( 'f', self.maxn*[ 0. ] )
+         #self.tau_reliso      = array( 'f', self.maxn*[ 0. ] )
+
          #From PuppiJet
          self.jet_size         = array( 'i', [ 0 ] )
          self.jet_btag         = array( 'i', self.maxn*[ 0 ] )
@@ -142,8 +152,17 @@ class TreeProducer:
          self.t.Branch( "muon_phi"   , self.muon_phi    , "muon_phi[muon_size]/F")
          self.t.Branch( "muon_mass"  , self.muon_mass   , "muon_mass[muon_size]/F")
          self.t.Branch( "muon_charge", self.muon_charge , "muon_charge[muon_size]/I")
-         self.t.Branch( "muon_sum_pt", self.elec_sum_pt , "muon_sum_pt[muon_size]/I")
+         self.t.Branch( "muon_sum_pt", self.muon_sum_pt , "muon_sum_pt[muon_size]/I")
          self.t.Branch( "muon_reliso", self.muon_reliso , "muon_reliso[muon_size]/F")
+            
+         #self.t.Branch( "tau_size"  , self.tau_size   , "tau_size/I")
+         #self.t.Branch( "tau_pt"    , self.tau_pt     , "tau_pt[tau_size]/F")
+         #self.t.Branch( "tau_eta"   , self.tau_eta    , "tau_eta[tau_size]/F")
+         #self.t.Branch( "tau_phi"   , self.tau_phi    , "tau_phi[tau_size]/F")
+         #self.t.Branch( "tau_mass"  , self.tau_mass   , "tau_mass[tau_size]/F")
+         #self.t.Branch( "tau_charge", self.tau_charge , "tau_charge[tau_size]/I")
+         #self.t.Branch( "tau_sum_pt", self.tau_sum_pt , "tau_sum_pt[tau_size]/I")
+         #self.t.Branch( "tau_reliso", self.tau_reliso , "tau_reliso[tau_size]/F")
          
          self.t.Branch( "jet_size"   , self.jet_size    , "jet_size/I")
          self.t.Branch( "jet_pt"     , self.jet_pt      , "jet_pt[jet_size]/F")
@@ -301,6 +320,21 @@ class TreeProducer:
         self.muon_size[0] = i
 
     #___________________________________________
+    
+#    def processTau(self, tau):
+#        i = 0
+#        for item in tau:
+#            self.tau_pt      [i] = item.PT
+#            self.tau_eta     [i] = item.Eta
+#            self.tau_phi     [i] = item.Phi
+#            self.tau_mass    [i] = item.P4().M()
+#            self.tau_charge  [i] = item.Charge
+#            self.tau_sum_pt  [i] = item.SumPt
+#            self.tau_reliso  [i] = item.IsolationVar
+#            i += 1
+#        self.tau_size[0] = i
+
+    #___________________________________________
 
     def processJets(self, jets):
         i = 0
@@ -386,6 +420,7 @@ def main():
     branchPhoton          = treeReader.UseBranch('PhotonTight')
     branchElectron        = treeReader.UseBranch('ElectronCHS')
     branchMuon            = treeReader.UseBranch('MuonTight')
+    #branchTau             = treeReader.UseBRanch('Tau') 
     branchJet             = treeReader.UseBranch('JetPUPPI')       #Modified from AK8 
     branchMissingET       = treeReader.UseBranch('PuppiMissingET')
     branchScalarHT        = treeReader.UseBranch('ScalarHT')
@@ -412,6 +447,7 @@ def main():
         treeProducer.processGenJets(branchGenJet)
         treeProducer.processElectrons(branchElectron)
         treeProducer.processMuons(branchMuon)
+        #treeProducer.processTau(branchTau) 
         treeProducer.processPhotons(branchPhoton)
         treeProducer.processJets(branchJet)
         treeProducer.processMissingET(branchMissingET)
@@ -419,6 +455,8 @@ def main():
 
         ## fill tree 
         treeProducer.fill()
+        
+    #ntuple = ROOT.TTree( "Delphes_Ntuples","Delphes_Ntuples" )
 
     out_root = ROOT.TFile(outputFile,"RECREATE")
     treeProducer.write()
