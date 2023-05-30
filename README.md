@@ -3,14 +3,14 @@
 - It's important to duplicate this repository to your own github repository so that the modifications only apply to your repository. 
 - Click "Fork" button on the github webpage on top right. 
 - Unselect "Forking the master branch only".
-- Copy the url in the green "<> Code" button. Then do 
+- Copy the url in the green "<> Code" button. **Note that this is the url of your forked git repository** Then do 
 ```
 $ git clone <url>
 $ git remote add origin git@github.com:<Your Github Username>/Top-Quark-Spin-Correlations.git
 $ git remote add ling git@github.com:holytpk/Top-Quark-Spin-Correlations.git
 $ git remote -v 
 ```
-- Switch branch to HLLHC:
+- If you have trouble with the personal access token, you need to create a classical token and select the correct access options. Switch branch to HLLHC:
 ```
 $ git checkout HLLHC
 ```
