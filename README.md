@@ -10,7 +10,8 @@ $ git remote add origin git@github.com:<Your Github Username>/Top-Quark-Spin-Cor
 $ git remote add ling git@github.com:holytpk/Top-Quark-Spin-Correlations.git
 $ git remote -v 
 ```
-- If you have trouble with the personal access token, you need to create a classical token and select the correct access options. Switch branch to HLLHC:
+- If you have trouble with the personal access token, you need to create a classical token and select the correct access options. <br>
+- Now, switch branch to HLLHC:
 ```
 $ git checkout HLLHC
 ```
