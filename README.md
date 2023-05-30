@@ -25,7 +25,7 @@ $ source init.sh
 - For HL-LHC, we need to convert the delphes files into ntuples.
 ```
 $ mkdir Ntuples
-$ python Ntuplizer/Delphes_Ntuplizer_custom.py -i /mnt/hadoop/store/user/abakshi/TTBar_Delphes/TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o Ntuples/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
+$ python Ntuplizer/Delphes_Ntuplizer_custom.py -i /eos/purdue/store/user/abakshi/TTBar_Delphes/TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o Ntuples/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
 
 ```
 - Do these to create the necessary folders (MiniTreeOutput & HistogramOutput):
