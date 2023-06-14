@@ -31,6 +31,11 @@ def main():
     outputFile = args.output
 
     fileptr = uproot.open(inputFile)['Delphes_Ntuples']
+
+    NEvents = len(jet_pt)
+#    NEvents = 100
+
+
     
     # Jet MET
     jet_pt   = fileptr['jet_pt'].array()
@@ -39,8 +44,6 @@ def main():
     jet_mass = fileptr['jet_mass'].array()
     jet_btag = fileptr['jet_btag'].array()
     
-    NEvents = len(jet_pt)
-
     met_pt    = fileptr['met_pt'].array()
     met_phi   = fileptr['met_phi'].array()
     weight    = fileptr['weight'].array()
@@ -253,6 +256,102 @@ def main():
         gen_neu_4vec  = ROOT.TLorentzVector()
         gen_aneu_4vec = ROOT.TLorentzVector()
 
+    ###########  RECO  ###########
+        
+        ########## Electrons ##########
+
+        # Ensure pt > 20 GeV and eta < 5.0 and isolation
+        for j in range(len(elec_pt[i])):
+            if (elec_pt[i][j] < 20):
+                continue
+
+            if ( abs(elec_eta[i][j]) > 5.0 ):
+                continue
+
+            #if (elec_reliso[i][j] > 0.0588):
+                #continue
+
+            e_idx.append(j)
+
+        ###########  Muons ############
+
+        # Ensure pt > 20 GeV and eta < 5.0 and isolation
+        for j in range(len(muon_pt[i])):
+            if (muon_pt[i][j] < 20):
+                continue
+
+            if (abs(muon_eta[i][j]) > 5.0):       # Should be 4?
+                continue
+
+            #if (muon_reliso[i][j] > 0.15):
+                #continue
+
+            mu_idx.append(j)
+
+        # Ensure exactly one muon and one electron
+        if (len(e_idx) != 1 or len(mu_idx) != 1):
+            continue
+
+        # Check for opp sign charge pairings
+        for j in range(len(e_idx)):
+            for k in range(len(mu_idx)):
+                # e_idx and mu_idx have the list of valid electron and muon indices
+                tmp_e_idx  = e_idx[j]
+                tmp_mu_idx = mu_idx[k]
+
+                if (elec_charge[i][tmp_e_idx] * muon_charge[i][tmp_mu_idx] == -1):
+                    ef_idx.append(tmp_e_idx)
+                    muf_idx.append(tmp_mu_idx)
+
+        # Ensure such a pairing exists
+        if (len(ef_idx) == 0 or len(muf_idx) == 0):
+            continue
+
+        # Assign leading indices to e and mu
+        e_index = ef_idx[0]
+        mu_index = muf_idx[0]
+
+        # Defining the 4 vectors
+        e_4vec.SetPtEtaPhiM(elec_pt[i][e_index]  , elec_eta[i][e_index] , elec_phi[i][e_index] , elec_mass[i][e_index])
+        mu_4vec.SetPtEtaPhiM(muon_pt[i][mu_index], muon_eta[i][mu_index], muon_phi[i][mu_index],  muon_mass[i][mu_index])
+
+        # Mll cut (Step 3 according to the FW)
+        if ((e_4vec + mu_4vec).M() < 20):
+            continue
+
+        ###########  Jets ###############
+
+        for j in range(len(jet_pt[i])):
+
+            # Ensure pt > 30 GeV and eta < 5.0 isolation
+
+            if ((dR(elec_phi[i][e_index],  elec_eta[i][e_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)
+            or (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)):
+                continue
+
+            if ((jet_pt[i][j] < 40)): ##Increase from 30 to 40
+                continue
+
+            if ((abs(jet_eta[i][j]) > 5.0)):
+                continue
+
+            if (jet_btag[i][j] != 0):
+                btag_cnt += 1
+
+            jet_idx.append(j)
+
+        # 2 Jets (Step 5 according to the FW)
+        if(len(jet_idx) < 2):
+            continue
+
+        # Atleast one b-tag (Step 6 according to the FW)
+        if (btag_cnt == 0):
+            continue
+
+        ljet_idx = jet_idx[0]
+        sljet_idx = jet_idx[1]
+
+
         ###########  GEN  ###########
 
         gen_top_index = -1
@@ -369,100 +468,6 @@ def main():
         gen_met_pt.append((gen_neu_4vec + gen_aneu_4vec).Pt())
         gen_met_phi.append((gen_neu_4vec + gen_aneu_4vec).Phi())   
     
-    ###########  RECO  ###########
-        
-        ########## Electrons ##########
-
-        # Ensure pt > 20 GeV and eta < 5.0 and isolation
-        for j in range(len(elec_pt[i])):
-            if (elec_pt[i][j] < 20):
-                continue
-
-            if ( abs(elec_eta[i][j]) > 5.0 ):
-                continue
-
-            #if (elec_reliso[i][j] > 0.0588):
-                #continue
-
-            e_idx.append(j)
-
-        ###########  Muons ############
-
-        # Ensure pt > 20 GeV and eta < 5.0 and isolation
-        for j in range(len(muon_pt[i])):
-            if (muon_pt[i][j] < 20):
-                continue
-
-            if (abs(muon_eta[i][j]) > 5.0):       # Should be 4?
-                continue
-
-            #if (muon_reliso[i][j] > 0.15):
-                #continue
-
-            mu_idx.append(j)
-
-        # Ensure exactly one muon and one electron
-        if (len(e_idx) != 1 or len(mu_idx) != 1):
-            continue
-
-        # Check for opp sign charge pairings
-        for j in range(len(e_idx)):
-            for k in range(len(mu_idx)):
-                # e_idx and mu_idx have the list of valid electron and muon indices
-                tmp_e_idx  = e_idx[j]
-                tmp_mu_idx = mu_idx[k]
-
-                if (elec_charge[i][tmp_e_idx] * muon_charge[i][tmp_mu_idx] == -1):
-                    ef_idx.append(tmp_e_idx)
-                    muf_idx.append(tmp_mu_idx)
-
-        # Ensure such a pairing exists
-        if (len(ef_idx) == 0 or len(muf_idx) == 0):
-            continue
-
-        # Assign leading indices to e and mu
-        e_index = ef_idx[0]
-        mu_index = muf_idx[0]
-
-        # Defining the 4 vectors
-        e_4vec.SetPtEtaPhiM(elec_pt[i][e_index]  , elec_eta[i][e_index] , elec_phi[i][e_index] , elec_mass[i][e_index])
-        mu_4vec.SetPtEtaPhiM(muon_pt[i][mu_index], muon_eta[i][mu_index], muon_phi[i][mu_index],  muon_mass[i][mu_index])
-
-        # Mll cut (Step 3 according to the FW)
-        if ((e_4vec + mu_4vec).M() < 20):
-            continue
-
-        ###########  Jets ###############
-
-        for j in range(len(jet_pt[i])):
-
-            # Ensure pt > 30 GeV and eta < 5.0 isolation
-
-            if ((dR(elec_phi[i][e_index],  elec_eta[i][e_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)
-            or (dR(muon_phi[i][mu_index], muon_eta[i][mu_index], jet_phi[i][j], jet_eta[i][j]) < 0.4)):
-                continue
-
-            if ((jet_pt[i][j] < 40)): ##Increase from 30 to 40
-                continue
-
-            if ((abs(jet_eta[i][j]) > 5.0)):
-                continue
-
-            if (jet_btag[i][j] != 0):
-                btag_cnt += 1
-
-            jet_idx.append(j)
-
-        # 2 Jets (Step 5 according to the FW)
-        if(len(jet_idx) < 2):
-            continue
-
-        # Atleast one b-tag (Step 6 according to the FW)
-        if (btag_cnt == 0):
-            continue
-
-        ljet_idx = jet_idx[0]
-        sljet_idx = jet_idx[1]
 
         # Search for gen leptons that are closer to the reco lepton than the method used above
 
