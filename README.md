@@ -56,3 +56,8 @@ Open Jupyterhub on Hammer (does not require VPN): notebook.hammer.rcac.purdue.ed
 Open the script and modify it as you want, you can perform all the interactive steps by switching to a proper kernel, ex. Coffea. <br>
 If you want to view directories above your home directory, ask Jason for help, XD. <br>
 You can also open a terminal to execute commands by clicking the "new" dropdown list which is right next to the "upload" button. <br>
+
+- To run Ntuple production parallel with Slurm, please do: 
+$ls /eos/purdue/store/user/abakshi/TTBar_Delphes > filelist_eos
+$python make_jobs.py
+$python submit_all.py
