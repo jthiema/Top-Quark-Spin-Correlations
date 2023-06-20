@@ -14,7 +14,6 @@ def deltaphi(e_phi, m_phi):
         d_phi += 2*np.pi
     return d_phi
 
-
 def dR(e_phi, e_eta, m_phi, m_eta):
     d_eta = abs(e_eta - m_eta)
     d_phi = deltaphi(e_phi, m_phi)
@@ -223,6 +222,9 @@ def main():
     gen_met_pt     = []
     gen_met_phi     = []
     
+    # for MET reconstruction
+    
+    
     # Let's create a mask
     selection = np.zeros(len(jet_pt)) 
 
@@ -382,7 +384,7 @@ def main():
                 continue
 
             #if (elec_reliso[i][j] > 0.0588):
-                #continue
+            #    continue
 
             e_idx.append(j)
 
@@ -397,13 +399,37 @@ def main():
                 continue
 
             #if (muon_reliso[i][j] > 0.15):
-                #continue
+            #    continue
 
             mu_idx.append(j)
 
+        # something odd with this (line 406 to line 424
         # Ensure exactly one muon and one electron
         if (len(e_idx) != 1 or len(mu_idx) != 1):
-            continue
+        
+            lep_pt.append(-9999)
+            lep_eta.append(-9999)
+            lep_phi.append(-9999)
+            lep_mass.append(-9999)
+            lep_pdgid.append(-9999)
+    
+            alep_pt.append(-9999)
+            alep_eta.append(-9999)
+            alep_phi.append(-9999)
+            alep_mass.append(-9999)
+            alep_pdgid.append(-9999)            
+            
+            l_pt.append(-9999)
+            l_phi.append(-9999)
+            l_eta.append(-9999)
+            l_mass.append(-9999)
+
+            sl_pt.append(-9999)
+            sl_phi.append(-9999)
+            sl_eta.append(-9999)
+            sl_mass.append(-9999)        
+            
+            continue 
 
         # Check for opp sign charge pairings
         for j in range(len(e_idx)):
@@ -418,6 +444,29 @@ def main():
 
         # Ensure such a pairing exists
         if (len(ef_idx) == 0 or len(muf_idx) == 0):
+            
+            lep_pt.append(-9999)
+            lep_eta.append(-9999)
+            lep_phi.append(-9999)
+            lep_mass.append(-9999)
+            lep_pdgid.append(-9999)
+    
+            alep_pt.append(-9999)
+            alep_eta.append(-9999)
+            alep_phi.append(-9999)
+            alep_mass.append(-9999)
+            alep_pdgid.append(-9999)            
+            
+            l_pt.append(-9999)
+            l_phi.append(-9999)
+            l_eta.append(-9999)
+            l_mass.append(-9999)
+
+            sl_pt.append(-9999)
+            sl_phi.append(-9999)
+            sl_eta.append(-9999)
+            sl_mass.append(-9999)
+            
             continue
 
         # Assign leading indices to e and mu
@@ -430,6 +479,29 @@ def main():
 
         # Mll cut (Step 3 according to the FW)
         if ((e_4vec + mu_4vec).M() < 20):
+            
+            lep_pt.append(-9999)
+            lep_eta.append(-9999)
+            lep_phi.append(-9999)
+            lep_mass.append(-9999)
+            lep_pdgid.append(-9999)
+    
+            alep_pt.append(-9999)
+            alep_eta.append(-9999)
+            alep_phi.append(-9999)
+            alep_mass.append(-9999)
+            alep_pdgid.append(-9999)            
+            
+            l_pt.append(-9999)
+            l_phi.append(-9999)
+            l_eta.append(-9999)
+            l_mass.append(-9999)
+
+            sl_pt.append(-9999)
+            sl_phi.append(-9999)
+            sl_eta.append(-9999)
+            sl_mass.append(-9999)
+            
             continue
 
         ###########  Jets ###############
@@ -455,10 +527,56 @@ def main():
 
         # 2 Jets (Step 5 according to the FW)
         if(len(jet_idx) < 2):
+            
+            lep_pt.append(-9999)
+            lep_eta.append(-9999)
+            lep_phi.append(-9999)
+            lep_mass.append(-9999)
+            lep_pdgid.append(-9999)
+    
+            alep_pt.append(-9999)
+            alep_eta.append(-9999)
+            alep_phi.append(-9999)
+            alep_mass.append(-9999)
+            alep_pdgid.append(-9999)            
+            
+            l_pt.append(-9999)
+            l_phi.append(-9999)
+            l_eta.append(-9999)
+            l_mass.append(-9999)
+
+            sl_pt.append(-9999)
+            sl_phi.append(-9999)
+            sl_eta.append(-9999)
+            sl_mass.append(-9999)            
+            
             continue
 
         # Atleast one b-tag (Step 6 according to the FW)
         if (btag_cnt == 0):
+
+            lep_pt.append(-9999)
+            lep_eta.append(-9999)
+            lep_phi.append(-9999)
+            lep_mass.append(-9999)
+            lep_pdgid.append(-9999)
+    
+            alep_pt.append(-9999)
+            alep_eta.append(-9999)
+            alep_phi.append(-9999)
+            alep_mass.append(-9999)
+            alep_pdgid.append(-9999)            
+            
+            l_pt.append(-9999)
+            l_phi.append(-9999)
+            l_eta.append(-9999)
+            l_mass.append(-9999)
+
+            sl_pt.append(-9999)
+            sl_phi.append(-9999)
+            sl_eta.append(-9999)
+            sl_mass.append(-9999)
+            
             continue
 
         ljet_idx = jet_idx[0]
@@ -469,7 +587,7 @@ def main():
         gen_lep_nearest_index = gen_lep_index
         gen_alep_nearest_index = gen_alep_index
 
-        # Initialize the dR with the gen lepton above, if it exits, else 9999
+        # Initialize the dR with the gen lepton above, if it exits, else -9999
 
         if ((elec_charge[i][e_index] < 0 and muon_charge[i][mu_index] > 0) and gen_lep_index > -1):
 
@@ -479,7 +597,7 @@ def main():
 
             gen_lep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index])
 
-        else: gen_lep_dR = 9999
+        else: gen_lep_dR = -9999
 
 
         if ((elec_charge[i][e_index] < 0 and muon_charge[i][mu_index] > 0) and gen_alep_index > -1):
@@ -490,7 +608,7 @@ def main():
 
             agen_lep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index])
 
-        else: agen_lep_dR = 9999
+        else: agen_lep_dR = -9999
 
         
         # begin search for a closer gen lepton
@@ -674,9 +792,6 @@ def main():
             l_eta.append(muon_eta[i][mu_index])
             l_mass.append(muon_mass[i][mu_index])
 
-        else:
-            continue
-
         # By flavor
         e_pt.append(elec_pt[i][e_index])
         e_eta.append(elec_eta[i][e_index])
@@ -716,8 +831,7 @@ def main():
             lep_phi.append(muon_phi[i][mu_index])
             lep_mass.append(muon_mass[i][mu_index])
             lep_pdgid.append(13)
-
-
+        
         # Leading and Subleading Pt
         ljet_pt.append(jet_pt[i][ljet_idx])
         ljet_phi.append(jet_phi[i][ljet_idx])
@@ -881,6 +995,7 @@ def main():
     #step0_file = 'preminitree_test.root'
     opfile = ROOT.TFile(outputFile, 'recreate')
     Step0tree = ROOT.TTree("Step0", "Step0")
+    #Step0_dilepton = ROOT.TTree("Step0_dilepton", "Step0_dilepton")
     
     genpart_size_arr_0 = array('i', [0])
     genpart_pt_arr_0 = array('f', maxn*[0.])
@@ -1048,8 +1163,8 @@ def main():
     Step0tree.Branch("gen_aneu_status_0", gen_aneu_status_arr_0, 'gen_aneu_status_0/F')
 
     Step0tree.Branch("gen_met_pt_0"    , gen_met_pt_arr_0    , 'gen_met_pt_0/F')
-    Step0tree.Branch("gen_met_phi_0"   , gen_met_phi_arr_0   , 'gen_met_phi_0/F')    
-
+    Step0tree.Branch("gen_met_phi_0"   , gen_met_phi_arr_0   , 'gen_met_phi_0/F')
+    
     # Store all gen information into the Step0 tree
     Step0tree.Branch("gen_lep_pt_0", gen_lep_pt_arr_0, 'gen_lep_pt_0/F')
 
@@ -1528,6 +1643,8 @@ def main():
     # print('gen_lep_pt_arr :: ' + str(len(gen_lep_pt_arr))) 
     print('gen_lep_pt_arr :: ' + str(len(gen_lep_pt_arr))) 
     print('gen_lep_pt :: ' + str(len(gen_lep_pt))) 
+    print('gen_lep_nearest_pt_arr :: ' + str(len(gen_lep_nearest_pt_arr))) 
+    print('gen_lep_nearest_pt :: ' + str(len(gen_lep_nearest_pt))) 
     
     # Write the tree into the output file and close the file
     opfile.Write()
