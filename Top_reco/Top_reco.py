@@ -58,6 +58,8 @@ fileptr = uproot.open(inputFile)['Step7']
 #mass   = fileptr['genpart_mass'].array()
 #status = fileptr['genpart_status'].array()
 
+step7_selection_step = fileptr['selection_step'].array()
+
 step7_gen_top_pt     = fileptr['gen_top_pt'].array()
 step7_gen_top_eta    = fileptr['gen_top_eta'].array()
 step7_gen_top_phi    = fileptr['gen_top_phi'].array()
@@ -142,6 +144,8 @@ step7_weight    = fileptr['weight'].array()
 
 
 # Storing the reconstructed as arrays
+
+step8_selection_step = []
 
 step8_lep_pt   = []
 step8_lep_eta  = []
@@ -557,6 +561,8 @@ step8_weight_sel = step7_weight[selection == 1]
 
 # Empty arrays that get mapped to histograms in a root file
 # Selected leptons and jets
+selection_step_arr = array('f', [0.])
+
 lep_pt_arr = array('f', [0.])
 lep_eta_arr = array('f', [0.])
 lep_phi_arr = array('f', [0.])
@@ -697,6 +703,8 @@ opfile = ROOT.TFile(outputFile, 'update')
 tree   = ROOT.TTree("Step8", "Step8")
 
 # Leptons and jets
+tree.Branch("selection_step", selection_step_arr, "selection_step/F") 
+
 tree.Branch("lep_pt", lep_pt_arr, 'lep_pt/F')
 tree.Branch("lep_eta", lep_eta_arr, 'lep_eta/F')
 tree.Branch("lep_phi", lep_phi_arr, 'lep_phi/F')
@@ -823,6 +831,8 @@ tree.Branch("gen_met_phi"   , gen_met_phi_arr   , 'gen_met_phi/F')
 
 
 for i in range(len(step8_top_pt)):
+    
+    selection_step[0] = step8_selection_step[i] 
 
     lep_pt_arr[0]   = step8_lep_pt[i]
     lep_eta_arr[0]  = step8_lep_eta[i]
@@ -941,7 +951,6 @@ for i in range(len(step8_top_pt)):
     gen_met_pt_arr[0]     = step8_gen_met_pt[i]
     gen_met_phi_arr[0]    = step8_gen_met_phi[i]
 
-    
     weight_size_arr[0]  = len(step8_weight_sel[i])
 
     for k in range(weight_size_arr[0]):
