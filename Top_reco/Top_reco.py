@@ -268,7 +268,6 @@ step8_gen_aneu_pdgid = []
 step8_gen_met_pt = []
 step8_gen_met_phi = []
 
-
 # Let's create a mask
 selection = np.zeros(len(step7_jet_pt))
 
@@ -435,7 +434,6 @@ for i in range(len(step7_jet_pt)):
         # COM 4-vec
         com = gen_top + gen_atop  # Adding the 4 vectors
     
-    
         step8_tt_mass.append(m_tt_final)
         step8_tt_pt.append(rcom.Pt())
         step8_tt_eta.append(rcom.Eta())
@@ -551,13 +549,16 @@ for i in range(len(step7_jet_pt)):
         step8_gen_aneu_pdgid.append(step7_gen_aneu_pdgid[i])
     
         step8_gen_met_pt.append(step7_gen_met_pt[i])
-        step8_gen_met_phi.append(step7_gen_met_phi[i])
-    
+        step8_gen_met_phi.append(step7_gen_met_phi[i])   
     
         # Create a mask for selection
         selection[i] = 1
+        step8_selection_step.append(8)
 
 step8_weight_sel = step7_weight[selection == 1]
+print(len(step8_top_pt))
+print(len(step7_selection_step))
+print(len(step8_selection_step))
 
 # Empty arrays that get mapped to histograms in a root file
 # Selected leptons and jets
@@ -832,7 +833,7 @@ tree.Branch("gen_met_phi"   , gen_met_phi_arr   , 'gen_met_phi/F')
 
 for i in range(len(step8_top_pt)):
     
-    selection_step[0] = step8_selection_step[i] 
+    selection_step_arr[0] = step8_selection_step[i] 
 
     lep_pt_arr[0]   = step8_lep_pt[i]
     lep_eta_arr[0]  = step8_lep_eta[i]
@@ -883,8 +884,7 @@ for i in range(len(step8_top_pt)):
     ttbar_rap_arr[0] = step8_tt_rap[i]
 
     met_pt_arr[0] = step8_met_pt[i]
-    met_phi_arr[0] =step8_met_phi[i]
-    
+    met_phi_arr[0] =step8_met_phi[i]    
 
     gen_m_ttbar_arr[0] = step8_gen_tt_mass[i]
     gen_ttbar_pt_arr[0] = step8_gen_tt_pt[i]
