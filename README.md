@@ -18,14 +18,15 @@ $ git checkout HLLHC
 ## Ling's Recommended Method: How to Get Started w/ the HL-LHC (https://en.wikipedia.org/wiki/Future_Circular_Collider)  
 ### Updated on 02/28/2023
 
-- To start the project, call the initialization shell commands: <br>
+- To start the project, call the initialization shell commands TWICE!!: <br>
 ```
+$ source init.sh
 $ source init.sh
 ```
 - For HL-LHC, we need to convert the delphes files into ntuples.
 ```
-$ mkdir Ntuples
-$ python Ntuplizer/Delphes_Ntuplizer_custom.py -i /eos/purdue/store/user/abakshi/TTBar_Delphes/TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o Ntuples/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
+$ mkdir <path of your choice>/TTBar_Ntuples
+$ python Ntuplizer/Delphes_Ntuplizer_custom.py -i /eos/purdue/store/user/abakshi/TTBar_Delphes/TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_100.root -o <path of your choice>/TTBar_Ntuples/TT_Dilept_100.root
 
 ```
 - Do these to create the necessary folders (MiniTreeOutput & HistogramOutput):
@@ -35,16 +36,16 @@ $ python Make_Histograms_Commands.py
 ```
 - Then select the commands you want to run from Minitrees_Commands.sh. Ex: <br>
 ```
-$ python Minitrees/Make_minitrees.py -i Ntuples/ntuple_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
-$ python Top_reco/Top_reco.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root
-$ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1.root -o HistogramOutput/histogram_TTJets_DiLept_TuneCUETP8M1_14TeV-madgraphMLM-pythia8_200PU_1_HLLHC.root
+$ python Minitrees/Make_minitrees_v2.py -i /depot/cms/top/he614/TTBar/TTBar_Ntuples/TT_Dilept_100.root -o MiniTreeOutput/minitree_TT_Dilept_100.root
+$ python Top_reco/Top_reco.py -i MiniTreeOutput/minitree_TT_Dilept_100.root
+$ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_TT_Dilept_100.root -o HistogramOutput/histogram_TT_Dilept_100.root
 ```
 - Note that the HistogramOutput .root file has a _HLLHC subfix to indicate the name of the collider. 
 - And then <br>
 ```
 $ cd Plotting
 $ root -l -b MkPlots.cc++'("HLLHC")' 
-$ root -l -b eff_cut.cc++'("HLLHC", "lep_pt", "GeV")'
+$ root -l -b eff_cut.cc++'("../HistogramOutput/histogram_TT_Dilept_100.root", "lep_pt", "GeV")'
 ```
 - To view the results (the following command shows one of them, ex. the Missing Transverse Momentum associated with the unseen neutrinos), do: <br>
 ```
@@ -54,10 +55,10 @@ $ display Plotting/FinalPlots/HLLHC_h_met_pt.pdf
 ### For Those Who Had Trouble Building ROOT Locally
 Open Jupyterhub on Hammer (does not require VPN): notebook.hammer.rcac.purdue.edu. <br>
 Open the script and modify it as you want, you can perform all the interactive steps by switching to a proper kernel, ex. Coffea. <br>
-If you want to view directories above your home directory, ask Jason for help, XD. <br>
+If you want to view directories above your home directory, use "ln -s <source directory> <how you like the link to be displayed>" to create a link, XD. <br>
 You can also open a terminal to execute commands by clicking the "new" dropdown list which is right next to the "upload" button. <br>
 
-- To run Ntuple production parallel with Slurm, please do: 
+- To run Ntuple productions parallelly with Slurm, please do: 
 $ls /eos/purdue/store/user/abakshi/TTBar_Delphes > filelist_eos
 $python make_jobs.py
 $python submit_all.py
