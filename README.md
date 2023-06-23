@@ -55,10 +55,16 @@ $ display Plotting/FinalPlots/HLLHC_h_met_pt.pdf
 ### For Those Who Had Trouble Building ROOT Locally
 Open Jupyterhub on Hammer (does not require VPN): notebook.hammer.rcac.purdue.edu. <br>
 Open the script and modify it as you want, you can perform all the interactive steps by switching to a proper kernel, ex. Coffea. <br>
-If you want to view directories above your home directory, use "ln -s <source directory> <how you like the link to be displayed>" to create a link, XD. <br>
-You can also open a terminal to execute commands by clicking the "new" dropdown list which is right next to the "upload" button. <br>
+If you want to view directories above your home directory, use 
+```
+$ ln -s <source directory> <how you like the link to be displayed>
+```
+- to create a link, XD. <br>
+- You can also open a terminal to execute commands by clicking the "new" dropdown list which is right next to the "upload" button. <br>
 
 - To run Ntuple productions parallelly with Slurm, please do: 
+```
 $ls /eos/purdue/store/user/abakshi/TTBar_Delphes > filelist_eos
 $python make_jobs.py
 $python submit_all.py
+```
