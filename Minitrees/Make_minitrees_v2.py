@@ -1,3 +1,5 @@
+# well, I just backed this up because I don't want to merge from Jason
+
 import ROOT
 import uproot
 import argparse
@@ -268,7 +270,7 @@ def main():
         gen_lep_index = -1
         gen_alep_index = -1
 
-        for j in range(len(genpart_pid[i]) - 1) :
+        for j in range(len(genpart_pid[i]) - 1) : 
 
             # Look for the first gen lepton, neutrino pairs on the list 
 
@@ -277,8 +279,11 @@ def main():
                 gen_lep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
                 gen_aneu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)
 
-                if( (gen_lep_4vec + gen_aneu_4vec).M() < 70.4 or (gen_lep_4vec + gen_aneu_4vec).M() > 90.4  ): continue
+                if( (gen_lep_4vec + gen_aneu_4vec).M() < 70.4 or (gen_lep_4vec + gen_aneu_4vec).M() > 90.4  ): #continue
 
+                    print("Event: " + str(i))
+                    print("Lepton + Anti-Neutrino Mass: " + str((gen_lep_4vec + gen_aneu_4vec).M()))                    
+                    
                 gen_lep_index = j # a flag to check for lepton 
 
             if( ( (genpart_pid[i][j] == -11 and genpart_pid[i][j+1] == 12) or (genpart_pid[i][j] == -13 and genpart_pid[i][j+1] == 14) or (genpart_pid[i][j] == -15 and genpart_pid[i][j+1] == 16) ) and gen_alep_index == -1 ):
@@ -286,8 +291,11 @@ def main():
                 gen_alep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
                 gen_neu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)
 
-                if ( (gen_alep_4vec + gen_neu_4vec).M() < 70.4 or (gen_alep_4vec + gen_neu_4vec).M() > 90.4  ): continue
+                if ( (gen_alep_4vec + gen_neu_4vec).M() < 70.4 or (gen_alep_4vec + gen_neu_4vec).M() > 90.4  ): #continue
 
+                    print("Event: " + str(i))
+                    print("Anti-Lepton + Neutrino Mass: " + str((gen_alep_4vec + gen_neu_4vec).M()))                   
+                    
                 gen_alep_index = j # a flag for anti-leptons 
 
             # gen top quarks with status 62
@@ -772,13 +780,6 @@ def main():
     jet_phi_sel  = jet_phi[selection == 1]
     jet_mass_sel = jet_mass[selection == 1]
     jet_btag_sel = jet_btag[selection == 1]    
-
-    #print(len(HT)) 
-    print(lep_pt) 
-    #print('len lep_pt', len(lep_pt))
-    #print('elec_pt', elec_pt)
-    print('jet_pt_sel', jet_pt_sel)
-    #print('len jet_pt_sel', len(jet_pt_sel))
     
     gen_pt_sel     = genpart_pt[selection == 1]
     gen_pid_sel    = genpart_pid[selection == 1]
@@ -1421,8 +1422,6 @@ def main():
                 weight_arr[k] = weight_sel[k_jet][k]
                 
             #Step7tree.Fill()     
-            
-            print('step7tree outer loop i = ', i)  
     
             HT_arr[0]  = HT[i]
             ST_arr[0]  = ST[i]
