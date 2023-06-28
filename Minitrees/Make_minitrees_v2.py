@@ -1083,6 +1083,30 @@ def main():
         gen_alep_pdgid_arr_0[0]     = gen_alep_pdgid[i]
         gen_alep_status_arr_0[0]     = gen_alep_status[i]
         
+        gen_top_pt_arr_0[0] = gen_top_pt[i]
+        gen_top_eta_arr_0[0] = gen_top_eta[i]
+        gen_top_phi_arr_0[0] = gen_top_phi[i]
+        gen_top_mass_arr_0[0] = gen_top_mass[i]
+        gen_top_status_arr_0[0] = gen_top_status[i]
+        
+        gen_atop_pt_arr_0[0] = gen_atop_pt[i]
+        gen_atop_eta_arr_0[0] = gen_atop_eta[i]
+        gen_atop_phi_arr_0[0] = gen_atop_phi[i]
+        gen_atop_mass_arr_0[0] = gen_atop_mass[i]
+        gen_atop_status_arr_0[0] = gen_atop_status[i]        
+        
+        gen_b_pt_arr_0[0] = gen_b_pt[i]
+        gen_b_eta_arr_0[0] = gen_b_eta[i]
+        gen_b_phi_arr_0[0] = gen_b_phi[i]
+        gen_b_mass_arr_0[0] = gen_b_mass[i]
+        gen_b_status_arr_0[0] = gen_b_status[i]
+        
+        gen_ab_pt_arr_0[0] = gen_ab_pt[i]
+        gen_ab_eta_arr_0[0] = gen_ab_eta[i]
+        gen_ab_phi_arr_0[0] = gen_ab_phi[i]
+        gen_ab_mass_arr_0[0] = gen_ab_mass[i]
+        gen_ab_status_arr_0[0] = gen_ab_status[i]        
+        
         gen_neu_pt_arr_0[0]     = gen_neu_pt[i]
         gen_neu_eta_arr_0[0]     = gen_neu_eta[i]
         gen_neu_phi_arr_0[0]     = gen_neu_phi[i]
@@ -1094,6 +1118,10 @@ def main():
         gen_aneu_phi_arr_0[0]     = gen_aneu_phi[i]
         gen_aneu_pdgid_arr_0[0]     = gen_aneu_pdgid[i]
         gen_aneu_status_arr_0[0]     = gen_aneu_status[i]
+        
+        gen_met_pt_arr_0[0] = gen_met_pt[i]
+        gen_met_phi_arr_0[0] = gen_met_phi[i]
+        
         Step0tree.Fill()
 
     opfile.Write()
