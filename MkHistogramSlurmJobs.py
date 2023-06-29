@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("commandlist")
 args = parser.parse_args()
 
-FCC_BASE = str(os.getenv("FCC_BASE"))
+HLLHC_BASE = str(os.getenv("HLLHC_BASE"))
 
 if not os.path.exists("MiniTreeOutput"): os.makedirs("MiniTreeOutput")
 if not os.path.exists("RecoOutput"): os.makedirs("RecoOutput")
@@ -50,7 +50,7 @@ for j in range(0,len(lines),20) :
         cfg.write("\n")
         cfg.write("#SBATCH --mem=8000")
         cfg.write("\n")
-        cfg.write("cd " + FCC_BASE )
+        cfg.write("cd " + HLLHC_BASE )
         cfg.write("\n")
         cfg.write("module load anaconda/5.3.1-py37")
         cfg.write("\n")
