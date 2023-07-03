@@ -43,10 +43,12 @@ def GetWeight(thetaMixingTarget, top_arr, lep_arr, chi0_arr, m_top, m_chi0) :
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', help='Input  Delphes Ntuple location')
+parser.add_argument('-v', '--verbose', action='count', default=0, help='Verbosity', required=False)
 
 args       = parser.parse_args()
 inputFile  = args.input
 outputFile = args.input
+verbose = args.verbose 
 
 fileptr = uproot.open(inputFile)['Step7']
 
@@ -57,8 +59,6 @@ fileptr = uproot.open(inputFile)['Step7']
 #pid    = fileptr['genpart_pid'].array()
 #mass   = fileptr['genpart_mass'].array()
 #status = fileptr['genpart_status'].array()
-
-step7_selection_step = fileptr['selection_step'].array()
 
 step7_gen_top_pt     = fileptr['gen_top_pt'].array()
 step7_gen_top_eta    = fileptr['gen_top_eta'].array()
@@ -92,17 +92,19 @@ step7_gen_alep_phi    = fileptr['gen_alep_phi'].array()
 step7_gen_alep_mass    = fileptr['gen_alep_mass'].array()
 step7_gen_alep_pdgid = fileptr['gen_alep_pdgid'].array()
 
-step7_gen_lep_nearest_pt     = fileptr['gen_lep_nearest_pt'].array()
-step7_gen_lep_nearest_eta    = fileptr['gen_lep_nearest_eta'].array()
-step7_gen_lep_nearest_phi    = fileptr['gen_lep_nearest_phi'].array()
-step7_gen_lep_nearest_mass    = fileptr['gen_lep_nearest_mass'].array()
-step7_gen_lep_nearest_pdgid = fileptr['gen_lep_nearest_pdgid'].array()
+if (verbose > 0):
 
-step7_gen_alep_nearest_pt     = fileptr['gen_alep_nearest_pt'].array()
-step7_gen_alep_nearest_eta    = fileptr['gen_alep_nearest_eta'].array()
-step7_gen_alep_nearest_phi    = fileptr['gen_alep_nearest_phi'].array()
-step7_gen_alep_nearest_mass    = fileptr['gen_alep_nearest_mass'].array()
-step7_gen_alep_nearest_pdgid = fileptr['gen_alep_nearest_pdgid'].array()
+    step7_gen_lep_nearest_pt     = fileptr['gen_lep_nearest_pt'].array()
+    step7_gen_lep_nearest_eta    = fileptr['gen_lep_nearest_eta'].array()
+    step7_gen_lep_nearest_phi    = fileptr['gen_lep_nearest_phi'].array()
+    step7_gen_lep_nearest_mass    = fileptr['gen_lep_nearest_mass'].array()
+    step7_gen_lep_nearest_pdgid = fileptr['gen_lep_nearest_pdgid'].array()
+
+    step7_gen_alep_nearest_pt     = fileptr['gen_alep_nearest_pt'].array()
+    step7_gen_alep_nearest_eta    = fileptr['gen_alep_nearest_eta'].array()
+    step7_gen_alep_nearest_phi    = fileptr['gen_alep_nearest_phi'].array()
+    step7_gen_alep_nearest_mass    = fileptr['gen_alep_nearest_mass'].array()
+    step7_gen_alep_nearest_pdgid = fileptr['gen_alep_nearest_pdgid'].array()
 
 step7_gen_neu_pt     = fileptr['gen_neu_pt'].array()
 step7_gen_neu_eta    = fileptr['gen_neu_eta'].array()
@@ -144,8 +146,6 @@ step7_weight    = fileptr['weight'].array()
 
 
 # Storing the reconstructed as arrays
-
-step8_selection_step = []
 
 step8_lep_pt   = []
 step8_lep_eta  = []
@@ -243,17 +243,19 @@ step8_gen_alep_phi= []
 step8_gen_alep_mass= []
 step8_gen_alep_pdgid = []
 
-step8_gen_lep_nearest_pt = []
-step8_gen_lep_nearest_eta= []
-step8_gen_lep_nearest_phi= []
-step8_gen_lep_nearest_mass= []
-step8_gen_lep_nearest_pdgid = []
+if (verbose > 0):
+    
+    step8_gen_lep_nearest_pt = []
+    step8_gen_lep_nearest_eta= []
+    step8_gen_lep_nearest_phi= []
+    step8_gen_lep_nearest_mass= []
+    step8_gen_lep_nearest_pdgid = []
 
-step8_gen_alep_nearest_pt = []
-step8_gen_alep_nearest_eta= []
-step8_gen_alep_nearest_phi= []
-step8_gen_alep_nearest_mass= []
-step8_gen_alep_nearest_pdgid = []
+    step8_gen_alep_nearest_pt = []
+    step8_gen_alep_nearest_eta= []
+    step8_gen_alep_nearest_phi= []
+    step8_gen_alep_nearest_mass= []
+    step8_gen_alep_nearest_pdgid = []
 
 step8_gen_neu_pt = []
 step8_gen_neu_eta= []
@@ -525,18 +527,20 @@ for i in range(len(step7_jet_pt)):
         step8_gen_alep_phi.append(step7_gen_alep_phi[i])
         step8_gen_alep_mass.append(step7_gen_alep_mass[i])
         step8_gen_alep_pdgid.append(step7_gen_alep_pdgid[i])
+
+        if (verbose > 0):
     
-        step8_gen_lep_nearest_pt.append(step7_gen_lep_nearest_pt[i])
-        step8_gen_lep_nearest_eta.append(step7_gen_lep_nearest_eta[i])
-        step8_gen_lep_nearest_phi.append(step7_gen_lep_nearest_phi[i])
-        step8_gen_lep_nearest_mass.append(step7_gen_lep_nearest_mass[i])
-        step8_gen_lep_nearest_pdgid.append(step7_gen_lep_nearest_pdgid[i])
-    
-        step8_gen_alep_nearest_pt.append(step7_gen_alep_nearest_pt[i])
-        step8_gen_alep_nearest_eta.append(step7_gen_alep_nearest_eta[i])
-        step8_gen_alep_nearest_phi.append(step7_gen_alep_nearest_phi[i])
-        step8_gen_alep_nearest_mass.append(step7_gen_alep_nearest_mass[i])
-        step8_gen_alep_nearest_pdgid.append(step7_gen_alep_nearest_pdgid[i])
+            step8_gen_lep_nearest_pt.append(step7_gen_lep_nearest_pt[i])
+            step8_gen_lep_nearest_eta.append(step7_gen_lep_nearest_eta[i])
+            step8_gen_lep_nearest_phi.append(step7_gen_lep_nearest_phi[i])
+            step8_gen_lep_nearest_mass.append(step7_gen_lep_nearest_mass[i])
+            step8_gen_lep_nearest_pdgid.append(step7_gen_lep_nearest_pdgid[i])
+
+            step8_gen_alep_nearest_pt.append(step7_gen_alep_nearest_pt[i])
+            step8_gen_alep_nearest_eta.append(step7_gen_alep_nearest_eta[i])
+            step8_gen_alep_nearest_phi.append(step7_gen_alep_nearest_phi[i])
+            step8_gen_alep_nearest_mass.append(step7_gen_alep_nearest_mass[i])
+            step8_gen_alep_nearest_pdgid.append(step7_gen_alep_nearest_pdgid[i])
     
         step8_gen_neu_pt.append(step7_gen_neu_pt[i])
         step8_gen_neu_eta.append(step7_gen_neu_eta[i])
@@ -553,16 +557,12 @@ for i in range(len(step7_jet_pt)):
     
         # Create a mask for selection
         selection[i] = 1
-        step8_selection_step.append(8)
 
 step8_weight_sel = step7_weight[selection == 1]
 print(len(step8_top_pt))
-print(len(step7_selection_step))
-print(len(step8_selection_step))
 
 # Empty arrays that get mapped to histograms in a root file
 # Selected leptons and jets
-selection_step_arr = array('f', [0.])
 
 lep_pt_arr = array('f', [0.])
 lep_eta_arr = array('f', [0.])
@@ -674,17 +674,19 @@ gen_alep_phi_arr= array('f', [0.])
 gen_alep_mass_arr= array('f', [0.])
 gen_alep_pdgid_arr = array('f', [0.])
 
-gen_lep_nearest_pt_arr  = array('f', [0.])
-gen_lep_nearest_eta_arr = array('f', [0.])
-gen_lep_nearest_phi_arr = array('f', [0.])
-gen_lep_nearest_mass_arr = array('f', [0.])
-gen_lep_nearest_pdgid_arr  = array('f', [0.])
+if (verbose > 0):
 
-gen_alep_nearest_pt_arr = array('f', [0.])
-gen_alep_nearest_eta_arr= array('f', [0.])
-gen_alep_nearest_phi_arr= array('f', [0.])
-gen_alep_nearest_mass_arr= array('f', [0.])
-gen_alep_nearest_pdgid_arr = array('f', [0.])
+    gen_lep_nearest_pt_arr  = array('f', [0.])
+    gen_lep_nearest_eta_arr = array('f', [0.])
+    gen_lep_nearest_phi_arr = array('f', [0.])
+    gen_lep_nearest_mass_arr = array('f', [0.])
+    gen_lep_nearest_pdgid_arr  = array('f', [0.])
+
+    gen_alep_nearest_pt_arr = array('f', [0.])
+    gen_alep_nearest_eta_arr= array('f', [0.])
+    gen_alep_nearest_phi_arr= array('f', [0.])
+    gen_alep_nearest_mass_arr= array('f', [0.])
+    gen_alep_nearest_pdgid_arr = array('f', [0.])
 
 gen_neu_pt_arr  = array('f', [0.])
 gen_neu_eta_arr = array('f', [0.])
@@ -704,7 +706,6 @@ opfile = ROOT.TFile(outputFile, 'update')
 tree   = ROOT.TTree("Step8", "Step8")
 
 # Leptons and jets
-tree.Branch("selection_step", selection_step_arr, "selection_step/F") 
 
 tree.Branch("lep_pt", lep_pt_arr, 'lep_pt/F')
 tree.Branch("lep_eta", lep_eta_arr, 'lep_eta/F')
@@ -805,17 +806,19 @@ tree.Branch("gen_alep_phi"   , gen_alep_phi_arr   , 'gen_alep_phi/F')
 tree.Branch("gen_alep_mass"   , gen_alep_mass_arr   , 'gen_alep_mass/F')
 tree.Branch("gen_alep_pdgid", gen_alep_pdgid_arr, 'gen_alep_pdgid/F')
 
-tree.Branch("gen_lep_nearest_pt"    , gen_lep_nearest_pt_arr    , 'gen_lep_nearest_pt/F')
-tree.Branch("gen_lep_nearest_eta"   , gen_lep_nearest_eta_arr   , 'gen_lep_nearest_eta/F')
-tree.Branch("gen_lep_nearest_phi"   , gen_lep_nearest_phi_arr   , 'gen_lep_nearest_phi/F')
-tree.Branch("gen_lep_nearest_mass"   , gen_lep_nearest_mass_arr   , 'gen_lep_nearest_mass/F')
-tree.Branch("gen_lep_nearest_pdgid", gen_lep_nearest_pdgid_arr, 'gen_lep_nearest_pdgid/F')
+if (verbose > 0):
+    
+    tree.Branch("gen_lep_nearest_pt"    , gen_lep_nearest_pt_arr    , 'gen_lep_nearest_pt/F')
+    tree.Branch("gen_lep_nearest_eta"   , gen_lep_nearest_eta_arr   , 'gen_lep_nearest_eta/F')
+    tree.Branch("gen_lep_nearest_phi"   , gen_lep_nearest_phi_arr   , 'gen_lep_nearest_phi/F')
+    tree.Branch("gen_lep_nearest_mass"   , gen_lep_nearest_mass_arr   , 'gen_lep_nearest_mass/F')
+    tree.Branch("gen_lep_nearest_pdgid", gen_lep_nearest_pdgid_arr, 'gen_lep_nearest_pdgid/F')
 
-tree.Branch("gen_alep_nearest_pt"    , gen_alep_nearest_pt_arr    , 'gen_alep_nearest_pt/F')
-tree.Branch("gen_alep_nearest_eta"   , gen_alep_nearest_eta_arr   , 'gen_alep_nearest_eta/F')
-tree.Branch("gen_alep_nearest_phi"   , gen_alep_nearest_phi_arr   , 'gen_alep_nearest_phi/F')
-tree.Branch("gen_alep_nearest_mass"   , gen_alep_nearest_mass_arr   , 'gen_alep_nearest_mass/F')
-tree.Branch("gen_alep_nearest_pdgid", gen_alep_nearest_pdgid_arr, 'gen_alep_nearest_pdgid/F')
+    tree.Branch("gen_alep_nearest_pt"    , gen_alep_nearest_pt_arr    , 'gen_alep_nearest_pt/F')
+    tree.Branch("gen_alep_nearest_eta"   , gen_alep_nearest_eta_arr   , 'gen_alep_nearest_eta/F')
+    tree.Branch("gen_alep_nearest_phi"   , gen_alep_nearest_phi_arr   , 'gen_alep_nearest_phi/F')
+    tree.Branch("gen_alep_nearest_mass"   , gen_alep_nearest_mass_arr   , 'gen_alep_nearest_mass/F')
+    tree.Branch("gen_alep_nearest_pdgid", gen_alep_nearest_pdgid_arr, 'gen_alep_nearest_pdgid/F')
 
 tree.Branch("gen_neu_pt"    , gen_neu_pt_arr    , 'gen_neu_pt/F')
 tree.Branch("gen_neu_eta"   , gen_neu_eta_arr   , 'gen_neu_eta/F')
@@ -832,8 +835,6 @@ tree.Branch("gen_met_phi"   , gen_met_phi_arr   , 'gen_met_phi/F')
 
 
 for i in range(len(step8_top_pt)):
-    
-    selection_step_arr[0] = step8_selection_step[i] 
 
     lep_pt_arr[0]   = step8_lep_pt[i]
     lep_eta_arr[0]  = step8_lep_eta[i]
@@ -926,17 +927,19 @@ for i in range(len(step8_top_pt)):
     gen_alep_mass_arr[0]    = step8_gen_alep_mass[i]
     gen_alep_pdgid_arr[0] = step8_gen_alep_pdgid[i]
 
-    gen_lep_nearest_pt_arr[0]     = step8_gen_lep_nearest_pt[i]
-    gen_lep_nearest_eta_arr[0]    = step8_gen_lep_nearest_eta[i]
-    gen_lep_nearest_phi_arr[0]    = step8_gen_lep_nearest_phi[i]
-    gen_lep_nearest_mass_arr[0]    = step8_gen_lep_nearest_mass[i]
-    gen_lep_nearest_pdgid_arr[0] = step8_gen_lep_nearest_pdgid[i]
+    if (verbose > 0):
+        
+        gen_lep_nearest_pt_arr[0]     = step8_gen_lep_nearest_pt[i]
+        gen_lep_nearest_eta_arr[0]    = step8_gen_lep_nearest_eta[i]
+        gen_lep_nearest_phi_arr[0]    = step8_gen_lep_nearest_phi[i]
+        gen_lep_nearest_mass_arr[0]    = step8_gen_lep_nearest_mass[i]
+        gen_lep_nearest_pdgid_arr[0] = step8_gen_lep_nearest_pdgid[i]
 
-    gen_alep_nearest_pt_arr[0]     = step8_gen_alep_nearest_pt[i]
-    gen_alep_nearest_eta_arr[0]    = step8_gen_alep_nearest_eta[i]
-    gen_alep_nearest_phi_arr[0]    = step8_gen_alep_nearest_phi[i]
-    gen_alep_nearest_mass_arr[0]    = step8_gen_alep_nearest_mass[i]
-    gen_alep_nearest_pdgid_arr[0] = step8_gen_alep_nearest_pdgid[i]
+        gen_alep_nearest_pt_arr[0]     = step8_gen_alep_nearest_pt[i]
+        gen_alep_nearest_eta_arr[0]    = step8_gen_alep_nearest_eta[i]
+        gen_alep_nearest_phi_arr[0]    = step8_gen_alep_nearest_phi[i]
+        gen_alep_nearest_mass_arr[0]    = step8_gen_alep_nearest_mass[i]
+        gen_alep_nearest_pdgid_arr[0] = step8_gen_alep_nearest_pdgid[i]
 
     gen_neu_pt_arr[0]     = step8_gen_neu_pt[i]
     gen_neu_eta_arr[0]    = step8_gen_neu_eta[i]
