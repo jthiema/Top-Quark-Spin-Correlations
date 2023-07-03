@@ -1,4 +1,4 @@
-# the original version has gen loop inside reco loop
+# well, I just backed this up because I don't want to merge from Jason
 
 import ROOT
 import uproot
@@ -16,7 +16,6 @@ def deltaphi(e_phi, m_phi):
         d_phi += 2*np.pi
     return d_phi
 
-
 def dR(e_phi, e_eta, m_phi, m_eta):
     d_eta = abs(e_eta - m_eta)
     d_phi = deltaphi(e_phi, m_phi)
@@ -25,272 +24,286 @@ def dR(e_phi, e_eta, m_phi, m_eta):
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-i', '--input', action='store', default='', help='Input  Delphes Ntuple location', required=True)
-    parser.add_argument('-o', '--output', action='store', default='', help='Output Delphes Minitree location', required=True)
+    parser.add_argument('-i', '--input', help='Input  Delphes Ntuple location')
+    parser.add_argument('-o', '--output', help='Output Delphes Minitree location')
     parser.add_argument('-v', '--verbose', action='count', default=0, help='Verbosity', required=False)
 
     args = parser.parse_args()
     inputFile = args.input
     outputFile = args.output
-    verbose = args.verbose
-
-    ## Read in branches from NTuple
+    verbose = args.verbose    
 
     fileptr = uproot.open(inputFile)['Delphes_Ntuples']
-   
+    
     # Jet MET
-    jet_pt = fileptr['jet_pt'].array()
-    jet_eta = fileptr['jet_eta'].array()
-    jet_phi = fileptr['jet_phi'].array()
+    jet_pt   = fileptr['jet_pt'].array()
+    jet_eta  = fileptr['jet_eta'].array()
+    jet_phi  = fileptr['jet_phi'].array()
     jet_mass = fileptr['jet_mass'].array()
     jet_btag = fileptr['jet_btag'].array()
     
-    met_pt = fileptr['met_pt'].array()
-    met_phi = fileptr['met_phi'].array()
-    weight = fileptr['weight'].array()
+    NEvents = len(jet_pt)
+    #NEvents = 100
+
+    met_pt    = fileptr['met_pt'].array()
+    met_phi   = fileptr['met_phi'].array()
+    weight    = fileptr['weight'].array()
     scalar_ht = fileptr['scalar_ht'].array()
 
     # Electrons
-    elec_pt  = fileptr['elec_pt'].array()
-    elec_eta = fileptr['elec_eta'].array()
-    elec_phi = fileptr['elec_phi'].array()
-    elec_mass = fileptr['elec_mass'].array()
+    elec_pt     = fileptr['elec_pt'].array()
+    elec_eta    = fileptr['elec_eta'].array()
+    elec_phi    = fileptr['elec_phi'].array()
+    elec_mass   = fileptr['elec_mass'].array()
     elec_charge = fileptr['elec_charge'].array()
     elec_reliso = fileptr['elec_reliso'].array()
 
     # Muons
-    muon_pt  = fileptr['muon_pt'].array()
-    muon_eta = fileptr['muon_eta'].array()
-    muon_phi = fileptr['muon_phi'].array()
-    muon_mass = fileptr['muon_mass'].array()
+    muon_pt     = fileptr['muon_pt'].array()
+    muon_eta    = fileptr['muon_eta'].array()
+    muon_phi    = fileptr['muon_phi'].array()
+    muon_mass   = fileptr['muon_mass'].array()
     muon_charge = fileptr['muon_charge'].array()
     muon_reliso = fileptr['muon_reliso'].array()
 
-    # Gen Jets
-    genjet_pt = fileptr['genjet_pt'].array()
-    genjet_eta = fileptr['genjet_eta'].array()
-    genjet_phi = fileptr['genjet_phi'].array()
+    # Gen level jets
+    genjet_pt   = fileptr['genjet_pt'].array()
+    genjet_eta  = fileptr['genjet_eta'].array()
+    genjet_phi  = fileptr['genjet_phi'].array()
     genjet_mass = fileptr['genjet_mass'].array()
     #genjet_btag = fileptr['genjet_btag'].array()
 
-    # Gen Particles
-    genpart_pt  = fileptr['genpart_pt'].array()
-    genpart_eta = fileptr['genpart_eta'].array()
-    genpart_phi = fileptr['genpart_phi'].array()
-    genpart_mass = fileptr['genpart_mass'].array()
-    genpart_pid = fileptr['genpart_pid'].array()
+    # Gen level data
+    genpart_pt     = fileptr['genpart_pt'].array()
+    genpart_eta    = fileptr['genpart_eta'].array()
+    genpart_phi    = fileptr['genpart_phi'].array()
+    genpart_mass   = fileptr['genpart_mass'].array()
+    genpart_pid    = fileptr['genpart_pid'].array()
     genpart_status = fileptr['genpart_status'].array()
     genpart_charge = fileptr['genpart_charge'].array()
+    
+    # GEN, Step0 
 
-    ## Empty arrays for the new branches of the output file
+    gen_top_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_top_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_top_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_top_mass_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_top_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_atop_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_atop_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_atop_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_atop_mass_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_atop_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_b_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_b_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_b_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_b_mass_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_b_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_ab_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_ab_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_ab_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_ab_mass_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_ab_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_lep_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_mass_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_pdgid_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_alep_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_mass_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_pdgid_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_lep_nearest_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_mass_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_pdgid_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_alep_nearest_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_mass_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_pdgid_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_neu_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_neu_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_neu_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_neu_pdgid_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_neu_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_aneu_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_aneu_eta_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_aneu_phi_0    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_aneu_pdgid_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_aneu_status_0 = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_met_pt_0     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_met_phi_0     = np.array(np.full((1,NEvents), np.nan)).flatten()    
+
+    # These empty arrays are the branch arrays for the output file
  
-    # GEN Before Event Selection (Step 0)
+    # RECO
 
-    gen_top_pt_0 = []
-    gen_top_eta_0 = []
-    gen_top_phi_0 = []
-    gen_top_mass_0 = []
-    gen_top_status_0 = []
+    selection_step = np.zeros(NEvents)
+    
+    lep_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    lep_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    lep_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    lep_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    lep_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_atop_pt_0 = []
-    gen_atop_eta_0 = []
-    gen_atop_phi_0 = []
-    gen_atop_mass_0 = []
-    gen_atop_status_0 = []
+    alep_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    alep_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    alep_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    alep_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    alep_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_b_pt_0 = []
-    gen_b_eta_0 = []
-    gen_b_phi_0 = []
-    gen_b_mass_0 = []
-    gen_b_status_0 = []
+    lep_nearest_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    lep_nearest_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    lep_nearest_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    lep_nearest_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    lep_nearest_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_ab_pt_0 = []
-    gen_ab_eta_0 = []
-    gen_ab_phi_0 = []
-    gen_ab_mass_0 = []
-    gen_ab_status_0 = []
-
-    gen_lep_pt_0 = []
-    gen_lep_eta_0 = []
-    gen_lep_phi_0 = []
-    gen_lep_mass_0 = []
-    gen_lep_pdgid_0 = []
-    gen_lep_status_0 = []
-
-    gen_alep_pt_0 = []
-    gen_alep_eta_0 = []
-    gen_alep_phi_0 = []
-    gen_alep_mass_0 = []
-    gen_alep_pdgid_0 = []
-    gen_alep_status_0 = []
-
-    gen_neu_pt_0 = []
-    gen_neu_eta_0 = []
-    gen_neu_phi_0 = []
-    gen_neu_pdgid_0 = []
-    gen_neu_status_0 = []
-
-    gen_aneu_pt_0 = []
-    gen_aneu_eta_0 = []
-    gen_aneu_phi_0 = []
-    gen_aneu_pdgid_0 = []
-    gen_aneu_status_0 = []
-
-    gen_met_pt_0 = []
-    gen_met_phi_0 = []
-
-    # RECO After Event Selection (Step 7)
-
-    lep_pt  = []
-    lep_eta = []
-    lep_phi = []
-    lep_mass = []
-    lep_pdgid = []
-
-    alep_pt  = []
-    alep_eta = []
-    alep_phi = []
-    alep_mass = []
-    alep_pdgid = []
-
-    lep_nearest_pt  = []
-    lep_nearest_eta = []
-    lep_nearest_phi = []
-    lep_nearest_mass = []
-    lep_nearest_pdgid = []
-
-    alep_nearest_pt  = []
-    alep_nearest_eta = []
-    alep_nearest_phi = []
-    alep_nearest_mass = []
-    alep_nearest_pdgid = []
+    alep_nearest_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    alep_nearest_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    alep_nearest_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    alep_nearest_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    alep_nearest_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
 
     # By leading and subleading Pt
-    l_pt = []
-    l_eta = []
-    l_phi = []
-    l_mass = []
+    l_pt   = np.array(np.full((1,NEvents), np.nan)).flatten()
+    l_eta  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    l_phi  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    l_mass = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    sl_pt = []
-    sl_eta = []
-    sl_phi = []
-    sl_mass = []
-
-    ljet_pt = []
-    ljet_eta = []
-    ljet_phi = []
-    ljet_mass = []
-
-    sljet_pt = []
-    sljet_eta = []
-    sljet_phi = []
-    sljet_mass = []
+    sl_pt   = np.array(np.full((1,NEvents), np.nan)).flatten()
+    sl_eta  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    sl_phi  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    sl_mass = np.array(np.full((1,NEvents), np.nan)).flatten()
 
     # By Lepton flavor
-    e_pt  = []
-    e_eta = []
-    e_phi = []
-    e_charge = []
+    e_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    e_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    e_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    e_charge = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    mu_pt  = []
-    mu_eta = []
-    mu_phi = []
-    mu_charge = []
+    mu_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    mu_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    mu_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    mu_charge = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    bjet_nearest_pt = []
-    bjet_nearest_eta = []
-    bjet_nearest_phi = []
-    bjet_nearest_mass = []
+    ljet_pt   = np.array(np.full((1,NEvents), np.nan)).flatten()
+    ljet_eta  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    ljet_phi  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    ljet_mass = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    abjet_nearest_pt = []
-    abjet_nearest_eta = []
-    abjet_nearest_phi = []
-    abjet_nearest_mass = []
+    sljet_pt   = np.array(np.full((1,NEvents), np.nan)).flatten()
+    sljet_eta  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    sljet_phi  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    sljet_mass = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    ST = []
-    HT = []
-    HT_check = []
-    ET_miss = []
-    MET_phi = []
+    bjet_nearest_pt   = np.array(np.full((1,NEvents), np.nan)).flatten()
+    bjet_nearest_eta  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    bjet_nearest_phi  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    bjet_nearest_mass = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    # GEN After Event Selection (Step 7)
+    abjet_nearest_pt   = np.array(np.full((1,NEvents), np.nan)).flatten()
+    abjet_nearest_eta  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    abjet_nearest_phi  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    abjet_nearest_mass = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_top_pt  = []
-    gen_top_eta = []
-    gen_top_phi = []
-    gen_top_mass = []
-    gen_top_status = []
+    ST = np.array(np.full((1,NEvents), np.nan)).flatten()
+    HT = np.array(np.full((1,NEvents), np.nan)).flatten()
+    HT_check = np.array(np.full((1,NEvents), np.nan)).flatten()
+    ET_miss  = np.array(np.full((1,NEvents), np.nan)).flatten()
+    MET_phi  = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_atop_pt  = []
-    gen_atop_eta = []
-    gen_atop_phi = []
-    gen_atop_mass = []
-    gen_atop_status = []
+    # GEN, Step7 (After Event Selection) 
 
-    gen_b_pt  = []
-    gen_b_eta = []
-    gen_b_phi = []
-    gen_b_mass = []
-    gen_b_status = []
+    gen_top_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_top_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_top_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_top_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_top_status = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_ab_pt  = []
-    gen_ab_eta = []
-    gen_ab_phi = []
-    gen_ab_mass = []
-    gen_ab_status = []
+    gen_atop_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_atop_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_atop_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_atop_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_atop_status = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_lep_pt  = []
-    gen_lep_eta = []
-    gen_lep_phi = []
-    gen_lep_mass = []
-    gen_lep_pdgid = []
-    gen_lep_status = []
+    gen_b_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_b_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_b_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_b_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_b_status = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_alep_pt  = []
-    gen_alep_eta = []
-    gen_alep_phi = []
-    gen_alep_mass = []
-    gen_alep_pdgid = []
-    gen_alep_status = []
+    gen_ab_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_ab_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_ab_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_ab_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_ab_status = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_lep_nearest_pt  = []
-    gen_lep_nearest_eta = []
-    gen_lep_nearest_phi = []
-    gen_lep_nearest_mass = []
-    gen_lep_nearest_pdgid = []
-    gen_lep_nearest_status = []
+    gen_lep_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_status = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_alep_nearest_pt  = []
-    gen_alep_nearest_eta = []
-    gen_alep_nearest_phi = []
-    gen_alep_nearest_mass = []
-    gen_alep_nearest_pdgid = []
-    gen_alep_nearest_status = []
+    gen_alep_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_status = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_neu_pt  = []
-    gen_neu_eta = []
-    gen_neu_phi = []
-    gen_neu_pdgid = []
-    gen_neu_status = []
+    gen_lep_nearest_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_lep_nearest_status = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_aneu_pt  = []
-    gen_aneu_eta = []
-    gen_aneu_phi = []
-    gen_aneu_pdgid = []
-    gen_aneu_status = []
+    gen_alep_nearest_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_mass    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_alep_nearest_status = np.array(np.full((1,NEvents), np.nan)).flatten()
 
-    gen_met_pt  = []
-    gen_met_phi  = []
+    gen_neu_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_neu_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_neu_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_neu_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_neu_status = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_aneu_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_aneu_eta    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_aneu_phi    = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_aneu_pdgid = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_aneu_status = np.array(np.full((1,NEvents), np.nan)).flatten()
+
+    gen_met_pt     = np.array(np.full((1,NEvents), np.nan)).flatten()
+    gen_met_phi     = np.array(np.full((1,NEvents), np.nan)).flatten()
     
-    # Selection Mask
-    selection = np.zeros(len(jet_pt)) 
+    # for MET reconstruction
+    
+    # Let's create a mask
+    selection = np.zeros(NEvents) 
 
-
-    NEvents = len(jet_pt)
-#    NEvents = 1000
-
-
-    ## Loop over the events
+    # Loop over the events
     for i in range(NEvents):
 
         if (i % 1000 == 0):
@@ -298,25 +311,29 @@ def main():
 
         # Temporary variables
 
-        gen_lep_4vec = ROOT.TLorentzVector()
-        gen_alep_4vec = ROOT.TLorentzVector()
-
-        gen_neu_4vec = ROOT.TLorentzVector()
-        gen_aneu_4vec = ROOT.TLorentzVector()
-
-        e_idx = []
+        e_idx  = []
         mu_idx = []
 
-        ef_idx = []
+        ef_idx  = []
         muf_idx = []
 
         jet_idx = []
 
         btag_cnt = 0
 
-        e_4vec = ROOT.TLorentzVector()
+        e_4vec  = ROOT.TLorentzVector()
         mu_4vec = ROOT.TLorentzVector()
 
+        gen_lep_4vec  = ROOT.TLorentzVector()
+        gen_alep_4vec = ROOT.TLorentzVector()
+
+        gen_neu_4vec  = ROOT.TLorentzVector()
+        gen_aneu_4vec = ROOT.TLorentzVector()
+
+        ###########  GEN  ###########
+
+        selection_step[i] = 0
+        
         gen_top_index = -1
         gen_atop_index = -1
         gen_b_index = -1
@@ -324,46 +341,37 @@ def main():
         gen_lep_index = -1
         gen_alep_index = -1
 
+        for j in range(len(genpart_pid[i]) - 1) : 
 
-        ###########  GEN STEP 0  ###########
-
-        for j in range(len(genpart_pid[i])-1) :
-
-            # Look for the first gen lepton, neutrino pairs on the list
+            # Look for the first gen lepton, neutrino pairs on the list 
 
             if( ( (genpart_pid[i][j] == 11 and genpart_pid[i][j+1] == -12) or (genpart_pid[i][j] == 13 and genpart_pid[i][j+1] == -14) or (genpart_pid[i][j] == 15 and genpart_pid[i][j+1] == -16) ) and gen_lep_index == -1 ):
-
+                
                 if (verbose > 0):
 
                     gen_lep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
                     gen_aneu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)
 
-                    if( (gen_lep_4vec + gen_aneu_4vec).M() < 70.4 or (gen_lep_4vec + gen_aneu_4vec).M() > 90.4  ): 
+                    if( (gen_lep_4vec + gen_aneu_4vec).M() < 70.4 or (gen_lep_4vec + gen_aneu_4vec).M() > 90.4  ): #continue
 
                         print("Event: " + str(i))
-
-                        print("Lepton + Anti-Neutrino Mass: " + str((gen_lep_4vec + gen_aneu_4vec).M()))
-
-                        # continue
-
-                gen_lep_index = j # a flag to check for lepton
+                        print("Lepton + Anti-Neutrino Mass: " + str((gen_lep_4vec + gen_aneu_4vec).M()))                    
+                    
+                gen_lep_index = j # a flag to check for lepton 
 
             if( ( (genpart_pid[i][j] == -11 and genpart_pid[i][j+1] == 12) or (genpart_pid[i][j] == -13 and genpart_pid[i][j+1] == 14) or (genpart_pid[i][j] == -15 and genpart_pid[i][j+1] == 16) ) and gen_alep_index == -1 ):
-
+                
                 if (verbose > 0):
 
                     gen_alep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
                     gen_neu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)
 
-                    if ( (gen_alep_4vec + gen_neu_4vec).M() < 70.4 or (gen_alep_4vec + gen_neu_4vec).M() > 90.4  ): 
-                    
+                    if ( (gen_alep_4vec + gen_neu_4vec).M() < 70.4 or (gen_alep_4vec + gen_neu_4vec).M() > 90.4  ): #continue
+
                         print("Event: " + str(i))
-
-                        print("Anti-Lepton + Neutrino Mass: " + str((gen_alep_4vec + gen_neu_4vec).M()))
-
-                        # continue
-
-                gen_alep_index = j # a flag for anti-leptons
+                        print("Anti-Lepton + Neutrino Mass: " + str((gen_alep_4vec + gen_neu_4vec).M()))                   
+                    
+                gen_alep_index = j # a flag for anti-leptons 
 
             # gen top quarks with status 62
 
@@ -374,7 +382,7 @@ def main():
             if ( genpart_pid[i][j] == -6 and genpart_status[i][j] == 62):
 
                 gen_atop_index = j
-
+                
             # gen b quarks with status 23
 
             if ( genpart_pid[i][j] == 5 and genpart_status[i][j] == 23):
@@ -394,69 +402,64 @@ def main():
 
             continue # ensures that there's at least one dilepton pair
 
+        ####### Fill the GEN arrays ##########
 
-        ####### Fill the GEN STEP 0 arrays ##########
+        gen_lep_pt_0[i]=genpart_pt[i][gen_lep_index]
+        gen_lep_eta_0[i]=genpart_eta[i][gen_lep_index]
+        gen_lep_phi_0[i]=genpart_phi[i][gen_lep_index]
+        gen_lep_mass_0[i]=genpart_mass[i][gen_lep_index]
+        gen_lep_pdgid_0[i]=genpart_pid[i][gen_lep_index]
+        gen_lep_status_0[i]=genpart_status[i][gen_lep_index]
+        
+        gen_aneu_pt_0[i]=genpart_pt[i][gen_lep_index+1]
+        gen_aneu_eta_0[i]=genpart_eta[i][gen_lep_index+1]
+        gen_aneu_phi_0[i]=genpart_phi[i][gen_lep_index+1]
+        gen_aneu_pdgid_0[i]=genpart_pid[i][gen_lep_index+1]
+        gen_aneu_status_0[i]=genpart_status[i][gen_lep_index+1]
 
-        gen_lep_pt_0.append(genpart_pt[i][gen_lep_index])
-        gen_lep_eta_0.append(genpart_eta[i][gen_lep_index])
-        gen_lep_phi_0.append(genpart_phi[i][gen_lep_index])
-        gen_lep_mass_0.append(genpart_mass[i][gen_lep_index])
-        gen_lep_pdgid_0.append(genpart_pid[i][gen_lep_index])
-        gen_lep_status_0.append(genpart_status[i][gen_lep_index])
+        gen_alep_pt_0[i]=genpart_pt[i][gen_alep_index]
+        gen_alep_eta_0[i]=genpart_eta[i][gen_alep_index]
+        gen_alep_phi_0[i]=genpart_phi[i][gen_alep_index]
+        gen_alep_mass_0[i]=genpart_mass[i][gen_alep_index]
+        gen_alep_pdgid_0[i]=genpart_pid[i][gen_alep_index]
+        gen_alep_status_0[i]=genpart_status[i][gen_alep_index]
+        
+        gen_neu_pt_0[i]=genpart_pt[i][gen_alep_index+1]
+        gen_neu_eta_0[i]=genpart_eta[i][gen_alep_index+1]
+        gen_neu_phi_0[i]=genpart_phi[i][gen_alep_index+1]
+        gen_neu_pdgid_0[i]=genpart_pid[i][gen_alep_index+1]
+        gen_neu_status_0[i]=genpart_status[i][gen_alep_index+1]
 
-        gen_aneu_pt_0.append(genpart_pt[i][gen_lep_index+1])
-        gen_aneu_eta_0.append(genpart_eta[i][gen_lep_index+1])
-        gen_aneu_phi_0.append(genpart_phi[i][gen_lep_index+1])
-        gen_aneu_pdgid_0.append(genpart_pid[i][gen_lep_index+1])
-        gen_aneu_status_0.append(genpart_status[i][gen_lep_index+1])
+        gen_top_pt_0[i]=genpart_pt[i][gen_top_index]
+        gen_top_eta_0[i]=genpart_eta[i][gen_top_index]
+        gen_top_phi_0[i]=genpart_phi[i][gen_top_index]
+        gen_top_mass_0[i]=genpart_mass[i][gen_top_index]
+        gen_top_status_0[i]=genpart_status[i][gen_top_index]
+                
+        gen_atop_pt_0[i]=genpart_pt[i][gen_atop_index]
+        gen_atop_eta_0[i]=genpart_eta[i][gen_atop_index]
+        gen_atop_phi_0[i]=genpart_phi[i][gen_atop_index]
+        gen_atop_mass_0[i]=genpart_mass[i][gen_atop_index]
+        gen_atop_status_0[i]=genpart_status[i][gen_atop_index]
 
-
-        gen_alep_pt_0.append(genpart_pt[i][gen_alep_index])
-        gen_alep_eta_0.append(genpart_eta[i][gen_alep_index])
-        gen_alep_phi_0.append(genpart_phi[i][gen_alep_index])
-        gen_alep_mass_0.append(genpart_mass[i][gen_alep_index])
-        gen_alep_pdgid_0.append(genpart_pid[i][gen_alep_index])
-        gen_alep_status_0.append(genpart_status[i][gen_alep_index])
-
-        gen_neu_pt_0.append(genpart_pt[i][gen_alep_index+1])
-        gen_neu_eta_0.append(genpart_eta[i][gen_alep_index+1])
-        gen_neu_phi_0.append(genpart_phi[i][gen_alep_index+1])
-        gen_neu_pdgid_0.append(genpart_pid[i][gen_alep_index+1])
-        gen_neu_status_0.append(genpart_status[i][gen_alep_index+1])
-
-
-        gen_top_pt_0.append(genpart_pt[i][gen_top_index])
-        gen_top_eta_0.append(genpart_eta[i][gen_top_index])
-        gen_top_phi_0.append(genpart_phi[i][gen_top_index])
-        gen_top_mass_0.append(genpart_mass[i][gen_top_index])
-        gen_top_status_0.append(genpart_status[i][gen_top_index])
-
-        gen_atop_pt_0.append(genpart_pt[i][gen_atop_index])
-        gen_atop_eta_0.append(genpart_eta[i][gen_atop_index])
-        gen_atop_phi_0.append(genpart_phi[i][gen_atop_index])
-        gen_atop_mass_0.append(genpart_mass[i][gen_atop_index])
-        gen_atop_status_0.append(genpart_status[i][gen_atop_index])
-
-
-        gen_b_pt_0.append(genpart_pt[i][gen_b_index])
-        gen_b_eta_0.append(genpart_eta[i][gen_b_index])
-        gen_b_phi_0.append(genpart_phi[i][gen_b_index])
-        gen_b_mass_0.append(genpart_mass[i][gen_b_index])
-        gen_b_status_0.append(genpart_status[i][gen_b_index])
-
-        gen_ab_pt_0.append(genpart_pt[i][gen_ab_index])
-        gen_ab_eta_0.append(genpart_eta[i][gen_ab_index])
-        gen_ab_phi_0.append(genpart_phi[i][gen_ab_index])
-        gen_ab_mass_0.append(genpart_mass[i][gen_ab_index])
-        gen_ab_status_0.append(genpart_status[i][gen_ab_index])
+        gen_b_pt_0[i]=genpart_pt[i][gen_b_index]
+        gen_b_eta_0[i]=genpart_eta[i][gen_b_index]
+        gen_b_phi_0[i]=genpart_phi[i][gen_b_index]
+        gen_b_mass_0[i]=genpart_mass[i][gen_b_index]
+        gen_b_status_0[i]=genpart_status[i][gen_b_index]
+                
+        gen_ab_pt_0[i]=genpart_pt[i][gen_ab_index]
+        gen_ab_eta_0[i]=genpart_eta[i][gen_ab_index]
+        gen_ab_phi_0[i]=genpart_phi[i][gen_ab_index]
+        gen_ab_mass_0[i]=genpart_mass[i][gen_ab_index]
+        gen_ab_status_0[i]=genpart_status[i][gen_ab_index]
 
         # Calculate gen met from gen neutrino and anti-neutrino
 
-        gen_met_pt_0.append((gen_neu_4vec + gen_aneu_4vec).Pt())
-        gen_met_phi_0.append((gen_neu_4vec + gen_aneu_4vec).Phi())
-
-
-        ###########  RECO STEP 7  ###########
+        gen_met_pt_0[i]=(gen_neu_4vec + gen_aneu_4vec).Pt()
+        gen_met_phi_0[i]=(gen_neu_4vec + gen_aneu_4vec).Phi()   
+    
+    ###########  RECO  ###########
         
         ########## Electrons ##########
 
@@ -469,7 +472,7 @@ def main():
                 continue
 
             #if (elec_reliso[i][j] > 0.0588):
-                #continue
+            #    continue
 
             e_idx.append(j)
 
@@ -484,19 +487,20 @@ def main():
                 continue
 
             #if (muon_reliso[i][j] > 0.15):
-                #continue
+            #    continue
 
             mu_idx.append(j)
 
         # Ensure exactly one muon and one electron
         if (len(e_idx) != 1 or len(mu_idx) != 1):
-            continue
+           
+            continue 
 
         # Check for opp sign charge pairings
         for j in range(len(e_idx)):
             for k in range(len(mu_idx)):
                 # e_idx and mu_idx have the list of valid electron and muon indices
-                tmp_e_idx = e_idx[j]
+                tmp_e_idx  = e_idx[j]
                 tmp_mu_idx = mu_idx[k]
 
                 if (elec_charge[i][tmp_e_idx] * muon_charge[i][tmp_mu_idx] == -1):
@@ -504,7 +508,7 @@ def main():
                     muf_idx.append(tmp_mu_idx)
 
         # Ensure such a pairing exists
-        if (len(ef_idx) == 0 or len(muf_idx) == 0):
+        if (len(ef_idx) == 0 or len(muf_idx) == 0):         
             continue
 
         # Assign leading indices to e and mu
@@ -516,7 +520,7 @@ def main():
         mu_4vec.SetPtEtaPhiM(muon_pt[i][mu_index], muon_eta[i][mu_index], muon_phi[i][mu_index],  muon_mass[i][mu_index])
 
         # Mll cut (Step 3 according to the FW)
-        if ((e_4vec + mu_4vec).M() < 20):
+        if ((e_4vec + mu_4vec).M() < 20):            
             continue
 
         ###########  Jets ###############
@@ -546,83 +550,78 @@ def main():
 
         # Atleast one b-tag (Step 6 according to the FW)
         if (btag_cnt == 0):
-            continue
-
+            continue  
+            
         ljet_idx = jet_idx[0]
         sljet_idx = jet_idx[1]
-
-
+        
         ###########  GEN STEP 7  ###########
 
-        ####### Fill the GEN STEP 7 arrays ##########
+        ####### Fill the GEN STEP 7 arrays ##########_0        
 
-        gen_lep_pt.append(genpart_pt[i][gen_lep_index])
-        gen_lep_eta.append(genpart_eta[i][gen_lep_index])
-        gen_lep_phi.append(genpart_phi[i][gen_lep_index])
-        gen_lep_mass.append(genpart_mass[i][gen_lep_index])
-        gen_lep_pdgid.append(genpart_pid[i][gen_lep_index])
-        gen_lep_status.append(genpart_status[i][gen_lep_index])
+        gen_lep_pt[i]=genpart_pt[i][gen_lep_index]
+        gen_lep_eta[i]=genpart_eta[i][gen_lep_index]
+        gen_lep_phi[i]=genpart_phi[i][gen_lep_index]
+        gen_lep_mass[i]=genpart_mass[i][gen_lep_index]
+        gen_lep_pdgid[i]=genpart_pid[i][gen_lep_index]
+        gen_lep_status[i]=genpart_status[i][gen_lep_index]
         
-        gen_aneu_pt.append(genpart_pt[i][gen_lep_index+1])
-        gen_aneu_eta.append(genpart_eta[i][gen_lep_index+1])
-        gen_aneu_phi.append(genpart_phi[i][gen_lep_index+1])
-        gen_aneu_pdgid.append(genpart_pid[i][gen_lep_index+1])
-        gen_aneu_status.append(genpart_status[i][gen_lep_index+1])
+        gen_aneu_pt[i]=genpart_pt[i][gen_lep_index+1]
+        gen_aneu_eta[i]=genpart_eta[i][gen_lep_index+1]
+        gen_aneu_phi[i]=genpart_phi[i][gen_lep_index+1]
+        gen_aneu_pdgid[i]=genpart_pid[i][gen_lep_index+1]
+        gen_aneu_status[i]=genpart_status[i][gen_lep_index+1]
 
-
-        gen_alep_pt.append(genpart_pt[i][gen_alep_index])
-        gen_alep_eta.append(genpart_eta[i][gen_alep_index])
-        gen_alep_phi.append(genpart_phi[i][gen_alep_index])
-        gen_alep_mass.append(genpart_mass[i][gen_alep_index])
-        gen_alep_pdgid.append(genpart_pid[i][gen_alep_index])
-        gen_alep_status.append(genpart_status[i][gen_alep_index])
+        gen_alep_pt[i]=genpart_pt[i][gen_alep_index]
+        gen_alep_eta[i]=genpart_eta[i][gen_alep_index]
+        gen_alep_phi[i]=genpart_phi[i][gen_alep_index]
+        gen_alep_mass[i]=genpart_mass[i][gen_alep_index]
+        gen_alep_pdgid[i]=genpart_pid[i][gen_alep_index]
+        gen_alep_status[i]=genpart_status[i][gen_alep_index]
         
-        gen_neu_pt.append(genpart_pt[i][gen_alep_index+1])
-        gen_neu_eta.append(genpart_eta[i][gen_alep_index+1])
-        gen_neu_phi.append(genpart_phi[i][gen_alep_index+1])
-        gen_neu_pdgid.append(genpart_pid[i][gen_alep_index+1])
-        gen_neu_status.append(genpart_status[i][gen_alep_index+1])
+        gen_neu_pt[i]=genpart_pt[i][gen_alep_index+1]
+        gen_neu_eta[i]=genpart_eta[i][gen_alep_index+1]
+        gen_neu_phi[i]=genpart_phi[i][gen_alep_index+1]
+        gen_neu_pdgid[i]=genpart_pid[i][gen_alep_index+1]
+        gen_neu_status[i]=genpart_status[i][gen_alep_index+1]
 
-
-        gen_top_pt.append(genpart_pt[i][gen_top_index])
-        gen_top_eta.append(genpart_eta[i][gen_top_index])
-        gen_top_phi.append(genpart_phi[i][gen_top_index])
-        gen_top_mass.append(genpart_mass[i][gen_top_index])
-        gen_top_status.append(genpart_status[i][gen_top_index])
+        gen_top_pt[i]=genpart_pt[i][gen_top_index]
+        gen_top_eta[i]=genpart_eta[i][gen_top_index]
+        gen_top_phi[i]=genpart_phi[i][gen_top_index]
+        gen_top_mass[i]=genpart_mass[i][gen_top_index]
+        gen_top_status[i]=genpart_status[i][gen_top_index]
                 
-        gen_atop_pt.append(genpart_pt[i][gen_atop_index])
-        gen_atop_eta.append(genpart_eta[i][gen_atop_index])
-        gen_atop_phi.append(genpart_phi[i][gen_atop_index])
-        gen_atop_mass.append(genpart_mass[i][gen_atop_index])
-        gen_atop_status.append(genpart_status[i][gen_atop_index])
+        gen_atop_pt[i]=genpart_pt[i][gen_atop_index]
+        gen_atop_eta[i]=genpart_eta[i][gen_atop_index]
+        gen_atop_phi[i]=genpart_phi[i][gen_atop_index]
+        gen_atop_mass[i]=genpart_mass[i][gen_atop_index]
+        gen_atop_status[i]=genpart_status[i][gen_atop_index]
 
-
-        gen_b_pt.append(genpart_pt[i][gen_b_index])
-        gen_b_eta.append(genpart_eta[i][gen_b_index])
-        gen_b_phi.append(genpart_phi[i][gen_b_index])
-        gen_b_mass.append(genpart_mass[i][gen_b_index])
-        gen_b_status.append(genpart_status[i][gen_b_index])
+        gen_b_pt[i]=genpart_pt[i][gen_b_index]
+        gen_b_eta[i]=genpart_eta[i][gen_b_index]
+        gen_b_phi[i]=genpart_phi[i][gen_b_index]
+        gen_b_mass[i]=genpart_mass[i][gen_b_index]
+        gen_b_status[i]=genpart_status[i][gen_b_index]
                 
-        gen_ab_pt.append(genpart_pt[i][gen_ab_index])
-        gen_ab_eta.append(genpart_eta[i][gen_ab_index])
-        gen_ab_phi.append(genpart_phi[i][gen_ab_index])
-        gen_ab_mass.append(genpart_mass[i][gen_ab_index])
-        gen_ab_status.append(genpart_status[i][gen_ab_index])
+        gen_ab_pt[i]=genpart_pt[i][gen_ab_index]
+        gen_ab_eta[i]=genpart_eta[i][gen_ab_index]
+        gen_ab_phi[i]=genpart_phi[i][gen_ab_index]
+        gen_ab_mass[i]=genpart_mass[i][gen_ab_index]
+        gen_ab_status[i]=genpart_status[i][gen_ab_index]
 
         # Calculate gen met from gen neutrino and anti-neutrino
 
-        gen_met_pt.append((gen_neu_4vec + gen_aneu_4vec).Pt())
-        gen_met_phi.append((gen_neu_4vec + gen_aneu_4vec).Phi())   
-    
-
+        gen_met_pt[i]=(gen_neu_4vec + gen_aneu_4vec).Pt()
+        gen_met_phi[i]=(gen_neu_4vec + gen_aneu_4vec).Phi()           
+        
         if (verbose > 0):
-
+            
             # Search for gen leptons that are closer to the reco lepton than the method used above
 
             gen_lep_nearest_index = gen_lep_index
             gen_alep_nearest_index = gen_alep_index
 
-            # Initialize the dR with the gen lepton above, if it exits, else 9999
+            # Initialize the dR with the gen lepton above, if it exits, else np.nan
 
             if ((elec_charge[i][e_index] < 0 and muon_charge[i][mu_index] > 0) and gen_lep_index > -1):
 
@@ -632,8 +631,7 @@ def main():
 
                 gen_lep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][gen_lep_index], genpart_eta[i][gen_lep_index])
 
-            else: gen_lep_dR = 9999
-
+            else: gen_lep_dR = np.nan
 
             if ((elec_charge[i][e_index] < 0 and muon_charge[i][mu_index] > 0) and gen_alep_index > -1):
 
@@ -643,8 +641,7 @@ def main():
 
                 agen_lep_dR = dR(elec_phi[i][e_index],  elec_eta[i][e_index], genpart_phi[i][gen_alep_index], genpart_eta[i][gen_alep_index])
 
-            else: agen_lep_dR = 9999
-
+            else: agen_lep_dR = np.nan
 
             # begin search for a closer gen lepton
 
@@ -682,24 +679,23 @@ def main():
                             gen_lep_dR = dR(muon_phi[i][mu_index], muon_eta[i][mu_index], genpart_phi[i][j], genpart_eta[i][j])
                             gen_lep_nearest_index = j
 
-            # append arrays with nearest lepton, if found, else fill with -9999
+            # append arrays with nearest lepton, if found, else fill with np.nan
 
-            gen_lep_nearest_pt.append(genpart_pt[i][gen_lep_nearest_index])
-            gen_lep_nearest_eta.append(genpart_eta[i][gen_lep_nearest_index])
-            gen_lep_nearest_phi.append(genpart_phi[i][gen_lep_nearest_index])
-            gen_lep_nearest_mass.append(genpart_mass[i][gen_lep_nearest_index])
-            gen_lep_nearest_pdgid.append(genpart_pid[i][gen_lep_nearest_index])
-            gen_lep_nearest_status.append(genpart_status[i][gen_lep_nearest_index])
+            gen_lep_nearest_pt[i] = genpart_pt[i][gen_lep_nearest_index]
+            gen_lep_nearest_eta[i] = genpart_eta[i][gen_lep_nearest_index]
+            gen_lep_nearest_phi[i] = genpart_phi[i][gen_lep_nearest_index]
+            gen_lep_nearest_mass[i] = genpart_mass[i][gen_lep_nearest_index]
+            gen_lep_nearest_pdgid[i] = genpart_pid[i][gen_lep_nearest_index]
+            gen_lep_nearest_status[i] = genpart_status[i][gen_lep_nearest_index]
 
+            gen_alep_nearest_pt[i] = genpart_pt[i][gen_alep_nearest_index]
+            gen_alep_nearest_eta[i] = genpart_eta[i][gen_alep_nearest_index]
+            gen_alep_nearest_phi[i] = genpart_phi[i][gen_alep_nearest_index]
+            gen_alep_nearest_mass[i] = genpart_mass[i][gen_alep_nearest_index]
+            gen_alep_nearest_pdgid[i] = genpart_pid[i][gen_alep_nearest_index]
+            gen_alep_nearest_status[i] = genpart_status[i][gen_alep_nearest_index]
 
-            gen_alep_nearest_pt.append(genpart_pt[i][gen_alep_nearest_index])
-            gen_alep_nearest_eta.append(genpart_eta[i][gen_alep_nearest_index])
-            gen_alep_nearest_phi.append(genpart_phi[i][gen_alep_nearest_index])
-            gen_alep_nearest_mass.append(genpart_mass[i][gen_alep_nearest_index])
-            gen_alep_nearest_pdgid.append(genpart_pid[i][gen_alep_nearest_index])
-            gen_alep_nearest_status.append(genpart_status[i][gen_alep_nearest_index])
-
-            ####### Fill the RECO STEP 7 arrays ##########
+            ####### Fill the RECO arrays ##########
 
             # Find the nearest reco jets to the gen b quarks
 
@@ -721,15 +717,15 @@ def main():
                      abjet_dR = dR(genpart_phi[i][gen_ab_index], genpart_eta[i][gen_ab_index], jet_phi[i][idx], jet_eta[i][idx])
                      abjet_nearest_index = idx
 
-            bjet_nearest_pt.append(jet_pt[i][bjet_nearest_index])
-            bjet_nearest_phi.append(jet_phi[i][bjet_nearest_index])
-            bjet_nearest_eta.append(jet_eta[i][bjet_nearest_index])
-            bjet_nearest_mass.append(jet_mass[i][bjet_nearest_index])
+            bjet_nearest_pt[i] = jet_pt[i][bjet_nearest_index]
+            bjet_nearest_phi[i] = jet_phi[i][bjet_nearest_index]
+            bjet_nearest_eta[i] = jet_eta[i][bjet_nearest_index]
+            bjet_nearest_mass[i] = jet_mass[i][bjet_nearest_index]
 
-            abjet_nearest_pt.append(jet_pt[i][abjet_nearest_index])
-            abjet_nearest_phi.append(jet_phi[i][abjet_nearest_index])
-            abjet_nearest_eta.append(jet_eta[i][abjet_nearest_index])
-            abjet_nearest_mass.append(jet_mass[i][abjet_nearest_index])
+            abjet_nearest_pt[i] = jet_pt[i][abjet_nearest_index]
+            abjet_nearest_phi[i] = jet_phi[i][abjet_nearest_index]
+            abjet_nearest_eta[i] = jet_eta[i][abjet_nearest_index]
+            abjet_nearest_mass[i] = jet_mass[i][abjet_nearest_index]
 
 
             # Find the nearest reco leptons to the gen leptons
@@ -773,117 +769,117 @@ def main():
 
             if ( lep_nearest_pdgid_tmp == 11 ):
 
-                lep_nearest_pt.append(elec_pt[i][lep_nearest_index])
-                lep_nearest_phi.append(elec_phi[i][lep_nearest_index])
-                lep_nearest_eta.append(elec_eta[i][lep_nearest_index])
-                lep_nearest_mass.append(elec_mass[i][lep_nearest_index])
-                lep_nearest_pdgid.append(11)
+                lep_nearest_pt[i] = elec_pt[i][lep_nearest_index]
+                lep_nearest_phi[i] = elec_phi[i][lep_nearest_index]
+                lep_nearest_eta[i] = elec_eta[i][lep_nearest_index]
+                lep_nearest_mass[i] = elec_mass[i][lep_nearest_index]
+                lep_nearest_pdgid[i] = 11
 
             elif ( lep_nearest_pdgid_tmp == 13 ):
 
-                lep_nearest_pt.append(muon_pt[i][lep_nearest_index])
-                lep_nearest_phi.append(muon_phi[i][lep_nearest_index])
-                lep_nearest_eta.append(muon_eta[i][lep_nearest_index])
-                lep_nearest_mass.append(muon_mass[i][lep_nearest_index])
-                lep_nearest_pdgid.append(13)
+                lep_nearest_pt[i] = muon_pt[i][lep_nearest_index]
+                lep_nearest_phi[i] = muon_phi[i][lep_nearest_index]
+                lep_nearest_eta[i] = muon_eta[i][lep_nearest_index]
+                lep_nearest_mass[i] = muon_mass[i][lep_nearest_index]
+                lep_nearest_pdgid[i] = 13
 
             if ( alep_nearest_pdgid_tmp == -11 ):
 
-                alep_nearest_pt.append(elec_pt[i][alep_nearest_index])
-                alep_nearest_phi.append(elec_phi[i][alep_nearest_index])
-                alep_nearest_eta.append(elec_eta[i][alep_nearest_index])
-                alep_nearest_mass.append(elec_mass[i][alep_nearest_index])
-                alep_nearest_pdgid.append(-11)
+                alep_nearest_pt[i] = elec_pt[i][alep_nearest_index]
+                alep_nearest_phi[i] = elec_phi[i][alep_nearest_index]
+                alep_nearest_eta[i] = elec_eta[i][alep_nearest_index]
+                alep_nearest_mass[i] = elec_mass[i][alep_nearest_index]
+                alep_nearest_pdgid[i] = -11
 
             elif ( alep_nearest_pdgid_tmp == -13 ):
 
-                alep_nearest_pt.append(muon_pt[i][alep_nearest_index])
-                alep_nearest_phi.append(muon_phi[i][alep_nearest_index])
-                alep_nearest_eta.append(muon_eta[i][alep_nearest_index])
-                alep_nearest_mass.append(muon_mass[i][alep_nearest_index])
-                alep_nearest_pdgid.append(-13)
+                alep_nearest_pt[i] = muon_pt[i][alep_nearest_index]
+                alep_nearest_phi[i] = muon_phi[i][alep_nearest_index]
+                alep_nearest_eta[i] = muon_eta[i][alep_nearest_index]
+                alep_nearest_mass[i] = muon_mass[i][alep_nearest_index]
+                alep_nearest_pdgid[i] = -13
 
 
         # Leading and sub-leading lepton pts
         if (elec_pt[i][e_index] > muon_pt[i][mu_index] and elec_pt[i][e_index] > 25):
-            l_pt.append(elec_pt[i][e_index])
-            l_phi.append(elec_phi[i][e_index])
-            l_eta.append(elec_eta[i][e_index])
-            l_mass.append(elec_mass[i][e_index])
+            l_pt[i] = elec_pt[i][e_index]
+            l_phi[i] = elec_phi[i][e_index]
+            l_eta[i] = elec_eta[i][e_index]
+            l_mass[i] = elec_mass[i][e_index]
 
-            sl_pt.append(muon_pt[i][mu_index])
-            sl_phi.append(muon_phi[i][mu_index])
-            sl_eta.append(muon_eta[i][mu_index])
-            sl_mass.append(muon_mass[i][mu_index])
+            sl_pt[i] = muon_pt[i][mu_index]
+            sl_phi[i] = muon_phi[i][mu_index]
+            sl_eta[i] = muon_eta[i][mu_index]
+            sl_mass[i] = muon_mass[i][mu_index]
 
         elif (muon_pt[i][mu_index] > elec_pt[i][e_index] and muon_pt[i][mu_index] > 25):
-            sl_pt.append(elec_pt[i][e_index])
-            sl_phi.append(elec_phi[i][e_index])
-            sl_eta.append(elec_eta[i][e_index])
-            sl_mass.append(elec_mass[i][e_index])
+            sl_pt[i] = elec_pt[i][e_index]
+            sl_phi[i] = elec_phi[i][e_index]
+            sl_eta[i] = elec_eta[i][e_index]
+            sl_mass[i] = elec_mass[i][e_index]
 
-            l_pt.append(muon_pt[i][mu_index])
-            l_phi.append(muon_phi[i][mu_index])
-            l_eta.append(muon_eta[i][mu_index])
-            l_mass.append(muon_mass[i][mu_index])
+            l_pt[i] = muon_pt[i][mu_index]
+            l_phi[i] = muon_phi[i][mu_index]
+            l_eta[i] = muon_eta[i][mu_index]
+            l_mass[i] = muon_mass[i][mu_index]  
 
         else:
             continue
-
+            
         # By flavor
-        e_pt.append(elec_pt[i][e_index])
-        e_eta.append(elec_eta[i][e_index])
-        e_phi.append(elec_phi[i][e_index])
-        e_charge.append(elec_charge[i][e_index])
-
-        mu_pt.append(muon_pt[i][mu_index])
-        mu_eta.append(muon_eta[i][mu_index])
-        mu_phi.append(muon_phi[i][mu_index])
-        mu_charge.append(muon_charge[i][mu_index])
-
+        e_pt[i] = elec_pt[i][e_index]
+        e_eta[i] = elec_eta[i][e_index]
+        e_phi[i] = elec_phi[i][e_index]
+        e_charge[i] = elec_charge[i][e_index]
+        
+        mu_pt[i] = muon_pt[i][mu_index]
+        mu_eta[i] = muon_eta[i][mu_index]
+        mu_phi[i] = muon_phi[i][mu_index]
+        mu_charge[i] = muon_charge[i][mu_index]
 
         if (elec_charge[i][e_index] < 0 and muon_charge[i][mu_index] > 0):
 
-            lep_pt.append(elec_pt[i][e_index])
-            lep_eta.append(elec_eta[i][e_index])
-            lep_phi.append(elec_phi[i][e_index])
-            lep_mass.append(elec_mass[i][e_index])
-            lep_pdgid.append(11)
-
-            alep_pt.append(muon_pt[i][mu_index])
-            alep_eta.append(muon_eta[i][mu_index])
-            alep_phi.append(muon_phi[i][mu_index])
-            alep_mass.append(muon_mass[i][mu_index])
-            alep_pdgid.append(-13)
+            lep_pt[i] = elec_pt[i][e_index]
+            lep_eta[i] = elec_eta[i][e_index]
+            lep_phi[i] = elec_phi[i][e_index]
+            lep_mass[i] = elec_mass[i][e_index]
+            lep_pdgid[i] = 11
+            
+            alep_pt[i] = muon_pt[i][mu_index]
+            alep_eta[i] = muon_eta[i][mu_index]
+            alep_phi[i] = muon_phi[i][mu_index]
+            alep_mass[i] = muon_mass[i][mu_index]
+            alep_pdgid[i] = -13
 
         elif (elec_charge[i][e_index] > 0 and muon_charge[i][mu_index] < 0):
 
-            alep_pt.append(elec_pt[i][e_index])
-            alep_eta.append(elec_eta[i][e_index])
-            alep_phi.append(elec_phi[i][e_index])
-            alep_mass.append(elec_mass[i][e_index])
-            alep_pdgid.append(-11)
-
-            lep_pt.append(muon_pt[i][mu_index])
-            lep_eta.append(muon_eta[i][mu_index])
-            lep_phi.append(muon_phi[i][mu_index])
-            lep_mass.append(muon_mass[i][mu_index])
-            lep_pdgid.append(13)
-
-
+            alep_pt[i] = elec_pt[i][e_index]
+            alep_eta[i] = elec_eta[i][e_index]
+            alep_phi[i] = elec_phi[i][e_index]
+            alep_mass[i] = elec_mass[i][e_index]
+            alep_pdgid[i] = -11
+            
+            lep_pt[i] = muon_pt[i][mu_index]
+            lep_eta[i] = muon_eta[i][mu_index]
+            lep_phi[i] = muon_phi[i][mu_index]
+            lep_mass[i] = muon_mass[i][mu_index]
+            lep_pdgid[i] = 13
+            
+        #print("Check lep_pt at iteration:", i, lep_pt[i])
+        
         # Leading and Subleading Pt
-        ljet_pt.append(jet_pt[i][ljet_idx])
-        ljet_phi.append(jet_phi[i][ljet_idx])
-        ljet_eta.append(jet_eta[i][ljet_idx])
-        ljet_mass.append(jet_mass[i][ljet_idx])
-
-        sljet_pt.append(jet_pt[i][sljet_idx])
-        sljet_phi.append(jet_phi[i][sljet_idx])
-        sljet_eta.append(jet_eta[i][sljet_idx])
-        sljet_mass.append(jet_mass[i][sljet_idx])
-
-        ET_miss.append(met_pt[i][0])
-        MET_phi.append(met_phi[i][0])
+        ljet_pt[i] = jet_pt[i][ljet_idx]
+        ljet_phi[i] = jet_phi[i][ljet_idx]
+        ljet_eta[i] = jet_eta[i][ljet_idx]
+        ljet_mass[i] = jet_mass[i][ljet_idx]
+        
+        sljet_pt[i] = jet_pt[i][sljet_idx]
+        sljet_phi[i] = jet_phi[i][sljet_idx]
+        sljet_eta[i] = jet_eta[i][sljet_idx]
+        sljet_mass[i] = jet_mass[i][sljet_idx]
+        
+        ET_miss[i] = met_pt[i][0]
+        MET_phi[i] = met_phi[i][0]
 
         # HT and ST
         # temporary variables
@@ -903,12 +899,12 @@ def main():
         St += met_pt[i][0]
 
         # Append to lists
-        HT.append(Ht)
-        ST.append(St)
-        HT_check.append(scalar_ht[i][0])
+        HT[i] = Ht
+        ST[i] = St
+        HT_check[i] = scalar_ht[i][0]
 
         # Create a mask for selection
-        selection[i] = 1        
+        selection[i] = 1   
         
     # Other variables that we need
     llbar_deta = abs(np.array(l_eta) - np.array(sl_eta))
@@ -921,29 +917,39 @@ def main():
 
     weight_sel = weight[selection == 1]
 
-    jet_pt_sel = jet_pt[selection == 1]
-    jet_eta_sel = jet_eta[selection == 1]
-    jet_phi_sel = jet_phi[selection == 1]
+    jet_pt_sel   = jet_pt[selection == 1]
+    jet_eta_sel  = jet_eta[selection == 1]
+    jet_phi_sel  = jet_phi[selection == 1]
     jet_mass_sel = jet_mass[selection == 1]
-    jet_btag_sel = jet_btag[selection == 1]
-
-    gen_pt_sel  = genpart_pt[selection == 1]
-    gen_pid_sel = genpart_pid[selection == 1]
-    gen_eta_sel = genpart_eta[selection == 1]
-    gen_phi_sel = genpart_phi[selection == 1]
-    gen_mass_sel = genpart_mass[selection == 1]
+    jet_btag_sel = jet_btag[selection == 1]    
+    
+    gen_pt_sel     = genpart_pt[selection == 1]
+    gen_pid_sel    = genpart_pid[selection == 1]
+    gen_eta_sel    = genpart_eta[selection == 1]
+    gen_phi_sel    = genpart_phi[selection == 1]
+    gen_mass_sel   = genpart_mass[selection == 1]
     gen_status_sel = genpart_status[selection == 1]
     #gen_charge_sel = genpart_charge[selection == 1]
 
-    #genjet_pt_sel = genjet_pt[selection == 1]
-    #genjet_eta_sel = genjet_eta[selection == 1]
-    #genjet_phi_sel = genjet_phi[selection == 1]
+    #genjet_pt_sel   = genjet_pt[selection == 1]
+    #genjet_eta_sel  = genjet_eta[selection == 1]
+    #genjet_phi_sel  = genjet_phi[selection == 1]
     #genjet_mass_sel = genjet_mass[selection == 1]
     #genjet_btag_sel = genjet_btag[selection == 1]
    
-    # Step 0 arrays for branches
+    # Request arrays for branches
     maxn    = 9999
+    
+    genpart_size_arr_0 = array('i', [0])
+    genpart_pt_arr_0 = array('f', maxn*[0.])
 
+    genpart_eta_arr_0  = array('f', maxn*[0.])
+    genpart_phi_arr_0  = array('f', maxn*[0.])
+    genpart_pid_arr_0  = array('i', maxn*[0])
+    genpart_mass_arr_0 = array('f', maxn*[0.])
+    genpart_status_arr_0 = array('i', maxn*[0])
+    #genpart_charge_arr_0 = array('f', maxn*[0])    
+    
     gen_top_pt_arr_0      = array('f', [0.])
     gen_top_eta_arr_0     = array('f', [0.])
     gen_top_phi_arr_0     = array('f', [0.])
@@ -982,6 +988,20 @@ def main():
     gen_alep_pdgid_arr_0 = array('f', [0.])
     gen_alep_status_arr_0  = array('f', [0.])
 
+    gen_lep_nearest_pt_arr_0      = array('f', [0.])
+    gen_lep_nearest_eta_arr_0     = array('f', [0.])
+    gen_lep_nearest_phi_arr_0     = array('f', [0.])
+    gen_lep_nearest_mass_arr_0     = array('f', [0.])
+    gen_lep_nearest_pdgid_arr_0  = array('f', [0.])
+    gen_lep_nearest_status_arr_0  = array('f', [0.])
+
+    gen_alep_nearest_pt_arr_0     = array('f', [0.])
+    gen_alep_nearest_eta_arr_0    = array('f', [0.])
+    gen_alep_nearest_phi_arr_0    = array('f', [0.])
+    gen_alep_nearest_mass_arr_0    = array('f', [0.])
+    gen_alep_nearest_pdgid_arr_0 = array('f', [0.])
+    gen_alep_nearest_status_arr_0  = array('f', [0.])
+
     gen_neu_pt_arr_0      = array('f', [0.])
     gen_neu_eta_arr_0     = array('f', [0.])
     gen_neu_phi_arr_0     = array('f', [0.])
@@ -997,78 +1017,77 @@ def main():
     gen_aneu_status_arr_0  = array('f', [0.])
 
     gen_met_pt_arr_0     = array('f', [0.])
-    gen_met_phi_arr_0    = array('f', [0.])
-
-    # STEP 7 arrays for branches
-    HT_arr = array('f', [0.])
-    ST_arr = array('f', [0.])
+    gen_met_phi_arr_0    = array('f', [0.])    
+    
+    HT_arr  = array('f', [0.])
+    ST_arr  = array('f', [0.])
     MET_arr = array('f', [0.])
-    MET_phi_arr = array('f', [0.])
+    MET_phi_arr  = array('f', [0.])
     HT_check_arr = array('f', [0.])
 
-    l_pt_arr = array('f', [0.])
-    l_eta_arr = array('f', [0.])
-    l_phi_arr = array('f', [0.])
+    l_pt_arr   = array('f', [0.])
+    l_eta_arr  = array('f', [0.])
+    l_phi_arr  = array('f', [0.])
     l_mass_arr = array('f', [0.])
 
-    sl_pt_arr = array('f', [0.])
-    sl_eta_arr = array('f', [0.])
-    sl_phi_arr = array('f', [0.])
+    sl_pt_arr   = array('f', [0.])
+    sl_eta_arr  = array('f', [0.])
+    sl_phi_arr  = array('f', [0.])
     sl_mass_arr = array('f', [0.])
 
     # By flavor
-    e_pt_arr   = array('f', [0.])
-    e_eta_arr  = array('f', [0.])
-    e_phi_arr  = array('f', [0.])
-    e_charge_arr = array('f', [0.])
+    e_pt_arr      = array('f', [0.])
+    e_eta_arr     = array('f', [0.])
+    e_phi_arr     = array('f', [0.])
+    e_charge_arr  = array('f', [0.])
 
-    mu_pt_arr  = array('f', [0.])
-    mu_eta_arr = array('f', [0.])
-    mu_phi_arr = array('f', [0.])
+    mu_pt_arr     = array('f', [0.])
+    mu_eta_arr    = array('f', [0.])
+    mu_phi_arr    = array('f', [0.])
     mu_charge_arr = array('f', [0.])
 
-    lep_pt_arr   = array('f', [0.])
-    lep_eta_arr  = array('f', [0.])
-    lep_phi_arr  = array('f', [0.])
-    lep_mass_arr  = array('f', [0.])
-    lep_pdgid_arr = array('f', [0.])
+    lep_pt_arr      = array('f', [0.])
+    lep_eta_arr     = array('f', [0.])
+    lep_phi_arr     = array('f', [0.])
+    lep_mass_arr     = array('f', [0.])
+    lep_pdgid_arr  = array('f', [0.])
 
-    alep_pt_arr  = array('f', [0.])
-    alep_eta_arr = array('f', [0.])
-    alep_phi_arr = array('f', [0.])
-    alep_mass_arr = array('f', [0.])
+    alep_pt_arr     = array('f', [0.])
+    alep_eta_arr    = array('f', [0.])
+    alep_phi_arr    = array('f', [0.])
+    alep_mass_arr    = array('f', [0.])
     alep_pdgid_arr = array('f', [0.])
 
-    lep_nearest_pt_arr   = array('f', [0.])
-    lep_nearest_eta_arr  = array('f', [0.])
-    lep_nearest_phi_arr  = array('f', [0.])
-    lep_nearest_mass_arr  = array('f', [0.])
-    lep_nearest_pdgid_arr = array('f', [0.])
+    lep_nearest_pt_arr      = array('f', [0.])
+    lep_nearest_eta_arr     = array('f', [0.])
+    lep_nearest_phi_arr     = array('f', [0.])
+    lep_nearest_mass_arr     = array('f', [0.])
+    lep_nearest_pdgid_arr  = array('f', [0.])
 
-    alep_nearest_pt_arr  = array('f', [0.])
-    alep_nearest_eta_arr = array('f', [0.])
-    alep_nearest_phi_arr = array('f', [0.])
-    alep_nearest_mass_arr = array('f', [0.])
+    alep_nearest_pt_arr     = array('f', [0.])
+    alep_nearest_eta_arr    = array('f', [0.])
+    alep_nearest_phi_arr    = array('f', [0.])
+    alep_nearest_mass_arr    = array('f', [0.])
     alep_nearest_pdgid_arr = array('f', [0.])
 
-    ljet_pt_arr = array('f', [0.])
-    ljet_eta_arr = array('f', [0.])
-    ljet_phi_arr = array('f', [0.])
+    ljet_pt_arr   = array('f', [0.])
+    ljet_eta_arr  = array('f', [0.])
+    ljet_phi_arr  = array('f', [0.])
     ljet_mass_arr = array('f', [0.])
 
-    sljet_pt_arr = array('f', [0.])
-    sljet_eta_arr = array('f', [0.])
-    sljet_phi_arr = array('f', [0.])
+    sljet_pt_arr   = array('f', [0.])
+    sljet_eta_arr  = array('f', [0.])
+    sljet_phi_arr  = array('f', [0.])
     sljet_mass_arr = array('f', [0.])
 
-    bjet_nearest_pt_arr = array('f', [0.])
-    bjet_nearest_eta_arr = array('f', [0.])
-    bjet_nearest_phi_arr = array('f', [0.])
+    bjet_nearest_pt_arr   = array('f', [0.])
+    bjet_nearest_eta_arr  = array('f', [0.])
+    bjet_nearest_phi_arr  = array('f', [0.])
     bjet_nearest_mass_arr = array('f', [0.])
 
-    abjet_nearest_pt_arr = array('f', [0.])
-    abjet_nearest_eta_arr = array('f', [0.])
-    abjet_nearest_phi_arr = array('f', [0.])
+    abjet_nearest_pt_arr   = array('f', [0.])
+    abjet_nearest_eta_arr  = array('f', [0.])
+    abjet_nearest_phi_arr  = array('f', [0.])
     abjet_nearest_mass_arr = array('f', [0.])
 
     llbar_deta_arr = array('f', [0.])
@@ -1077,99 +1096,96 @@ def main():
     bbbar_dphi_arr = array('f', [0.])
 
     weight_size_arr = array('i', [0])
-    weight_arr   = array('f', maxn*[0.])
+    weight_arr      = array('f', maxn*[0.])
 
     jet_size_arr = array('i', [0])
 
-    jet_pt_arr = array('f', maxn*[0.])
-    jet_eta_arr = array('f', maxn*[0.])
-    jet_phi_arr = array('f', maxn*[0.])
+    jet_pt_arr   = array('f', maxn*[0.])
+    jet_eta_arr  = array('f', maxn*[0.])
+    jet_phi_arr  = array('f', maxn*[0.])
     jet_mass_arr = array('f', maxn*[0.])
     jet_btag_arr = array('i', maxn*[0])
     
-
     genpart_size_arr = array('i', [0])
     genpart_pt_arr = array('f', maxn*[0.])
 
-    genpart_eta_arr = array('f', maxn*[0.])
-    genpart_phi_arr = array('f', maxn*[0.])
-    genpart_pid_arr = array('i', maxn*[0])
+    genpart_eta_arr  = array('f', maxn*[0.])
+    genpart_phi_arr  = array('f', maxn*[0.])
+    genpart_pid_arr  = array('i', maxn*[0])
     genpart_mass_arr = array('f', maxn*[0.])
     genpart_status_arr = array('i', maxn*[0])
-    #genpart_charge_arr = array('f', maxn*[0])
+    #genpart_charge_arr_0 = array('f', maxn*[0])
     
-    gen_top_pt_arr   = array('f', [0.])
-    gen_top_eta_arr  = array('f', [0.])
-    gen_top_phi_arr  = array('f', [0.])
-    gen_top_mass_arr  = array('f', [0.])
-    gen_top_status_arr = array('f', [0.])
+    gen_top_pt_arr      = array('f', [0.])
+    gen_top_eta_arr     = array('f', [0.])
+    gen_top_phi_arr     = array('f', [0.])
+    gen_top_mass_arr     = array('f', [0.])
+    gen_top_status_arr  = array('f', [0.])
 
-    gen_atop_pt_arr  = array('f', [0.])
-    gen_atop_eta_arr = array('f', [0.])
-    gen_atop_phi_arr = array('f', [0.])
-    gen_atop_mass_arr = array('f', [0.])
-    gen_atop_status_arr = array('f', [0.])
+    gen_atop_pt_arr     = array('f', [0.])
+    gen_atop_eta_arr    = array('f', [0.])
+    gen_atop_phi_arr    = array('f', [0.])
+    gen_atop_mass_arr    = array('f', [0.])
+    gen_atop_status_arr  = array('f', [0.])
 
-    gen_b_pt_arr   = array('f', [0.])
-    gen_b_eta_arr  = array('f', [0.])
-    gen_b_phi_arr  = array('f', [0.])
-    gen_b_mass_arr  = array('f', [0.])
-    gen_b_status_arr = array('f', [0.])
+    gen_b_pt_arr      = array('f', [0.])
+    gen_b_eta_arr     = array('f', [0.])
+    gen_b_phi_arr     = array('f', [0.])
+    gen_b_mass_arr     = array('f', [0.])
+    gen_b_status_arr  = array('f', [0.])
 
-    gen_ab_pt_arr  = array('f', [0.])
-    gen_ab_eta_arr = array('f', [0.])
-    gen_ab_phi_arr = array('f', [0.])
-    gen_ab_mass_arr = array('f', [0.])
-    gen_ab_status_arr = array('f', [0.])
+    gen_ab_pt_arr     = array('f', [0.])
+    gen_ab_eta_arr    = array('f', [0.])
+    gen_ab_phi_arr    = array('f', [0.])
+    gen_ab_mass_arr    = array('f', [0.])
+    gen_ab_status_arr  = array('f', [0.])
 
-    gen_lep_pt_arr   = array('f', [0.])
-    gen_lep_eta_arr  = array('f', [0.])
-    gen_lep_phi_arr  = array('f', [0.])
-    gen_lep_mass_arr  = array('f', [0.])
-    gen_lep_pdgid_arr = array('f', [0.])
-    gen_lep_status_arr = array('f', [0.])
+    gen_lep_pt_arr      = array('f', [0.])
+    gen_lep_eta_arr     = array('f', [0.])
+    gen_lep_phi_arr     = array('f', [0.])
+    gen_lep_mass_arr     = array('f', [0.])
+    gen_lep_pdgid_arr  = array('f', [0.])
+    gen_lep_status_arr  = array('f', [0.])
 
-    gen_alep_pt_arr  = array('f', [0.])
-    gen_alep_eta_arr = array('f', [0.])
-    gen_alep_phi_arr = array('f', [0.])
-    gen_alep_mass_arr = array('f', [0.])
+    gen_alep_pt_arr     = array('f', [0.])
+    gen_alep_eta_arr    = array('f', [0.])
+    gen_alep_phi_arr    = array('f', [0.])
+    gen_alep_mass_arr    = array('f', [0.])
     gen_alep_pdgid_arr = array('f', [0.])
-    gen_alep_status_arr = array('f', [0.])
+    gen_alep_status_arr  = array('f', [0.])
 
-    gen_lep_nearest_pt_arr   = array('f', [0.])
-    gen_lep_nearest_eta_arr  = array('f', [0.])
-    gen_lep_nearest_phi_arr  = array('f', [0.])
-    gen_lep_nearest_mass_arr  = array('f', [0.])
-    gen_lep_nearest_pdgid_arr = array('f', [0.])
-    gen_lep_nearest_status_arr = array('f', [0.])
+    gen_lep_nearest_pt_arr      = array('f', [0.])
+    gen_lep_nearest_eta_arr     = array('f', [0.])
+    gen_lep_nearest_phi_arr     = array('f', [0.])
+    gen_lep_nearest_mass_arr     = array('f', [0.])
+    gen_lep_nearest_pdgid_arr  = array('f', [0.])
+    gen_lep_nearest_status_arr  = array('f', [0.])
 
-    gen_alep_nearest_pt_arr  = array('f', [0.])
-    gen_alep_nearest_eta_arr = array('f', [0.])
-    gen_alep_nearest_phi_arr = array('f', [0.])
-    gen_alep_nearest_mass_arr = array('f', [0.])
+    gen_alep_nearest_pt_arr     = array('f', [0.])
+    gen_alep_nearest_eta_arr    = array('f', [0.])
+    gen_alep_nearest_phi_arr    = array('f', [0.])
+    gen_alep_nearest_mass_arr    = array('f', [0.])
     gen_alep_nearest_pdgid_arr = array('f', [0.])
-    gen_alep_nearest_status_arr = array('f', [0.])
+    gen_alep_nearest_status_arr  = array('f', [0.])
 
-    gen_neu_pt_arr   = array('f', [0.])
-    gen_neu_eta_arr  = array('f', [0.])
-    gen_neu_phi_arr  = array('f', [0.])
-    gen_neu_mass_arr  = array('f', [0.])
-    gen_neu_pdgid_arr = array('f', [0.])
-    gen_neu_status_arr = array('f', [0.])
+    gen_neu_pt_arr      = array('f', [0.])
+    gen_neu_eta_arr     = array('f', [0.])
+    gen_neu_phi_arr     = array('f', [0.])
+    gen_neu_mass_arr     = array('f', [0.])
+    gen_neu_pdgid_arr  = array('f', [0.])
+    gen_neu_status_arr  = array('f', [0.])
 
-    gen_aneu_pt_arr  = array('f', [0.])
-    gen_aneu_eta_arr = array('f', [0.])
-    gen_aneu_phi_arr = array('f', [0.])
-    gen_aneu_mass_arr = array('f', [0.])
+    gen_aneu_pt_arr     = array('f', [0.])
+    gen_aneu_eta_arr    = array('f', [0.])
+    gen_aneu_phi_arr    = array('f', [0.])
+    gen_aneu_mass_arr    = array('f', [0.])
     gen_aneu_pdgid_arr = array('f', [0.])
-    gen_aneu_status_arr = array('f', [0.])
+    gen_aneu_status_arr  = array('f', [0.])
 
-    gen_met_pt_arr  = array('f', [0.])
-    gen_met_phi_arr = array('f', [0.])
-
-
+    gen_met_pt_arr     = array('f', [0.])
+    gen_met_phi_arr    = array('f', [0.])
+    
     opfile = ROOT.TFile(outputFile, 'recreate')
-
 
     # Make Step 0 Tree
     Step0tree = ROOT.TTree("Step0", "Step0")
@@ -1177,163 +1193,102 @@ def main():
 
     # Make Step 7 Tree
     Step7tree = ROOT.TTree("Step7", "Step7")
-    hist = ROOT.TH1F('Nevents_selected', '', 1, 0.5, 1.5)    
-
-
-    ## Step 0 Branches
-
-    Step0tree.Branch("gen_top_pt"    , gen_top_pt_arr_0    , 'gen_top_pt/F')
-    Step0tree.Branch("gen_top_eta"   , gen_top_eta_arr_0   , 'gen_top_eta/F')
-    Step0tree.Branch("gen_top_phi"   , gen_top_phi_arr_0   , 'gen_top_phi/F')
-    Step0tree.Branch("gen_top_mass"   , gen_top_mass_arr_0   , 'gen_top_mass/F')
-    Step0tree.Branch("gen_top_status", gen_top_status_arr_0, 'gen_top_status/F')
-
-    Step0tree.Branch("gen_atop_pt"    , gen_atop_pt_arr_0    , 'gen_atop_pt/F')
-    Step0tree.Branch("gen_atop_eta"   , gen_atop_eta_arr_0   , 'gen_atop_eta/F')
-    Step0tree.Branch("gen_atop_phi"   , gen_atop_phi_arr_0   , 'gen_atop_phi/F')
-    Step0tree.Branch("gen_atop_mass"   , gen_atop_mass_arr_0   , 'gen_atop_mass/F')
-    Step0tree.Branch("gen_atop_status", gen_atop_status_arr_0, 'gen_atop_status/F')
-
-    Step0tree.Branch("gen_b_pt"    , gen_b_pt_arr_0    , 'gen_b_pt/F')
-    Step0tree.Branch("gen_b_eta"   , gen_b_eta_arr_0   , 'gen_b_eta/F')
-    Step0tree.Branch("gen_b_phi"   , gen_b_phi_arr_0   , 'gen_b_phi/F')
-    Step0tree.Branch("gen_b_mass"   , gen_b_mass_arr_0   , 'gen_b_mass/F')
-    Step0tree.Branch("gen_b_status", gen_b_status_arr_0, 'gen_b_status/F')
-
-    Step0tree.Branch("gen_ab_pt"    , gen_ab_pt_arr_0    , 'gen_ab_pt/F')
-    Step0tree.Branch("gen_ab_eta"   , gen_ab_eta_arr_0   , 'gen_ab_eta/F')
-    Step0tree.Branch("gen_ab_phi"   , gen_ab_phi_arr_0   , 'gen_ab_phi/F')
-    Step0tree.Branch("gen_ab_mass"   , gen_ab_mass_arr_0   , 'gen_ab_mass/F')
-    Step0tree.Branch("gen_ab_status", gen_ab_status_arr_0, 'gen_ab_status/F')
-
-    Step0tree.Branch("gen_lep_pt"    , gen_lep_pt_arr_0    , 'gen_lep_pt/F')
-    Step0tree.Branch("gen_lep_eta"   , gen_lep_eta_arr_0   , 'gen_lep_eta/F')
-    Step0tree.Branch("gen_lep_phi"   , gen_lep_phi_arr_0   , 'gen_lep_phi/F')
-    Step0tree.Branch("gen_lep_mass"   , gen_lep_mass_arr_0   , 'gen_lep_mass/F')
-    Step0tree.Branch("gen_lep_pdgid", gen_lep_pdgid_arr_0, 'gen_lep_pdgid/F')
-    Step0tree.Branch("gen_lep_status", gen_lep_status_arr_0, 'gen_lep_status/F')
-
-    Step0tree.Branch("gen_alep_pt"    , gen_alep_pt_arr_0    , 'gen_alep_pt/F')
-    Step0tree.Branch("gen_alep_eta"   , gen_alep_eta_arr_0   , 'gen_alep_eta/F')
-    Step0tree.Branch("gen_alep_phi"   , gen_alep_phi_arr_0   , 'gen_alep_phi/F')
-    Step0tree.Branch("gen_alep_mass"   , gen_alep_mass_arr_0   , 'gen_alep_mass/F')
-    Step0tree.Branch("gen_alep_pdgid", gen_alep_pdgid_arr_0, 'gen_alep_pdgid/F')
-    Step0tree.Branch("gen_alep_status", gen_alep_status_arr_0, 'gen_alep_status/F')
-
-    Step0tree.Branch("gen_neu_pt"    , gen_neu_pt_arr_0    , 'gen_neu_pt/F')
-    Step0tree.Branch("gen_neu_eta"   , gen_neu_eta_arr_0   , 'gen_neu_eta/F')
-    Step0tree.Branch("gen_neu_phi"   , gen_neu_phi_arr_0   , 'gen_neu_phi/F')
-    Step0tree.Branch("gen_neu_pdgid", gen_neu_pdgid_arr_0, 'gen_neu_pdgid/F')
-    Step0tree.Branch("gen_neu_status", gen_neu_status_arr_0, 'gen_neu_status/F')
-
-    Step0tree.Branch("gen_aneu_pt"    , gen_aneu_pt_arr_0    , 'gen_aneu_pt/F')
-    Step0tree.Branch("gen_aneu_eta"   , gen_aneu_eta_arr_0   , 'gen_aneu_eta/F')
-    Step0tree.Branch("gen_aneu_phi"   , gen_aneu_phi_arr_0   , 'gen_aneu_phi/F')
-    Step0tree.Branch("gen_aneu_pdgid", gen_aneu_pdgid_arr_0, 'gen_aneu_pdgid/F')
-    Step0tree.Branch("gen_aneu_status", gen_aneu_status_arr_0, 'gen_aneu_status/F')
-
-    Step0tree.Branch("gen_met_pt"    , gen_met_pt_arr_0    , 'gen_met_pt/F')
-    Step0tree.Branch("gen_met_phi"   , gen_met_phi_arr_0   , 'gen_met_phi/F')
-
-    #Step0tree.Branch("weight_size", weight_size_arr_0, "weight_size_0/I")
-    #Step0tree.Branch("weight", weight_arr_0, "weight_0[weight_size]/F")
-
-
-    ## Step 7 Branches
+    hist = ROOT.TH1F('Nevents_selected', '', 1, 0.5, 1.5)            
     
     # Gen jets
-    #Step7tree.Branch("genjet_size", genjet_size_arr, "genjet_size/I")
-    #Step7tree.Branch("genjet_btag", genjet_btag_arr, "genjet_btag[genjet_size]/I")
+    #Step0tree.Branch("genjet_size_0", genjet_size_arr_0, "genjet_size_0/I")
+    #Step0tree.Branch("genjet_btag_0", genjet_btag_arr_0, "genjet_btag_0[genjet_size_0]/I")
 
-    #Step7tree.Branch("genjet_pt"  , genjet_pt_arr  , "genjet_pt[genjet_size]/F")
-    #Step7tree.Branch("genjet_eta" , genjet_eta_arr , "genjet_eta[genjet_size]/F")
-    #Step7tree.Branch("genjet_phi" , genjet_phi_arr , "genjet_phi[genjet_size]/F")
-    #Step7tree.Branch("genjet_mass", genjet_mass_arr, "genjet_mass[genjet_size]/F")
+    #Step0tree.Branch("genjet_pt_0"  , genjet_pt_arr_0  , "genjet_pt_0[genjet_size_0]/F")
+    #Step0tree.Branch("genjet_eta_0" , genjet_eta_arr_0 , "genjet_eta_0[genjet_size_0]/F")
+    #Step0tree.Branch("genjet_phi_0" , genjet_phi_arr_0 , "genjet_phi_0[genjet_size_0]/F")
+    #Step0tree.Branch("genjet_mass_0", genjet_mass_arr_0, "genjet_mass_0[genjet_size_0]/F")
 
+    # Selection Mark
+    
     # Gen particles
-    Step7tree.Branch("genpart_size", genpart_size_arr, "genpart_size/I")
-    Step7tree.Branch("genpart_pid", genpart_pid_arr, "genpart_pid[genpart_size]/I")
-    Step7tree.Branch("genpart_status", genpart_status_arr,"genpart_status[genpart_size]/I")
+    Step0tree.Branch("genpart_size", genpart_size_arr, "genpart_size/I")
+    Step0tree.Branch("genpart_pid", genpart_pid_arr, "genpart_pid[genpart_size]/I")
+    Step0tree.Branch("genpart_status", genpart_status_arr,"genpart_status[genpart_size]/I")
 
-    Step7tree.Branch("genpart_pt", genpart_pt_arr, "genpart_pt[genpart_size]/F")
-    Step7tree.Branch("genpart_eta", genpart_eta_arr, "genpart_eta[genpart_size]/F")
-    Step7tree.Branch("genpart_phi", genpart_phi_arr, "genpart_phi[genpart_size]/F")
-    Step7tree.Branch("genpart_mass", genpart_mass_arr,"genpart_mass[genpart_size]/F")
+    Step0tree.Branch("genpart_pt", genpart_pt_arr, "genpart_pt[genpart_size]/F")
+    Step0tree.Branch("genpart_eta", genpart_eta_arr, "genpart_eta[genpart_size]/F")
+    Step0tree.Branch("genpart_phi", genpart_phi_arr, "genpart_phi[genpart_size]/F")
+    Step0tree.Branch("genpart_mass", genpart_mass_arr,"genpart_mass[genpart_size]/F")
     #Step7tree.Branch("genpart_charge", genpart_charge_arr,"genpart_charge[genpart_size]/F")
 
     #Gen particle branches
     # By flavor
-    Step7tree.Branch("gen_top_pt"    , gen_top_pt_arr    , 'gen_top_pt/F')
-    Step7tree.Branch("gen_top_eta"   , gen_top_eta_arr   , 'gen_top_eta/F')
-    Step7tree.Branch("gen_top_phi"   , gen_top_phi_arr   , 'gen_top_phi/F')
-    Step7tree.Branch("gen_top_mass"   , gen_top_mass_arr   , 'gen_top_mass/F')
-    Step7tree.Branch("gen_top_status", gen_top_status_arr, 'gen_top_status/F')
+    Step0tree.Branch("gen_top_pt"    , gen_top_pt_arr    , 'gen_top_pt/F')
+    Step0tree.Branch("gen_top_eta"   , gen_top_eta_arr   , 'gen_top_eta/F')
+    Step0tree.Branch("gen_top_phi"   , gen_top_phi_arr   , 'gen_top_phi/F')
+    Step0tree.Branch("gen_top_mass"   , gen_top_mass_arr   , 'gen_top_mass/F')
+    Step0tree.Branch("gen_top_status", gen_top_status_arr, 'gen_top_status/F')
 
-    Step7tree.Branch("gen_atop_pt"    , gen_atop_pt_arr    , 'gen_atop_pt/F')
-    Step7tree.Branch("gen_atop_eta"   , gen_atop_eta_arr   , 'gen_atop_eta/F')
-    Step7tree.Branch("gen_atop_phi"   , gen_atop_phi_arr   , 'gen_atop_phi/F')
-    Step7tree.Branch("gen_atop_mass"   , gen_atop_mass_arr   , 'gen_atop_mass/F')
-    Step7tree.Branch("gen_atop_status", gen_atop_status_arr, 'gen_atop_status/F')
+    Step0tree.Branch("gen_atop_pt"    , gen_atop_pt_arr    , 'gen_atop_pt/F')
+    Step0tree.Branch("gen_atop_eta"   , gen_atop_eta_arr   , 'gen_atop_eta/F')
+    Step0tree.Branch("gen_atop_phi"   , gen_atop_phi_arr   , 'gen_atop_phi/F')
+    Step0tree.Branch("gen_atop_mass"   , gen_atop_mass_arr   , 'gen_atop_mass/F')
+    Step0tree.Branch("gen_atop_status", gen_atop_status_arr, 'gen_atop_status/F')
     
-    Step7tree.Branch("gen_b_pt"    , gen_b_pt_arr    , 'gen_b_pt/F')
-    Step7tree.Branch("gen_b_eta"   , gen_b_eta_arr   , 'gen_b_eta/F')
-    Step7tree.Branch("gen_b_phi"   , gen_b_phi_arr   , 'gen_b_phi/F')
-    Step7tree.Branch("gen_b_mass"   , gen_b_mass_arr   , 'gen_b_mass/F')
-    Step7tree.Branch("gen_b_status", gen_b_status_arr, 'gen_b_status/F')
+    Step0tree.Branch("gen_b_pt"    , gen_b_pt_arr    , 'gen_b_pt/F')
+    Step0tree.Branch("gen_b_eta"   , gen_b_eta_arr   , 'gen_b_eta/F')
+    Step0tree.Branch("gen_b_phi"   , gen_b_phi_arr   , 'gen_b_phi/F')
+    Step0tree.Branch("gen_b_mass"   , gen_b_mass_arr   , 'gen_b_mass/F')
+    Step0tree.Branch("gen_b_status", gen_b_status_arr, 'gen_b_status/F')
 
-    Step7tree.Branch("gen_ab_pt"    , gen_ab_pt_arr    , 'gen_ab_pt/F')
-    Step7tree.Branch("gen_ab_eta"   , gen_ab_eta_arr   , 'gen_ab_eta/F')
-    Step7tree.Branch("gen_ab_phi"   , gen_ab_phi_arr   , 'gen_ab_phi/F')
-    Step7tree.Branch("gen_ab_mass"   , gen_ab_mass_arr   , 'gen_ab_mass/F')
-    Step7tree.Branch("gen_ab_status", gen_ab_status_arr, 'gen_ab_status/F')
+    Step0tree.Branch("gen_ab_pt"    , gen_ab_pt_arr    , 'gen_ab_pt/F')
+    Step0tree.Branch("gen_ab_eta"   , gen_ab_eta_arr   , 'gen_ab_eta/F')
+    Step0tree.Branch("gen_ab_phi"   , gen_ab_phi_arr   , 'gen_ab_phi/F')
+    Step0tree.Branch("gen_ab_mass"   , gen_ab_mass_arr   , 'gen_ab_mass/F')
+    Step0tree.Branch("gen_ab_status", gen_ab_status_arr, 'gen_ab_status/F')
+    
+    if (verbose > 0):    
 
-    if (verbose > 0):
+        Step0tree.Branch("gen_lep_nearest_pt"    , gen_lep_nearest_pt_arr    , 'gen_lep_nearest_pt/F')
+        Step0tree.Branch("gen_lep_nearest_eta"   , gen_lep_nearest_eta_arr   , 'gen_lep_nearest_eta/F')
+        Step0tree.Branch("gen_lep_nearest_phi"   , gen_lep_nearest_phi_arr   , 'gen_lep_nearest_phi/F')
+        Step0tree.Branch("gen_lep_nearest_mass"   , gen_lep_nearest_mass_arr   , 'gen_lep_nearest_mass/F')
+        Step0tree.Branch("gen_lep_nearest_pdgid", gen_lep_nearest_pdgid_arr, 'gen_lep_nearest_pdgid/F')
+        Step0tree.Branch("gen_lep_nearest_status", gen_lep_nearest_status_arr, 'gen_lep_nearest_status/F')
 
-        Step7tree.Branch("gen_lep_nearest_pt"    , gen_lep_nearest_pt_arr    , 'gen_lep_nearest_pt/F')
-        Step7tree.Branch("gen_lep_nearest_eta"   , gen_lep_nearest_eta_arr   , 'gen_lep_nearest_eta/F')
-        Step7tree.Branch("gen_lep_nearest_phi"   , gen_lep_nearest_phi_arr   , 'gen_lep_nearest_phi/F')
-        Step7tree.Branch("gen_lep_nearest_mass"   , gen_lep_nearest_mass_arr   , 'gen_lep_nearest_mass/F')
-        Step7tree.Branch("gen_lep_nearest_pdgid", gen_lep_nearest_pdgid_arr, 'gen_lep_nearest_pdgid/F')
-        Step7tree.Branch("gen_lep_nearest_status", gen_lep_nearest_status_arr, 'gen_lep_nearest_status/F')
+        Step0tree.Branch("gen_alep_nearest_pt"    , gen_alep_nearest_pt_arr    , 'gen_alep_nearest_pt/F')
+        Step0tree.Branch("gen_alep_nearest_eta"   , gen_alep_nearest_eta_arr   , 'gen_alep_nearest_eta/F')
+        Step0tree.Branch("gen_alep_nearest_phi"   , gen_alep_nearest_phi_arr   , 'gen_alep_nearest_phi/F')
+        Step0tree.Branch("gen_alep_nearest_mass"   , gen_alep_nearest_mass_arr   , 'gen_alep_nearest_mass/F')
+        Step0tree.Branch("gen_alep_nearest_pdgid", gen_alep_nearest_pdgid_arr, 'gen_alep_nearest_pdgid/F')
+        Step0tree.Branch("gen_alep_nearest_status", gen_alep_nearest_status_arr, 'gen_alep_nearest_status/F')
 
-        Step7tree.Branch("gen_alep_nearest_pt"    , gen_alep_nearest_pt_arr    , 'gen_alep_nearest_pt/F')
-        Step7tree.Branch("gen_alep_nearest_eta"   , gen_alep_nearest_eta_arr   , 'gen_alep_nearest_eta/F')
-        Step7tree.Branch("gen_alep_nearest_phi"   , gen_alep_nearest_phi_arr   , 'gen_alep_nearest_phi/F')
-        Step7tree.Branch("gen_alep_nearest_mass"   , gen_alep_nearest_mass_arr   , 'gen_alep_nearest_mass/F')
-        Step7tree.Branch("gen_alep_nearest_pdgid", gen_alep_nearest_pdgid_arr, 'gen_alep_nearest_pdgid/F')
-        Step7tree.Branch("gen_alep_nearest_status", gen_alep_nearest_status_arr, 'gen_alep_nearest_status/F')
+    Step0tree.Branch("gen_lep_pt"    , gen_lep_pt_arr    , 'gen_lep_pt/F')
+    Step0tree.Branch("gen_lep_eta"   , gen_lep_eta_arr   , 'gen_lep_eta/F')
+    Step0tree.Branch("gen_lep_phi"   , gen_lep_phi_arr   , 'gen_lep_phi/F')
+    Step0tree.Branch("gen_lep_mass"   , gen_lep_mass_arr   , 'gen_lep_mass/F')
+    Step0tree.Branch("gen_lep_pdgid", gen_lep_pdgid_arr, 'gen_lep_pdgid/F')
+    Step0tree.Branch("gen_lep_status", gen_lep_status_arr, 'gen_lep_status/F')
 
-    Step7tree.Branch("gen_lep_pt"    , gen_lep_pt_arr    , 'gen_lep_pt/F')
-    Step7tree.Branch("gen_lep_eta"   , gen_lep_eta_arr   , 'gen_lep_eta/F')
-    Step7tree.Branch("gen_lep_phi"   , gen_lep_phi_arr   , 'gen_lep_phi/F')
-    Step7tree.Branch("gen_lep_mass"   , gen_lep_mass_arr   , 'gen_lep_mass/F')
-    Step7tree.Branch("gen_lep_pdgid", gen_lep_pdgid_arr, 'gen_lep_pdgid/F')
-    Step7tree.Branch("gen_lep_status", gen_lep_status_arr, 'gen_lep_status/F')
+    Step0tree.Branch("gen_alep_pt"    , gen_alep_pt_arr    , 'gen_alep_pt/F')
+    Step0tree.Branch("gen_alep_eta"   , gen_alep_eta_arr   , 'gen_alep_eta/F')
+    Step0tree.Branch("gen_alep_phi"   , gen_alep_phi_arr   , 'gen_alep_phi/F')
+    Step0tree.Branch("gen_alep_mass"   , gen_alep_mass_arr   , 'gen_alep_mass/F')
+    Step0tree.Branch("gen_alep_pdgid", gen_alep_pdgid_arr, 'gen_alep_pdgid/F')
+    Step0tree.Branch("gen_alep_status", gen_alep_status_arr, 'gen_alep_status/F')
 
-    Step7tree.Branch("gen_alep_pt"    , gen_alep_pt_arr    , 'gen_alep_pt/F')
-    Step7tree.Branch("gen_alep_eta"   , gen_alep_eta_arr   , 'gen_alep_eta/F')
-    Step7tree.Branch("gen_alep_phi"   , gen_alep_phi_arr   , 'gen_alep_phi/F')
-    Step7tree.Branch("gen_alep_mass"   , gen_alep_mass_arr   , 'gen_alep_mass/F')
-    Step7tree.Branch("gen_alep_pdgid", gen_alep_pdgid_arr, 'gen_alep_pdgid/F')
-    Step7tree.Branch("gen_alep_status", gen_alep_status_arr, 'gen_alep_status/F')
+    Step0tree.Branch("gen_neu_pt"    , gen_neu_pt_arr    , 'gen_neu_pt/F')
+    Step0tree.Branch("gen_neu_eta"   , gen_neu_eta_arr   , 'gen_neu_eta/F')
+    Step0tree.Branch("gen_neu_phi"   , gen_neu_phi_arr   , 'gen_neu_phi/F')
+    Step0tree.Branch("gen_neu_pdgid", gen_neu_pdgid_arr, 'gen_neu_pdgid/F')
+    Step0tree.Branch("gen_neu_status", gen_neu_status_arr, 'gen_neu_status/F')
 
-    Step7tree.Branch("gen_neu_pt"    , gen_neu_pt_arr    , 'gen_neu_pt/F')
-    Step7tree.Branch("gen_neu_eta"   , gen_neu_eta_arr   , 'gen_neu_eta/F')
-    Step7tree.Branch("gen_neu_phi"   , gen_neu_phi_arr   , 'gen_neu_phi/F')
-    Step7tree.Branch("gen_neu_pdgid", gen_neu_pdgid_arr, 'gen_neu_pdgid/F')
-    Step7tree.Branch("gen_neu_status", gen_neu_status_arr, 'gen_neu_status/F')
+    Step0tree.Branch("gen_aneu_pt"    , gen_aneu_pt_arr    , 'gen_aneu_pt/F')
+    Step0tree.Branch("gen_aneu_eta"   , gen_aneu_eta_arr   , 'gen_aneu_eta/F')
+    Step0tree.Branch("gen_aneu_phi"   , gen_aneu_phi_arr   , 'gen_aneu_phi/F')
+    Step0tree.Branch("gen_aneu_pdgid", gen_aneu_pdgid_arr, 'gen_aneu_pdgid/F')
+    Step0tree.Branch("gen_aneu_status", gen_aneu_status_arr, 'gen_aneu_status/F')
 
-    Step7tree.Branch("gen_aneu_pt"    , gen_aneu_pt_arr    , 'gen_aneu_pt/F')
-    Step7tree.Branch("gen_aneu_eta"   , gen_aneu_eta_arr   , 'gen_aneu_eta/F')
-    Step7tree.Branch("gen_aneu_phi"   , gen_aneu_phi_arr   , 'gen_aneu_phi/F')
-    Step7tree.Branch("gen_aneu_pdgid", gen_aneu_pdgid_arr, 'gen_aneu_pdgid/F')
-    Step7tree.Branch("gen_aneu_status", gen_aneu_status_arr, 'gen_aneu_status/F')
+    Step0tree.Branch("gen_met_pt"    , gen_met_pt_arr    , 'gen_met_pt/F')
+    Step0tree.Branch("gen_met_phi"   , gen_met_phi_arr   , 'gen_met_phi/F')
 
-    Step7tree.Branch("gen_met_pt"    , gen_met_pt_arr    , 'gen_met_pt/F')
-    Step7tree.Branch("gen_met_phi"   , gen_met_phi_arr   , 'gen_met_phi/F')    
-
-
-    # Step 7 RECO
+    # s7 GEN branches 
 
     # Create the branches and assign the fill-variables to them as floats (F)
 
@@ -1377,8 +1332,7 @@ def main():
     Step7tree.Branch("alep_mass"   , alep_mass_arr   , 'alep_mass/F')
     Step7tree.Branch("alep_pdgid", alep_pdgid_arr, 'alep_pdgid/F')
 
-    if (verbose > 0):
- 
+    if (verbose > 0):  
         Step7tree.Branch("lep_nearest_pt"    , lep_nearest_pt_arr    , 'lep_nearest_pt/F')
         Step7tree.Branch("lep_nearest_eta"   , lep_nearest_eta_arr   , 'lep_nearest_eta/F')
         Step7tree.Branch("lep_nearest_phi"   , lep_nearest_phi_arr   , 'lep_nearest_phi/F')
@@ -1402,13 +1356,12 @@ def main():
     Step7tree.Branch("sljet_phi", sljet_phi_arr, 'sljet_phi/F')
     Step7tree.Branch("sljet_mass", sljet_mass_arr, 'sljet_mass/F')
 
-    if (verbose > 0):
-
+    if (verbose > 0):  
         Step7tree.Branch("bjet_nearest_pt", bjet_nearest_pt_arr, 'bjet_nearest_pt/F')
         Step7tree.Branch("bjet_nearest_eta", bjet_nearest_eta_arr, 'bjet_nearest_eta/F')
         Step7tree.Branch("bjet_nearest_phi", bjet_nearest_phi_arr, 'bjet_nearest_phi/F')
         Step7tree.Branch("bjet_nearest_mass", bjet_nearest_mass_arr, 'bjet_nearest_mass/F')
-        
+
         Step7tree.Branch("abjet_nearest_pt", abjet_nearest_pt_arr, 'abjet_nearest_pt/F')
         Step7tree.Branch("abjet_nearest_eta", abjet_nearest_eta_arr, 'abjet_nearest_eta/F')
         Step7tree.Branch("abjet_nearest_phi", abjet_nearest_phi_arr, 'abjet_nearest_phi/F')
@@ -1433,263 +1386,361 @@ def main():
     Step7tree.Branch("jet_phi", jet_phi_arr, "jet_phi[jet_size]/F")
     Step7tree.Branch("jet_mass", jet_mass_arr, "jet_mass[jet_size]/F")
 
+    # Gen jets
+    #Step7tree.Branch("genjet_size", genjet_size_arr, "genjet_size/I")
+    #Step7tree.Branch("genjet_btag", genjet_btag_arr, "genjet_btag[genjet_size]/I")
+
+    #Step7tree.Branch("genjet_pt"  , genjet_pt_arr  , "genjet_pt[genjet_size]/F")
+    #Step7tree.Branch("genjet_eta" , genjet_eta_arr , "genjet_eta[genjet_size]/F")
+    #Step7tree.Branch("genjet_phi" , genjet_phi_arr , "genjet_phi[genjet_size]/F")
+    #Step7tree.Branch("genjet_mass", genjet_mass_arr, "genjet_mass[genjet_size]/F")
+
+    # Gen particles
+    Step7tree.Branch("genpart_size", genpart_size_arr, "genpart_size/I")
+    Step7tree.Branch("genpart_pid", genpart_pid_arr, "genpart_pid[genpart_size]/I")
+    Step7tree.Branch("genpart_status", genpart_status_arr,"genpart_status[genpart_size]/I")
+
+    Step7tree.Branch("genpart_pt", genpart_pt_arr, "genpart_pt[genpart_size]/F")
+    Step7tree.Branch("genpart_eta", genpart_eta_arr, "genpart_eta[genpart_size]/F")
+    Step7tree.Branch("genpart_phi", genpart_phi_arr, "genpart_phi[genpart_size]/F")
+    Step7tree.Branch("genpart_mass", genpart_mass_arr,"genpart_mass[genpart_size]/F")
+    #Step7tree.Branch("genpart_charge", genpart_charge_arr,"genpart_charge[genpart_size]/F")
+
+    #Gen particle branches
+    # By flavor
+    Step7tree.Branch("gen_top_pt"    , gen_top_pt_arr    , 'gen_top_pt/F')
+    Step7tree.Branch("gen_top_eta"   , gen_top_eta_arr   , 'gen_top_eta/F')
+    Step7tree.Branch("gen_top_phi"   , gen_top_phi_arr   , 'gen_top_phi/F')
+    Step7tree.Branch("gen_top_mass"   , gen_top_mass_arr   , 'gen_top_mass/F')
+    Step7tree.Branch("gen_top_status", gen_top_status_arr, 'gen_top_status/F')
+
+    Step7tree.Branch("gen_atop_pt"    , gen_atop_pt_arr    , 'gen_atop_pt/F')
+    Step7tree.Branch("gen_atop_eta"   , gen_atop_eta_arr   , 'gen_atop_eta/F')
+    Step7tree.Branch("gen_atop_phi"   , gen_atop_phi_arr   , 'gen_atop_phi/F')
+    Step7tree.Branch("gen_atop_mass"   , gen_atop_mass_arr   , 'gen_atop_mass/F')
+    Step7tree.Branch("gen_atop_status", gen_atop_status_arr, 'gen_atop_status/F')
+
+    Step7tree.Branch("gen_b_pt"    , gen_b_pt_arr    , 'gen_b_pt/F')
+    Step7tree.Branch("gen_b_eta"   , gen_b_eta_arr   , 'gen_b_eta/F')
+    Step7tree.Branch("gen_b_phi"   , gen_b_phi_arr   , 'gen_b_phi/F')
+    Step7tree.Branch("gen_b_mass"   , gen_b_mass_arr   , 'gen_b_mass/F')
+    Step7tree.Branch("gen_b_status", gen_b_status_arr, 'gen_b_status/F')
+
+    Step7tree.Branch("gen_ab_pt"    , gen_ab_pt_arr    , 'gen_ab_pt/F')
+    Step7tree.Branch("gen_ab_eta"   , gen_ab_eta_arr   , 'gen_ab_eta/F')
+    Step7tree.Branch("gen_ab_phi"   , gen_ab_phi_arr   , 'gen_ab_phi/F')
+    Step7tree.Branch("gen_ab_mass"   , gen_ab_mass_arr   , 'gen_ab_mass/F')
+    Step7tree.Branch("gen_ab_status", gen_ab_status_arr, 'gen_ab_status/F')
+
+    if (verbose > 0):  
+        Step7tree.Branch("gen_lep_nearest_pt"    , gen_lep_nearest_pt_arr    , 'gen_lep_nearest_pt/F')
+        Step7tree.Branch("gen_lep_nearest_eta"   , gen_lep_nearest_eta_arr   , 'gen_lep_nearest_eta/F')
+        Step7tree.Branch("gen_lep_nearest_phi"   , gen_lep_nearest_phi_arr   , 'gen_lep_nearest_phi/F')
+        Step7tree.Branch("gen_lep_nearest_mass"   , gen_lep_nearest_mass_arr   , 'gen_lep_nearest_mass/F')
+        Step7tree.Branch("gen_lep_nearest_pdgid", gen_lep_nearest_pdgid_arr, 'gen_lep_nearest_pdgid/F')
+        Step7tree.Branch("gen_lep_nearest_status", gen_lep_nearest_status_arr, 'gen_lep_nearest_status/F')
+
+        Step7tree.Branch("gen_alep_nearest_pt"    , gen_alep_nearest_pt_arr    , 'gen_alep_nearest_pt/F')
+        Step7tree.Branch("gen_alep_nearest_eta"   , gen_alep_nearest_eta_arr   , 'gen_alep_nearest_eta/F')
+        Step7tree.Branch("gen_alep_nearest_phi"   , gen_alep_nearest_phi_arr   , 'gen_alep_nearest_phi/F')
+        Step7tree.Branch("gen_alep_nearest_mass"   , gen_alep_nearest_mass_arr   , 'gen_alep_nearest_mass/F')
+        Step7tree.Branch("gen_alep_nearest_pdgid", gen_alep_nearest_pdgid_arr, 'gen_alep_nearest_pdgid/F')
+        Step7tree.Branch("gen_alep_nearest_status", gen_alep_nearest_status_arr, 'gen_alep_nearest_status/F')
+
+    Step7tree.Branch("gen_lep_pt"    , gen_lep_pt_arr    , 'gen_lep_pt/F')
+    Step7tree.Branch("gen_lep_eta"   , gen_lep_eta_arr   , 'gen_lep_eta/F')
+    Step7tree.Branch("gen_lep_phi"   , gen_lep_phi_arr   , 'gen_lep_phi/F')
+    Step7tree.Branch("gen_lep_mass"   , gen_lep_mass_arr   , 'gen_lep_mass/F')
+    Step7tree.Branch("gen_lep_pdgid", gen_lep_pdgid_arr, 'gen_lep_pdgid/F')
+    Step7tree.Branch("gen_lep_status", gen_lep_status_arr, 'gen_lep_status/F')
+
+    Step7tree.Branch("gen_alep_pt"    , gen_alep_pt_arr    , 'gen_alep_pt/F')
+    Step7tree.Branch("gen_alep_eta"   , gen_alep_eta_arr   , 'gen_alep_eta/F')
+    Step7tree.Branch("gen_alep_phi"   , gen_alep_phi_arr   , 'gen_alep_phi/F')
+    Step7tree.Branch("gen_alep_mass"   , gen_alep_mass_arr   , 'gen_alep_mass/F')
+    Step7tree.Branch("gen_alep_pdgid", gen_alep_pdgid_arr, 'gen_alep_pdgid/F')
+    Step7tree.Branch("gen_alep_status", gen_alep_status_arr, 'gen_alep_status/F')
+
+    Step7tree.Branch("gen_neu_pt"    , gen_neu_pt_arr    , 'gen_neu_pt/F')
+    Step7tree.Branch("gen_neu_eta"   , gen_neu_eta_arr   , 'gen_neu_eta/F')
+    Step7tree.Branch("gen_neu_phi"   , gen_neu_phi_arr   , 'gen_neu_phi/F')
+    Step7tree.Branch("gen_neu_pdgid", gen_neu_pdgid_arr, 'gen_neu_pdgid/F')
+    Step7tree.Branch("gen_neu_status", gen_neu_status_arr, 'gen_neu_status/F')
+
+    Step7tree.Branch("gen_aneu_pt"    , gen_aneu_pt_arr    , 'gen_aneu_pt/F')
+    Step7tree.Branch("gen_aneu_eta"   , gen_aneu_eta_arr   , 'gen_aneu_eta/F')
+    Step7tree.Branch("gen_aneu_phi"   , gen_aneu_phi_arr   , 'gen_aneu_phi/F')
+    Step7tree.Branch("gen_aneu_pdgid", gen_aneu_pdgid_arr, 'gen_aneu_pdgid/F')
+    Step7tree.Branch("gen_aneu_status", gen_aneu_status_arr, 'gen_aneu_status/F')
+
+    Step7tree.Branch("gen_met_pt"    , gen_met_pt_arr    , 'gen_met_pt/F')
+    Step7tree.Branch("gen_met_phi"   , gen_met_phi_arr   , 'gen_met_phi/F')    
+    
+    # Store all gen information into the Step0 tree
+    #Step0tree.Branch("gen_lep_pt_0", gen_lep_pt_arr_0, 'gen_lep_pt_0/F')
 
     for i in range(len(gen_lep_pt_0)):
-
-        gen_top_pt_arr_0[0]     = gen_top_pt_0[i]
-        gen_top_eta_arr_0[0]    = gen_top_eta_0[i]
-        gen_top_phi_arr_0[0]    = gen_top_phi_0[i]
-        gen_top_mass_arr_0[0]    = gen_top_mass_0[i]
-        gen_top_status_arr_0[0] = gen_top_status_0[i]
-
-        gen_atop_pt_arr_0[0]     = gen_atop_pt_0[i]
-        gen_atop_eta_arr_0[0]    = gen_atop_eta_0[i]
-        gen_atop_phi_arr_0[0]    = gen_atop_phi_0[i]
-        gen_atop_mass_arr_0[0]    = gen_atop_mass_0[i]
-        gen_atop_status_arr_0[0] = gen_atop_status_0[i]
-
-        gen_b_pt_arr_0[0]     = gen_b_pt_0[i]
-        gen_b_eta_arr_0[0]    = gen_b_eta_0[i]
-        gen_b_phi_arr_0[0]    = gen_b_phi_0[i]
-        gen_b_mass_arr_0[0]    = gen_b_mass_0[i]
-        gen_b_status_arr_0[0] = gen_b_status_0[i]
-
-        gen_ab_pt_arr_0[0]     = gen_ab_pt_0[i]
-        gen_ab_eta_arr_0[0]    = gen_ab_eta_0[i]
-        gen_ab_phi_arr_0[0]    = gen_ab_phi_0[i]
-        gen_ab_mass_arr_0[0]    = gen_ab_mass_0[i]
-        gen_ab_status_arr_0[0] = gen_ab_status_0[i]
-
+        
         gen_lep_pt_arr_0[0]     = gen_lep_pt_0[i]
-        gen_lep_eta_arr_0[0]    = gen_lep_eta_0[i]
-        gen_lep_phi_arr_0[0]    = gen_lep_phi_0[i]
-        gen_lep_mass_arr_0[0]    = gen_lep_mass_0[i]
-        gen_lep_pdgid_arr_0[0] = gen_lep_pdgid_0[i]
-        gen_lep_status_arr_0[0] = gen_lep_status_0[i]
+        gen_lep_eta_arr_0[0]     = gen_lep_eta_0[i]
+        gen_lep_phi_arr_0[0]     = gen_lep_phi_0[i]
+        gen_lep_mass_arr_0[0]     = gen_lep_mass_0[i]
+        gen_lep_pdgid_arr_0[0]     = gen_lep_pdgid_0[i]
+        gen_lep_status_arr_0[0]     = gen_lep_status_0[i]
 
         gen_alep_pt_arr_0[0]     = gen_alep_pt_0[i]
-        gen_alep_eta_arr_0[0]    = gen_alep_eta_0[i]
-        gen_alep_phi_arr_0[0]    = gen_alep_phi_0[i]
-        gen_alep_mass_arr_0[0]    = gen_alep_mass_0[i]
-        gen_alep_pdgid_arr_0[0] = gen_alep_pdgid_0[i]
-        gen_alep_status_arr_0[0] = gen_alep_status_0[i]
-
+        gen_alep_eta_arr_0[0]     = gen_alep_eta_0[i]
+        gen_alep_phi_arr_0[0]     = gen_alep_phi_0[i]
+        gen_alep_mass_arr_0[0]     = gen_alep_mass_0[i]
+        gen_alep_pdgid_arr_0[0]     = gen_alep_pdgid_0[i]
+        gen_alep_status_arr_0[0]     = gen_alep_status_0[i]
+        
+        gen_top_pt_arr_0[0] = gen_top_pt_0[i]
+        gen_top_eta_arr_0[0] = gen_top_eta_0[i]
+        gen_top_phi_arr_0[0] = gen_top_phi_0[i]
+        gen_top_mass_arr_0[0] = gen_top_mass_0[i]
+        gen_top_status_arr_0[0] = gen_top_status_0[i]
+        
+        gen_atop_pt_arr_0[0] = gen_atop_pt_0[i]
+        gen_atop_eta_arr_0[0] = gen_atop_eta_0[i]
+        gen_atop_phi_arr_0[0] = gen_atop_phi_0[i]
+        gen_atop_mass_arr_0[0] = gen_atop_mass_0[i]
+        gen_atop_status_arr_0[0] = gen_atop_status_0[i]        
+        
+        gen_b_pt_arr_0[0] = gen_b_pt_0[i]
+        gen_b_eta_arr_0[0] = gen_b_eta_0[i]
+        gen_b_phi_arr_0[0] = gen_b_phi_0[i]
+        gen_b_mass_arr_0[0] = gen_b_mass_0[i]
+        gen_b_status_arr_0[0] = gen_b_status_0[i]
+        
+        gen_ab_pt_arr_0[0] = gen_ab_pt_0[i]
+        gen_ab_eta_arr_0[0] = gen_ab_eta_0[i]
+        gen_ab_phi_arr_0[0] = gen_ab_phi_0[i]
+        gen_ab_mass_arr_0[0] = gen_ab_mass_0[i]
+        gen_ab_status_arr_0[0] = gen_ab_status_0[i]        
+        
         gen_neu_pt_arr_0[0]     = gen_neu_pt_0[i]
-        gen_neu_eta_arr_0[0]    = gen_neu_eta_0[i]
-        gen_neu_phi_arr_0[0]    = gen_neu_phi_0[i]
-        gen_neu_pdgid_arr_0[0] = gen_neu_pdgid_0[i]
-        gen_neu_status_arr_0[0] = gen_neu_status_0[i]
-
+        gen_neu_eta_arr_0[0]     = gen_neu_eta_0[i]
+        gen_neu_phi_arr_0[0]     = gen_neu_phi_0[i]
+        gen_neu_pdgid_arr_0[0]     = gen_neu_pdgid_0[i]
+        gen_neu_status_arr_0[0]     = gen_neu_status_0[i]
+        
         gen_aneu_pt_arr_0[0]     = gen_aneu_pt_0[i]
-        gen_aneu_eta_arr_0[0]    = gen_aneu_eta_0[i]
-        gen_aneu_phi_arr_0[0]    = gen_aneu_phi_0[i]
-        gen_aneu_pdgid_arr_0[0] = gen_aneu_pdgid_0[i]
-        gen_aneu_status_arr_0[0] = gen_aneu_status_0[i]
-
-        gen_met_pt_arr_0[0]     = gen_met_pt_0[i]
-        gen_met_phi_arr_0[0]    = gen_met_phi_0[i]
-
-        #for k in range(weight_size_arr_0[0]):
-        #    weight_arr_0[k] = weight_sel_0[i][k]
-
+        gen_aneu_eta_arr_0[0]     = gen_aneu_eta_0[i]
+        gen_aneu_phi_arr_0[0]     = gen_aneu_phi_0[i]
+        gen_aneu_pdgid_arr_0[0]     = gen_aneu_pdgid_0[i]
+        gen_aneu_status_arr_0[0]     = gen_aneu_status_0[i]
+        
+        gen_met_pt_arr_0[0] = gen_met_pt_0[i]
+        gen_met_phi_arr_0[0] = gen_met_phi_0[i]
+        
         Step0tree.Fill()
-        hist_0.Fill(i)
+        hist_0.Fill(i)    
 
+    #print(len(HT), ' is the length of ', *HT, 'and the sum of valid numbers is ', ak.count_nonzero(HT))
 
-    for i in range(len(HT)):
+    k_jet = 0
+    for i in range(NEvents):    
 
-        HT_arr[0] = HT[i]
-        ST_arr[0] = ST[i]
-        MET_arr[0] = ET_miss[i]
+        if (selection[i]==1):
+                
+            #print('step7tree jet loop i k=', i, k_jet)
+            
+            jet_size_arr[0]     = len(jet_pt_sel[k_jet])
+            weight_size_arr[0]  = len(weight_sel[k_jet])
+            genpart_size_arr[0] = len(gen_pt_sel[k_jet])
+            #genjet_size_arr[0]  = len(genjet_pt_sel[i])            
+                            
+            for j in range(jet_size_arr[0]):
+                jet_pt_arr[j]   = jet_pt_sel[k_jet][j]
+                jet_eta_arr[j]  = jet_eta_sel[k_jet][j]
+                jet_phi_arr[j]  = jet_phi_sel[k_jet][j]
+                jet_mass_arr[j] = jet_mass_sel[k_jet][j]
+                jet_btag_arr[j] = int(jet_btag_sel[k_jet][j])
+            
+            #for j in range(genjet_size_arr[0]):
+                #genjet_pt_arr[j]   = genjet_pt_sel[i][j]
+                #genjet_eta_arr[j]  = genjet_eta_sel[i][j]
+                #genjet_phi_arr[j]  = genjet_phi_sel[i][j]
+                #genjet_mass_arr[j] = genjet_mass_sel[i][j]
+                #genjet_btag_arr[j] = genjet_btag_sel[i][j]
+            
+            for j in range(genpart_size_arr[0]):
+                genpart_pt_arr[j]   = gen_pt_sel[k_jet][j]
+                genpart_pid_arr[j]  = gen_pid_sel[k_jet][j]
+                genpart_eta_arr[j]  = gen_eta_sel[k_jet][j]
+                genpart_phi_arr[j]  = gen_phi_sel[k_jet][j]
+                genpart_mass_arr[j] = gen_mass_sel[k_jet][j]
+                genpart_status_arr[j] = gen_status_sel[k_jet][j]
+                #genpart_charge_arr[j] = gen_charge_sel[i][j]            
+            
+            for k in range(weight_size_arr[0]):
+                weight_arr[k] = weight_sel[k_jet][k]   
+    
+            HT_arr[0]  = HT[i]
+            ST_arr[0]  = ST[i]
+            MET_arr[0] = ET_miss[i]
+    
+            HT_check_arr[0] = HT_check[i]
+            MET_phi_arr[0]  = MET_phi[i]
+    
+            l_pt_arr[0]   = l_pt[i]
+            l_eta_arr[0]  = l_eta[i]
+            l_phi_arr[0]  = l_phi[i]
+            l_mass_arr[0] = l_mass[i]
+    
+            sl_pt_arr[0]   = sl_pt[i]
+            sl_eta_arr[0]  = sl_eta[i]
+            sl_phi_arr[0]  = sl_phi[i]
+            sl_mass_arr[0] = sl_mass[i]
+    
+            e_pt_arr[0]     = e_pt[i]
+            e_eta_arr[0]    = e_eta[i]
+            e_phi_arr[0]    = e_phi[i]
+            e_charge_arr[0] = e_charge[i]
+    
+            mu_pt_arr[0]     = mu_pt[i]
+            mu_eta_arr[0]    = mu_eta[i]
+            mu_phi_arr[0]    = mu_phi[i]
+            mu_charge_arr[0] = mu_charge[i]
+    
+            lep_pt_arr[0]     = lep_pt[i]
+            lep_eta_arr[0]    = lep_eta[i]
+            lep_phi_arr[0]    = lep_phi[i]
+            lep_mass_arr[0]    = lep_mass[i]
+            lep_pdgid_arr[0] = lep_pdgid[i]
+    
+            alep_pt_arr[0]     = alep_pt[i]
+            alep_eta_arr[0]    = alep_eta[i]
+            alep_phi_arr[0]    = alep_phi[i]
+            alep_mass_arr[0]    = alep_mass[i]
+            alep_pdgid_arr[0] = alep_pdgid[i]
+            
+            if (verbose > 0):
+            
+                lep_nearest_pt_arr[0]     = lep_nearest_pt[i]
+                lep_nearest_eta_arr[0]    = lep_nearest_eta[i]
+                lep_nearest_phi_arr[0]    = lep_nearest_phi[i]
+                lep_nearest_mass_arr[0]    = lep_nearest_mass[i]
+                lep_nearest_pdgid_arr[0] = lep_nearest_pdgid[i]
 
-        HT_check_arr[0] = HT_check[i]
-        MET_phi_arr[0] = MET_phi[i]
+                alep_nearest_pt_arr[0]     = alep_nearest_pt[i]
+                alep_nearest_eta_arr[0]    = alep_nearest_eta[i]
+                alep_nearest_phi_arr[0]    = alep_nearest_phi[i]
+                alep_nearest_mass_arr[0]    = alep_nearest_mass[i]
+                alep_nearest_pdgid_arr[0] = alep_nearest_pdgid[i]
+    
+            ljet_pt_arr[0]   = ljet_pt[i]
+            ljet_eta_arr[0]  = ljet_eta[i]
+            ljet_phi_arr[0]  = ljet_phi[i]
+            ljet_mass_arr[0] = ljet_mass[i]
+    
+            sljet_pt_arr[0]   = sljet_pt[i]
+            sljet_eta_arr[0]  = sljet_eta[i]
+            sljet_phi_arr[0]  = sljet_phi[i]
+            sljet_mass_arr[0] = sljet_mass[i] 
 
-        l_pt_arr[0] = l_pt[i]
-        l_eta_arr[0] = l_eta[i]
-        l_phi_arr[0] = l_phi[i]
-        l_mass_arr[0] = l_mass[i]
+            if (verbose > 0):
+                
+                bjet_nearest_pt_arr[0]   = bjet_nearest_pt[i]
+                bjet_nearest_eta_arr[0]  = bjet_nearest_eta[i]
+                bjet_nearest_phi_arr[0]  = bjet_nearest_phi[i]
+                bjet_nearest_mass_arr[0] = bjet_nearest_mass[i]
 
-        sl_pt_arr[0] = sl_pt[i]
-        sl_eta_arr[0] = sl_eta[i]
-        sl_phi_arr[0] = sl_phi[i]
-        sl_mass_arr[0] = sl_mass[i]
-
-        e_pt_arr[0]  = e_pt[i]
-        e_eta_arr[0] = e_eta[i]
-        e_phi_arr[0] = e_phi[i]
-        e_charge_arr[0] = e_charge[i]
-
-        mu_pt_arr[0]  = mu_pt[i]
-        mu_eta_arr[0] = mu_eta[i]
-        mu_phi_arr[0] = mu_phi[i]
-        mu_charge_arr[0] = mu_charge[i]
-
-        lep_pt_arr[0]  = lep_pt[i]
-        lep_eta_arr[0] = lep_eta[i]
-        lep_phi_arr[0] = lep_phi[i]
-        lep_mass_arr[0] = lep_mass[i]
-        lep_pdgid_arr[0] = lep_pdgid[i]
-
-        alep_pt_arr[0]  = alep_pt[i]
-        alep_eta_arr[0] = alep_eta[i]
-        alep_phi_arr[0] = alep_phi[i]
-        alep_mass_arr[0] = alep_mass[i]
-        alep_pdgid_arr[0] = alep_pdgid[i]
-
-        if (verbose > 0):
-
-            lep_nearest_pt_arr[0]  = lep_nearest_pt[i]
-            lep_nearest_eta_arr[0] = lep_nearest_eta[i]
-            lep_nearest_phi_arr[0] = lep_nearest_phi[i]
-            lep_nearest_mass_arr[0] = lep_nearest_mass[i]
-            lep_nearest_pdgid_arr[0] = lep_nearest_pdgid[i]
-
-            alep_nearest_pt_arr[0]  = alep_nearest_pt[i]
-            alep_nearest_eta_arr[0] = alep_nearest_eta[i]
-            alep_nearest_phi_arr[0] = alep_nearest_phi[i]
-            alep_nearest_mass_arr[0] = alep_nearest_mass[i]
-            alep_nearest_pdgid_arr[0] = alep_nearest_pdgid[i]
-
-        ljet_pt_arr[0] = ljet_pt[i]
-        ljet_eta_arr[0] = ljet_eta[i]
-        ljet_phi_arr[0] = ljet_phi[i]
-        ljet_mass_arr[0] = ljet_mass[i]
-
-        sljet_pt_arr[0] = sljet_pt[i]
-        sljet_eta_arr[0] = sljet_eta[i]
-        sljet_phi_arr[0] = sljet_phi[i]
-        sljet_mass_arr[0] = sljet_mass[i]
-
-        if (verbose > 0):
-
-            bjet_nearest_pt_arr[0] = bjet_nearest_pt[i]
-            bjet_nearest_eta_arr[0] = bjet_nearest_eta[i]
-            bjet_nearest_phi_arr[0] = bjet_nearest_phi[i]
-            bjet_nearest_mass_arr[0] = bjet_nearest_mass[i]
-
-            abjet_nearest_pt_arr[0] = abjet_nearest_pt[i]
-            abjet_nearest_eta_arr[0] = abjet_nearest_eta[i]
-            abjet_nearest_phi_arr[0] = abjet_nearest_phi[i]
-            abjet_nearest_mass_arr[0] = abjet_nearest_mass[i]
-
-        llbar_deta_arr[0] = llbar_deta[i]
-        llbar_dphi_arr[0] = llbar_dphi[i]
-        bbbar_deta_arr[0] = bbbar_deta[i]
-        bbbar_dphi_arr[0] = bbbar_dphi[i]
-
-        jet_size_arr[0]  = len(jet_pt_sel[i])
-        weight_size_arr[0] = len(weight_sel[i])
-
-        # Gen
-
-        genpart_size_arr[0] = len(gen_pt_sel[i])
-        #genjet_size_arr[0] = len(genjet_pt_sel[i])
-
-        gen_top_pt_arr[0]  = gen_top_pt[i]
-        gen_top_eta_arr[0] = gen_top_eta[i]
-        gen_top_phi_arr[0] = gen_top_phi[i]
-        gen_top_mass_arr[0] = gen_top_mass[i]
-        gen_top_status_arr[0] = gen_top_status[i]
-
-        gen_atop_pt_arr[0]  = gen_atop_pt[i]
-        gen_atop_eta_arr[0] = gen_atop_eta[i]
-        gen_atop_phi_arr[0] = gen_atop_phi[i]
-        gen_atop_mass_arr[0] = gen_atop_mass[i]
-        gen_atop_status_arr[0] = gen_atop_status[i]
-
-        gen_b_pt_arr[0]  = gen_b_pt[i]
-        gen_b_eta_arr[0] = gen_b_eta[i]
-        gen_b_phi_arr[0] = gen_b_phi[i]
-        gen_b_mass_arr[0] = gen_b_mass[i]
-        gen_b_status_arr[0] = gen_b_status[i]
-
-        gen_ab_pt_arr[0]  = gen_ab_pt[i]
-        gen_ab_eta_arr[0] = gen_ab_eta[i]
-        gen_ab_phi_arr[0] = gen_ab_phi[i]
-        gen_ab_mass_arr[0] = gen_ab_mass[i]
-        gen_ab_status_arr[0] = gen_ab_status[i]
-
-        gen_lep_pt_arr[0]  = gen_lep_pt[i]
-        gen_lep_eta_arr[0] = gen_lep_eta[i]
-        gen_lep_phi_arr[0] = gen_lep_phi[i]
-        gen_lep_mass_arr[0] = gen_lep_mass[i]
-        gen_lep_pdgid_arr[0] = gen_lep_pdgid[i]
-        gen_lep_status_arr[0] = gen_lep_status[i]
-
-        gen_alep_pt_arr[0]  = gen_alep_pt[i]
-        gen_alep_eta_arr[0] = gen_alep_eta[i]
-        gen_alep_phi_arr[0] = gen_alep_phi[i]
-        gen_alep_mass_arr[0] = gen_alep_mass[i]
-        gen_alep_pdgid_arr[0] = gen_alep_pdgid[i]
-        gen_alep_status_arr[0] = gen_alep_status[i]
-
-        if (verbose > 0):
-
-            gen_lep_nearest_pt_arr[0]  = gen_lep_nearest_pt[i]
-            gen_lep_nearest_eta_arr[0] = gen_lep_nearest_eta[i]
-            gen_lep_nearest_phi_arr[0] = gen_lep_nearest_phi[i]
-            gen_lep_nearest_mass_arr[0] = gen_lep_nearest_mass[i]
+                abjet_nearest_pt_arr[0]   = abjet_nearest_pt[i]
+                abjet_nearest_eta_arr[0]  = abjet_nearest_eta[i]
+                abjet_nearest_phi_arr[0]  = abjet_nearest_phi[i]
+                abjet_nearest_mass_arr[0] = abjet_nearest_mass[i]
+    
+            llbar_deta_arr[0] = llbar_deta[i]
+            llbar_dphi_arr[0] = llbar_dphi[i]
+            bbbar_deta_arr[0] = bbbar_deta[i]
+            bbbar_dphi_arr[0] = bbbar_dphi[i]
+        
+            #print(i, ', len(jet_pt_sel)=', len(jet_pt_sel[i]), ', jet_pt_sel=', jet_pt_sel[i])
+    
+            # Gen
+    
+            gen_top_pt_arr[0]     = gen_top_pt[i]
+            gen_top_eta_arr[0]    = gen_top_eta[i]
+            gen_top_phi_arr[0]    = gen_top_phi[i]
+            gen_top_mass_arr[0]    = gen_top_mass[i]
+            gen_top_status_arr[0] = gen_top_status[i]
+    
+            gen_atop_pt_arr[0]     = gen_atop_pt[i]
+            gen_atop_eta_arr[0]    = gen_atop_eta[i]
+            gen_atop_phi_arr[0]    = gen_atop_phi[i]
+            gen_atop_mass_arr[0]    = gen_atop_mass[i]
+            gen_atop_status_arr[0] = gen_atop_status[i] 
+            
+            gen_b_pt_arr[0]     = gen_b_pt[i]
+            gen_b_eta_arr[0]    = gen_b_eta[i]
+            gen_b_phi_arr[0]    = gen_b_phi[i]
+            gen_b_mass_arr[0]    = gen_b_mass[i]
+            gen_b_status_arr[0] = gen_b_status[i]
+    
+            gen_ab_pt_arr[0]     = gen_ab_pt[i]
+            gen_ab_eta_arr[0]    = gen_ab_eta[i]
+            gen_ab_phi_arr[0]    = gen_ab_phi[i]
+            gen_ab_mass_arr[0]    = gen_ab_mass[i]
+            gen_ab_status_arr[0] = gen_ab_status[i]
+    
+            gen_lep_pt_arr[0]     = gen_lep_pt[i]
+            gen_lep_eta_arr[0]    = gen_lep_eta[i]
+            gen_lep_phi_arr[0]    = gen_lep_phi[i]
+            gen_lep_mass_arr[0]    = gen_lep_mass[i]
+            gen_lep_pdgid_arr[0] = gen_lep_pdgid[i]
+            gen_lep_status_arr[0] = gen_lep_status[i]
+    
+            gen_alep_pt_arr[0]     = gen_alep_pt[i]
+            gen_alep_eta_arr[0]    = gen_alep_eta[i]
+            gen_alep_phi_arr[0]    = gen_alep_phi[i]
+            gen_alep_mass_arr[0]    = gen_alep_mass[i]
+            gen_alep_pdgid_arr[0] = gen_alep_pdgid[i]
+            gen_alep_status_arr[0] = gen_alep_status[i]
+    
+            gen_lep_nearest_pt_arr[0]     = gen_lep_nearest_pt[i]
+            gen_lep_nearest_eta_arr[0]    = gen_lep_nearest_eta[i]
+            gen_lep_nearest_phi_arr[0]    = gen_lep_nearest_phi[i]
+            gen_lep_nearest_mass_arr[0]    = gen_lep_nearest_mass[i]
             gen_lep_nearest_pdgid_arr[0] = gen_lep_nearest_pdgid[i]
             gen_lep_nearest_status_arr[0] = gen_lep_nearest_status[i]
-
-            gen_alep_nearest_pt_arr[0]  = gen_alep_nearest_pt[i]
-            gen_alep_nearest_eta_arr[0] = gen_alep_nearest_eta[i]
-            gen_alep_nearest_phi_arr[0] = gen_alep_nearest_phi[i]
-            gen_alep_nearest_mass_arr[0] = gen_alep_nearest_mass[i]
+    
+            gen_alep_nearest_pt_arr[0]     = gen_alep_nearest_pt[i]
+            gen_alep_nearest_eta_arr[0]    = gen_alep_nearest_eta[i]
+            gen_alep_nearest_phi_arr[0]    = gen_alep_nearest_phi[i]
+            gen_alep_nearest_mass_arr[0]    = gen_alep_nearest_mass[i]
             gen_alep_nearest_pdgid_arr[0] = gen_alep_nearest_pdgid[i]
             gen_alep_nearest_status_arr[0] = gen_alep_nearest_status[i]
-
-        gen_neu_pt_arr[0]  = gen_neu_pt[i]
-        gen_neu_eta_arr[0] = gen_neu_eta[i]
-        gen_neu_phi_arr[0] = gen_neu_phi[i]
-        gen_neu_pdgid_arr[0] = gen_neu_pdgid[i]
-        gen_neu_status_arr[0] = gen_neu_status[i]
-
-        gen_aneu_pt_arr[0]  = gen_aneu_pt[i]
-        gen_aneu_eta_arr[0] = gen_aneu_eta[i]
-        gen_aneu_phi_arr[0] = gen_aneu_phi[i]
-        gen_aneu_pdgid_arr[0] = gen_aneu_pdgid[i]
-        gen_aneu_status_arr[0] = gen_aneu_status[i]
-
-        gen_met_pt_arr[0]  = gen_met_pt[i]
-        gen_met_phi_arr[0] = gen_met_phi[i]
-
-        for j in range(jet_size_arr[0]):
-            jet_pt_arr[j] = jet_pt_sel[i][j]
-            jet_eta_arr[j] = jet_eta_sel[i][j]
-            jet_phi_arr[j] = jet_phi_sel[i][j]
-            jet_mass_arr[j] = jet_mass_sel[i][j]
-            jet_btag_arr[j] = int(jet_btag_sel[i][j])
-
-        #for j in range(genjet_size_arr[0]):
-            #genjet_pt_arr[j] = genjet_pt_sel[i][j]
-            #genjet_eta_arr[j] = genjet_eta_sel[i][j]
-            #genjet_phi_arr[j] = genjet_phi_sel[i][j]
-            #genjet_mass_arr[j] = genjet_mass_sel[i][j]
-            #genjet_btag_arr[j] = genjet_btag_sel[i][j]
-
-        for j in range(genpart_size_arr[0]):
-            genpart_pt_arr[j] = gen_pt_sel[i][j]
-            genpart_pid_arr[j] = gen_pid_sel[i][j]
-            genpart_eta_arr[j] = gen_eta_sel[i][j]
-            genpart_phi_arr[j] = gen_phi_sel[i][j]
-            genpart_mass_arr[j] = gen_mass_sel[i][j]
-            genpart_status_arr[j] = gen_status_sel[i][j]
-            #genpart_charge_arr[j] = gen_charge_sel[i][j]
-
-        for k in range(weight_size_arr[0]):
-            weight_arr[k] = weight_sel[i][k]
-
-        Step7tree.Fill()
-
+    
+            gen_neu_pt_arr[0]     = gen_neu_pt[i]
+            gen_neu_eta_arr[0]    = gen_neu_eta[i]
+            gen_neu_phi_arr[0]    = gen_neu_phi[i]
+            gen_neu_pdgid_arr[0] = gen_neu_pdgid[i]
+            gen_neu_status_arr[0] = gen_neu_status[i]
+    
+            gen_aneu_pt_arr[0]     = gen_aneu_pt[i]
+            gen_aneu_eta_arr[0]    = gen_aneu_eta[i]
+            gen_aneu_phi_arr[0]    = gen_aneu_phi[i]
+            gen_aneu_pdgid_arr[0] = gen_aneu_pdgid[i]
+            gen_aneu_status_arr[0] = gen_aneu_status[i]
+    
+            gen_met_pt_arr[0]     = gen_met_pt[i]
+            gen_met_phi_arr[0]    = gen_met_phi[i]     
+    
+            Step7tree.Fill()             
+     
+            k_jet += 1
+        
     for i in range(len(selection)):
         hist.Fill(i)
     
     print('Number of events that pass selection :: ' + str(len(ljet_pt)))
     # print('gen_lep_pt_arr :: ' + str(len(gen_lep_pt_arr))) 
-    # print('gen_lep_pt_arr :: ' + str(len(gen_lep_pt_arr))) 
-    # print('gen_lep_pt :: ' + str(len(gen_lep_pt))) 
+    #print('gen_lep_pt_arr :: ' + str(len(gen_lep_pt_arr))) 
+    #print('gen_lep_pt :: ' + str(len(gen_lep_pt))) 
+    #print('gen_lep_nearest_pt_arr :: ' + str(len(gen_lep_nearest_pt_arr))) 
+    #print('gen_lep_nearest_pt :: ' + str(len(gen_lep_nearest_pt))) 
     
     # Write the tree into the output file and close the file
     opfile.Write()
