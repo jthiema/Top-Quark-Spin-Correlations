@@ -36,7 +36,7 @@ $ python Make_Histograms_Commands.py
 ```
 - Then select the commands you want to run from Minitrees_Commands.sh. Ex: <br>
 ```
-$ python Minitrees/Make_minitrees_v2.py -i /depot/cms/top/he614/TTBar/TTBar_Ntuples/TT_Dilept_100.root -o MiniTreeOutput/minitree_TT_Dilept_100.root
+$ python Minitrees/Make_minitrees.py -i /depot/cms/top/he614/TTBar/TTBar_Ntuples/TT_Dilept_100.root -o MiniTreeOutput/minitree_TT_Dilept_100.root
 $ python Top_reco/Top_reco.py -i MiniTreeOutput/minitree_TT_Dilept_100.root
 $ python Histograms/Make_histograms.py -i MiniTreeOutput/minitree_TT_Dilept_100.root -o HistogramOutput/histogram_TT_Dilept_100.root
 ```
