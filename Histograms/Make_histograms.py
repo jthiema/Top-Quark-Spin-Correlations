@@ -31,10 +31,12 @@ def ifOk(var_check) :
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', help='Input delphes minitrees file')
 parser.add_argument('-o', '--output', help='Output file location')
+parser.add_argument('-v', '--verbose', action='count', default=0, help='Verbosity', required=False)
 
 args = parser.parse_args()
 inputFile = args.input
 outputFile = args.output
+verbose = args.verbose
 
 opfile = ROOT.TFile(outputFile, 'recreate')
 
@@ -42,74 +44,74 @@ opfile = ROOT.TFile(outputFile, 'recreate')
 step0 = uproot.open(inputFile)['Step0']
 
 # items we need from Make_minitrees.py 
-#    gen_top_pt_arr_0      = array('f', [0.])
-#    gen_top_eta_arr_0     = array('f', [0.])
-#    gen_top_phi_arr_0     = array('f', [0.])
-#    gen_top_mass_arr_0     = array('f', [0.])
-#    gen_top_status_arr_0  = array('f', [0.])
+#    gen_top_pt_arr      = array('f', [0.])
+#    gen_top_eta_arr     = array('f', [0.])
+#    gen_top_phi_arr     = array('f', [0.])
+#    gen_top_mass_arr     = array('f', [0.])
+#    gen_top_status_arr  = array('f', [0.])
 #
-#    gen_atop_pt_arr_0     = array('f', [0.])
-#    gen_atop_eta_arr_0    = array('f', [0.])
-#    gen_atop_phi_arr_0    = array('f', [0.])
-#    gen_atop_mass_arr_0    = array('f', [0.])
-#    gen_atop_status_arr_0  = array('f', [0.])
+#    gen_atop_pt_arr     = array('f', [0.])
+#    gen_atop_eta_arr    = array('f', [0.])
+#    gen_atop_phi_arr    = array('f', [0.])
+#    gen_atop_mass_arr    = array('f', [0.])
+#    gen_atop_status_arr  = array('f', [0.])
 #
-#    gen_b_pt_arr_0      = array('f', [0.])
-#    gen_b_eta_arr_0     = array('f', [0.])
-#    gen_b_phi_arr_0     = array('f', [0.])
-#    gen_b_mass_arr_0     = array('f', [0.])
-#    gen_b_status_arr_0  = array('f', [0.])
+#    gen_b_pt_arr      = array('f', [0.])
+#    gen_b_eta_arr     = array('f', [0.])
+#    gen_b_phi_arr     = array('f', [0.])
+#    gen_b_mass_arr     = array('f', [0.])
+#    gen_b_status_arr  = array('f', [0.])
 #
-#    gen_ab_pt_arr_0     = array('f', [0.])
-#    gen_ab_eta_arr_0    = array('f', [0.])
-#    gen_ab_phi_arr_0    = array('f', [0.])
-#    gen_ab_mass_arr_0    = array('f', [0.])
-#    gen_ab_status_arr_0  = array('f', [0.])
+#    gen_ab_pt_arr     = array('f', [0.])
+#    gen_ab_eta_arr    = array('f', [0.])
+#    gen_ab_phi_arr    = array('f', [0.])
+#    gen_ab_mass_arr    = array('f', [0.])
+#    gen_ab_status_arr  = array('f', [0.])
 #
-#    gen_lep_pt_arr_0      = array('f', [0.])
-#    gen_lep_eta_arr_0     = array('f', [0.])
-#    gen_lep_phi_arr_0     = array('f', [0.])
-#    gen_lep_mass_arr_0     = array('f', [0.])
-#    gen_lep_pdgid_arr_0  = array('f', [0.])
-#    gen_lep_status_arr_0  = array('f', [0.])
+#    gen_lep_pt_arr      = array('f', [0.])
+#    gen_lep_eta_arr     = array('f', [0.])
+#    gen_lep_phi_arr     = array('f', [0.])
+#    gen_lep_mass_arr     = array('f', [0.])
+#    gen_lep_pdgid_arr  = array('f', [0.])
+#    gen_lep_status_arr  = array('f', [0.])
 #
-#    gen_alep_pt_arr_0     = array('f', [0.])
-#    gen_alep_eta_arr_0    = array('f', [0.])
-#    gen_alep_phi_arr_0    = array('f', [0.])
-#    gen_alep_mass_arr_0    = array('f', [0.])
-#    gen_alep_pdgid_arr_0 = array('f', [0.])
-#    gen_alep_status_arr_0  = array('f', [0.])
+#    gen_alep_pt_arr     = array('f', [0.])
+#    gen_alep_eta_arr    = array('f', [0.])
+#    gen_alep_phi_arr    = array('f', [0.])
+#    gen_alep_mass_arr    = array('f', [0.])
+#    gen_alep_pdgid_arr = array('f', [0.])
+#    gen_alep_status_arr  = array('f', [0.])
 #
-#    gen_lep_nearest_pt_arr_0      = array('f', [0.])
-#    gen_lep_nearest_eta_arr_0     = array('f', [0.])
-#    gen_lep_nearest_phi_arr_0     = array('f', [0.])
-#    gen_lep_nearest_mass_arr_0     = array('f', [0.])
-#    gen_lep_nearest_pdgid_arr_0  = array('f', [0.])
-#    gen_lep_nearest_status_arr_0  = array('f', [0.])
+#    gen_lep_nearest_pt_arr      = array('f', [0.])
+#    gen_lep_nearest_eta_arr     = array('f', [0.])
+#    gen_lep_nearest_phi_arr     = array('f', [0.])
+#    gen_lep_nearest_mass_arr     = array('f', [0.])
+#    gen_lep_nearest_pdgid_arr  = array('f', [0.])
+#    gen_lep_nearest_status_arr  = array('f', [0.])
 #
-#    gen_alep_nearest_pt_arr_0     = array('f', [0.])
-#    gen_alep_nearest_eta_arr_0    = array('f', [0.])
-#    gen_alep_nearest_phi_arr_0    = array('f', [0.])
-#    gen_alep_nearest_mass_arr_0    = array('f', [0.])
-#    gen_alep_nearest_pdgid_arr_0 = array('f', [0.])
-#    gen_alep_nearest_status_arr_0  = array('f', [0.])
+#    gen_alep_nearest_pt_arr     = array('f', [0.])
+#    gen_alep_nearest_eta_arr    = array('f', [0.])
+#    gen_alep_nearest_phi_arr    = array('f', [0.])
+#    gen_alep_nearest_mass_arr    = array('f', [0.])
+#    gen_alep_nearest_pdgid_arr = array('f', [0.])
+#    gen_alep_nearest_status_arr  = array('f', [0.])
 #
-#    gen_neu_pt_arr_0      = array('f', [0.])
-#    gen_neu_eta_arr_0     = array('f', [0.])
-#    gen_neu_phi_arr_0     = array('f', [0.])
-#    gen_neu_mass_arr_0     = array('f', [0.])
-#    gen_neu_pdgid_arr_0  = array('f', [0.])
-#    gen_neu_status_arr_0  = array('f', [0.])
+#    gen_neu_pt_arr      = array('f', [0.])
+#    gen_neu_eta_arr     = array('f', [0.])
+#    gen_neu_phi_arr     = array('f', [0.])
+#    gen_neu_mass_arr     = array('f', [0.])
+#    gen_neu_pdgid_arr  = array('f', [0.])
+#    gen_neu_status_arr  = array('f', [0.])
 #
-#    gen_aneu_pt_arr_0     = array('f', [0.])
-#    gen_aneu_eta_arr_0    = array('f', [0.])
-#    gen_aneu_phi_arr_0    = array('f', [0.])
-#    gen_aneu_mass_arr_0    = array('f', [0.])
-#    gen_aneu_pdgid_arr_0 = array('f', [0.])
-#    gen_aneu_status_arr_0  = array('f', [0.])
+#    gen_aneu_pt_arr     = array('f', [0.])
+#    gen_aneu_eta_arr    = array('f', [0.])
+#    gen_aneu_phi_arr    = array('f', [0.])
+#    gen_aneu_mass_arr    = array('f', [0.])
+#    gen_aneu_pdgid_arr = array('f', [0.])
+#    gen_aneu_status_arr  = array('f', [0.])
 #
-#    gen_met_pt_arr_0     = array('f', [0.])
-#    gen_met_phi_arr_0    = array('f', [0.])
+#    gen_met_pt_arr     = array('f', [0.])
+#    gen_met_phi_arr    = array('f', [0.])
 
 step0_hleppt = ROOT.TH1D('all_gen_lep_pt', 'all_gen_lep_pt', 30, 0, 300)
 step0_hlepeta = ROOT.TH1D('all_gen_lep_eta', 'all_gen_lep_eta', 30, -7, 7)
@@ -138,33 +140,33 @@ step0_haneupt = ROOT.TH1D('all_gen_aneu_pt', 'all_gen_aneu_pt', 30, 0, 300)
 step0_haneueta = ROOT.TH1D('all_gen_aneu_eta', 'all_gen_aneu_eta', 30, -7, 7)
 step0_haneuphi = ROOT.TH1D('all_gen_aneu_phi', 'all_gen_aneu_phi', 30, -np.pi, np.pi)
 
-for i in range(len(step0['gen_lep_pt_0'].array())):
-    step0_hleppt.Fill(step0['gen_lep_pt_0'].array()[i]) 
-    step0_hlepeta.Fill(step0['gen_lep_eta_0'].array()[i]) 
-    step0_hlepphi.Fill(step0['gen_lep_phi_0'].array()[i]) 
-    step0_haleppt.Fill(step0['gen_alep_pt_0'].array()[i]) 
-    step0_halepeta.Fill(step0['gen_alep_eta_0'].array()[i]) 
-    step0_halepphi.Fill(step0['gen_alep_phi_0'].array()[i]) 
-    step0_hmetpt.Fill(step0['gen_met_pt_0'].array()[i]) 
-    step0_hmetphi.Fill(step0['gen_met_phi_0'].array()[i]) 
-    step0_htpt.Fill(step0['gen_top_pt_0'].array()[i]) 
-    step0_hteta.Fill(step0['gen_top_eta_0'].array()[i]) 
-    step0_htphi.Fill(step0['gen_top_phi_0'].array()[i]) 
-    step0_hatpt.Fill(step0['gen_atop_pt_0'].array()[i]) 
-    step0_hateta.Fill(step0['gen_atop_eta_0'].array()[i]) 
-    step0_hatphi.Fill(step0['gen_atop_phi_0'].array()[i]) 
-    step0_hbpt.Fill(step0['gen_b_pt_0'].array()[i]) 
-    step0_hbeta.Fill(step0['gen_b_eta_0'].array()[i]) 
-    step0_hbphi.Fill(step0['gen_b_phi_0'].array()[i]) 
-    step0_habpt.Fill(step0['gen_ab_pt_0'].array()[i]) 
-    step0_habeta.Fill(step0['gen_ab_eta_0'].array()[i]) 
-    step0_habphi.Fill(step0['gen_ab_phi_0'].array()[i]) 
-    step0_hneupt.Fill(step0['gen_neu_pt_0'].array()[i]) 
-    step0_hneueta.Fill(step0['gen_neu_eta_0'].array()[i]) 
-    step0_hneuphi.Fill(step0['gen_neu_phi_0'].array()[i]) 
-    step0_haneupt.Fill(step0['gen_aneu_pt_0'].array()[i]) 
-    step0_haneueta.Fill(step0['gen_aneu_eta_0'].array()[i]) 
-    step0_haneuphi.Fill(step0['gen_aneu_phi_0'].array()[i]) 
+for i in range(len(step0['gen_lep_pt'].array())):
+    step0_hleppt.Fill(step0['gen_lep_pt'].array()[i]) 
+    step0_hlepeta.Fill(step0['gen_lep_eta'].array()[i]) 
+    step0_hlepphi.Fill(step0['gen_lep_phi'].array()[i]) 
+    step0_haleppt.Fill(step0['gen_alep_pt'].array()[i]) 
+    step0_halepeta.Fill(step0['gen_alep_eta'].array()[i]) 
+    step0_halepphi.Fill(step0['gen_alep_phi'].array()[i]) 
+    step0_hmetpt.Fill(step0['gen_met_pt'].array()[i]) 
+    step0_hmetphi.Fill(step0['gen_met_phi'].array()[i]) 
+    step0_htpt.Fill(step0['gen_top_pt'].array()[i]) 
+    step0_hteta.Fill(step0['gen_top_eta'].array()[i]) 
+    step0_htphi.Fill(step0['gen_top_phi'].array()[i]) 
+    step0_hatpt.Fill(step0['gen_atop_pt'].array()[i]) 
+    step0_hateta.Fill(step0['gen_atop_eta'].array()[i]) 
+    step0_hatphi.Fill(step0['gen_atop_phi'].array()[i]) 
+    step0_hbpt.Fill(step0['gen_b_pt'].array()[i]) 
+    step0_hbeta.Fill(step0['gen_b_eta'].array()[i]) 
+    step0_hbphi.Fill(step0['gen_b_phi'].array()[i]) 
+    step0_habpt.Fill(step0['gen_ab_pt'].array()[i]) 
+    step0_habeta.Fill(step0['gen_ab_eta'].array()[i]) 
+    step0_habphi.Fill(step0['gen_ab_phi'].array()[i]) 
+    step0_hneupt.Fill(step0['gen_neu_pt'].array()[i]) 
+    step0_hneueta.Fill(step0['gen_neu_eta'].array()[i]) 
+    step0_hneuphi.Fill(step0['gen_neu_phi'].array()[i]) 
+    step0_haneupt.Fill(step0['gen_aneu_pt'].array()[i]) 
+    step0_haneueta.Fill(step0['gen_aneu_eta'].array()[i]) 
+    step0_haneuphi.Fill(step0['gen_aneu_phi'].array()[i]) 
 
 # Step 8 RECO hists
 
@@ -903,71 +905,70 @@ gen_ab_eta = fileptr['gen_ab_eta'].array()
 gen_ab_phi = fileptr['gen_ab_phi'].array()
 gen_ab_mass = fileptr['gen_ab_mass'].array()
 
-lep_nearest_pt = fileptr['lep_nearest_pt'].array()
-lep_nearest_eta = fileptr['lep_nearest_eta'].array()
-lep_nearest_phi = fileptr['lep_nearest_phi'].array()
-lep_nearest_mass = fileptr['lep_nearest_mass'].array()
-
-alep_nearest_pt = fileptr['alep_nearest_pt'].array()
-alep_nearest_eta = fileptr['alep_nearest_eta'].array()
-alep_nearest_phi = fileptr['alep_nearest_phi'].array()
-alep_nearest_mass = fileptr['alep_nearest_mass'].array()
-
-bjet_nearest_pt = fileptr['bjet_nearest_pt'].array()
-bjet_nearest_eta = fileptr['bjet_nearest_eta'].array()
-bjet_nearest_phi = fileptr['bjet_nearest_phi'].array()
-bjet_nearest_mass = fileptr['bjet_nearest_mass'].array()
-
-abjet_nearest_pt = fileptr['abjet_nearest_pt'].array()
-abjet_nearest_eta = fileptr['abjet_nearest_eta'].array()
-abjet_nearest_phi = fileptr['abjet_nearest_phi'].array()
-abjet_nearest_mass = fileptr['abjet_nearest_mass'].array()
-
-
-for i in range(len(fileptr['lep_nearest_pt'].array())):
-
-    gen_lep_4vec  = ROOT.TLorentzVector()
-    gen_alep_4vec = ROOT.TLorentzVector()
-
-    gen_lep_4vec.SetPtEtaPhiM(gen_lep_pt[i] , gen_lep_eta[i] , gen_lep_phi[i] , gen_lep_mass[i])
-    gen_alep_4vec.SetPtEtaPhiM(gen_alep_pt[i] , gen_alep_eta[i] , gen_alep_phi[i] , gen_alep_mass[i])
-
-    gen_b_4vec  = ROOT.TLorentzVector()
-    gen_ab_4vec = ROOT.TLorentzVector()
-
-    gen_b_4vec.SetPtEtaPhiM(gen_b_pt[i] , gen_b_eta[i] , gen_b_phi[i] , gen_b_mass[i])
-    gen_ab_4vec.SetPtEtaPhiM(gen_ab_pt[i] , gen_ab_eta[i] , gen_ab_phi[i] , gen_ab_mass[i])
-
-    lep_nearest_4vec  = ROOT.TLorentzVector()
-    alep_nearest_4vec = ROOT.TLorentzVector()
-
-    lep_nearest_4vec.SetPtEtaPhiM(lep_nearest_pt[i] , lep_nearest_eta[i] , lep_nearest_phi[i] , lep_nearest_mass[i])
-    alep_nearest_4vec.SetPtEtaPhiM(alep_nearest_pt[i] , alep_nearest_eta[i] , alep_nearest_phi[i] , alep_nearest_mass[i])
-
-    bjet_nearest_4vec  = ROOT.TLorentzVector()
-    abjet_nearest_4vec = ROOT.TLorentzVector()
-
-    bjet_nearest_4vec.SetPtEtaPhiM(bjet_nearest_pt[i] , bjet_nearest_eta[i] , bjet_nearest_phi[i] , bjet_nearest_mass[i])
-    abjet_nearest_4vec.SetPtEtaPhiM(abjet_nearest_pt[i] , abjet_nearest_eta[i] , abjet_nearest_phi[i] , abjet_nearest_mass[i])
-
+if (verbose > 0):
     
-    h_KinReco_fE_jet_step7.Fill(gen_b_4vec.E()/bjet_nearest_4vec.E())
-    h_KinReco_fE_jet_step7.Fill(gen_ab_4vec.E()/abjet_nearest_4vec.E())
+    lep_nearest_pt = fileptr['lep_nearest_pt'].array()
+    lep_nearest_eta = fileptr['lep_nearest_eta'].array()
+    lep_nearest_phi = fileptr['lep_nearest_phi'].array()
+    lep_nearest_mass = fileptr['lep_nearest_mass'].array()
 
-    h_KinReco_fE_lep_step7.Fill(gen_lep_4vec.E()/lep_nearest_4vec.E())
-    h_KinReco_fE_lep_step7.Fill(gen_alep_4vec.E()/alep_nearest_4vec.E())
+    alep_nearest_pt = fileptr['alep_nearest_pt'].array()
+    alep_nearest_eta = fileptr['alep_nearest_eta'].array()
+    alep_nearest_phi = fileptr['alep_nearest_phi'].array()
+    alep_nearest_mass = fileptr['alep_nearest_mass'].array()
+
+    bjet_nearest_pt = fileptr['bjet_nearest_pt'].array()
+    bjet_nearest_eta = fileptr['bjet_nearest_eta'].array()
+    bjet_nearest_phi = fileptr['bjet_nearest_phi'].array()
+    bjet_nearest_mass = fileptr['bjet_nearest_mass'].array()
+
+    abjet_nearest_pt = fileptr['abjet_nearest_pt'].array()
+    abjet_nearest_eta = fileptr['abjet_nearest_eta'].array()
+    abjet_nearest_phi = fileptr['abjet_nearest_phi'].array()
+    abjet_nearest_mass = fileptr['abjet_nearest_mass'].array()
+
+    for i in range(len(fileptr['lep_nearest_pt'].array())):
+
+        gen_lep_4vec  = ROOT.TLorentzVector()
+        gen_alep_4vec = ROOT.TLorentzVector()
+
+        gen_lep_4vec.SetPtEtaPhiM(gen_lep_pt[i] , gen_lep_eta[i] , gen_lep_phi[i] , gen_lep_mass[i])
+        gen_alep_4vec.SetPtEtaPhiM(gen_alep_pt[i] , gen_alep_eta[i] , gen_alep_phi[i] , gen_alep_mass[i])
+
+        gen_b_4vec  = ROOT.TLorentzVector()
+        gen_ab_4vec = ROOT.TLorentzVector()
+
+        gen_b_4vec.SetPtEtaPhiM(gen_b_pt[i] , gen_b_eta[i] , gen_b_phi[i] , gen_b_mass[i])
+        gen_ab_4vec.SetPtEtaPhiM(gen_ab_pt[i] , gen_ab_eta[i] , gen_ab_phi[i] , gen_ab_mass[i])
+
+        lep_nearest_4vec  = ROOT.TLorentzVector()
+        alep_nearest_4vec = ROOT.TLorentzVector()
+
+        lep_nearest_4vec.SetPtEtaPhiM(lep_nearest_pt[i] , lep_nearest_eta[i] , lep_nearest_phi[i] , lep_nearest_mass[i])
+        alep_nearest_4vec.SetPtEtaPhiM(alep_nearest_pt[i] , alep_nearest_eta[i] , alep_nearest_phi[i] , alep_nearest_mass[i])
+
+        bjet_nearest_4vec  = ROOT.TLorentzVector()
+        abjet_nearest_4vec = ROOT.TLorentzVector()
+
+        bjet_nearest_4vec.SetPtEtaPhiM(bjet_nearest_pt[i] , bjet_nearest_eta[i] , bjet_nearest_phi[i] , bjet_nearest_mass[i])
+        abjet_nearest_4vec.SetPtEtaPhiM(abjet_nearest_pt[i] , abjet_nearest_eta[i] , abjet_nearest_phi[i] , abjet_nearest_mass[i])
 
 
-    h_KinReco_d_angle_jet_step7.Fill(gen_b_4vec.Angle(bjet_nearest_4vec.Vect()))
-    h_KinReco_d_angle_jet_step7.Fill(gen_ab_4vec.Angle(abjet_nearest_4vec.Vect()))
+        h_KinReco_fE_jet_step7.Fill(gen_b_4vec.E()/bjet_nearest_4vec.E())
+        h_KinReco_fE_jet_step7.Fill(gen_ab_4vec.E()/abjet_nearest_4vec.E())
 
-    h_KinReco_d_angle_lep_step7.Fill(gen_lep_4vec.Angle(lep_nearest_4vec.Vect()))
-    h_KinReco_d_angle_lep_step7.Fill(gen_alep_4vec.Angle(alep_nearest_4vec.Vect()))
+        h_KinReco_fE_lep_step7.Fill(gen_lep_4vec.E()/lep_nearest_4vec.E())
+        h_KinReco_fE_lep_step7.Fill(gen_alep_4vec.E()/alep_nearest_4vec.E())
 
-    h_KinReco_mbl_true_step7.Fill((gen_alep_4vec + gen_b_4vec).M())
-    h_KinReco_mbl_true_step7.Fill((gen_lep_4vec + gen_ab_4vec).M())
-    
-   
+
+        h_KinReco_d_angle_jet_step7.Fill(gen_b_4vec.Angle(bjet_nearest_4vec.Vect()))
+        h_KinReco_d_angle_jet_step7.Fill(gen_ab_4vec.Angle(abjet_nearest_4vec.Vect()))
+
+        h_KinReco_d_angle_lep_step7.Fill(gen_lep_4vec.Angle(lep_nearest_4vec.Vect()))
+        h_KinReco_d_angle_lep_step7.Fill(gen_alep_4vec.Angle(alep_nearest_4vec.Vect()))
+
+        h_KinReco_mbl_true_step7.Fill((gen_alep_4vec + gen_b_4vec).M())
+        h_KinReco_mbl_true_step7.Fill((gen_lep_4vec + gen_ab_4vec).M())
 
 opfile.Write()
 opfile.Close()
