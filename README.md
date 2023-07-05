@@ -18,9 +18,8 @@ $ git checkout HLLHC
 ## Ling's Recommended Method: How to Get Started w/ the HL-LHC (https://en.wikipedia.org/wiki/Future_Circular_Collider)  
 ### Updated on 02/28/2023
 
-- To start the project, call the initialization shell commands TWICE!!: <br>
+- To start the project, call the initialization shell commands: <br>
 ```
-$ source init.sh
 $ source init.sh
 ```
 - For HL-LHC, we need to convert the delphes files into ntuples.
