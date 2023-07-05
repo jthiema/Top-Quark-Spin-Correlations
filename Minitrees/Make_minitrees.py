@@ -346,11 +346,11 @@ def main():
             # Look for the first gen lepton, neutrino pairs on the list 
 
             if( ( (genpart_pid[i][j] == 11 and genpart_pid[i][j+1] == -12) or (genpart_pid[i][j] == 13 and genpart_pid[i][j+1] == -14) or (genpart_pid[i][j] == 15 and genpart_pid[i][j+1] == -16) ) and gen_lep_index == -1 ):
+
+                gen_lep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
+                gen_aneu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)                
                 
                 if (verbose > 0):
-
-                    gen_lep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
-                    gen_aneu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)
 
                     if( (gen_lep_4vec + gen_aneu_4vec).M() < 70.4 or (gen_lep_4vec + gen_aneu_4vec).M() > 90.4  ): #continue
 
@@ -360,11 +360,11 @@ def main():
                 gen_lep_index = j # a flag to check for lepton 
 
             if( ( (genpart_pid[i][j] == -11 and genpart_pid[i][j+1] == 12) or (genpart_pid[i][j] == -13 and genpart_pid[i][j+1] == 14) or (genpart_pid[i][j] == -15 and genpart_pid[i][j+1] == 16) ) and gen_alep_index == -1 ):
+
+                gen_alep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
+                gen_neu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)                
                 
                 if (verbose > 0):
-
-                    gen_alep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
-                    gen_neu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)
 
                     if ( (gen_alep_4vec + gen_neu_4vec).M() < 70.4 or (gen_alep_4vec + gen_neu_4vec).M() > 90.4  ): #continue
 
@@ -610,7 +610,8 @@ def main():
         gen_ab_status[i]=genpart_status[i][gen_ab_index]
 
         # Calculate gen met from gen neutrino and anti-neutrino
-
+        #print(gen_neu_4vec.Pt(), gen_aneu_4vec.Pt()) 
+        
         gen_met_pt[i]=(gen_neu_4vec + gen_aneu_4vec).Pt()
         gen_met_phi[i]=(gen_neu_4vec + gen_aneu_4vec).Phi()           
         
@@ -1344,6 +1345,8 @@ def main():
         gen_aneu_phi_arr_0[0]     = gen_aneu_phi_0[i]
         gen_aneu_pdgid_arr_0[0]     = gen_aneu_pdgid_0[i]
         gen_aneu_status_arr_0[0]     = gen_aneu_status_0[i]
+        
+        #print(gen_met_pt_0[i])
         
         gen_met_pt_arr_0[0] = gen_met_pt_0[i]
         gen_met_phi_arr_0[0] = gen_met_phi_0[i]
