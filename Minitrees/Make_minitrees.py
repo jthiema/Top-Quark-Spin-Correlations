@@ -21,6 +21,32 @@ def dR(e_phi, e_eta, m_phi, m_eta):
     d_phi = deltaphi(e_phi, m_phi)
     return np.sqrt(d_phi**2 + d_eta**2)
 
+def ptetaphiarray(mass, px, py, pz, nevents):
+    pt = []
+    eta = []
+    phi = []
+    for i in range(nevents):
+        if (i % 1000 == 0):
+            print('Processing event ' + str(i) + ' of ' + str(nevents))
+        pt.append([])
+        eta.append([])
+        phi.append([])
+        for v in range(len(px[i])):
+            pxi = px[i][v]
+            pyi = py[i][v]
+            pzi = pz[i][v]
+            massi = mass[i][v]
+            Ei = np.sqrt(pxi**2 + pyi**2 + pzi**2 + massi**2)
+            l  = ROOT.TLorentzVector()
+            l.SetPxPyPzE(pxi, pyi, pzi, Ei)
+            pti = l.Pt()
+            phii = l.Phi()
+            etai = l.Eta()
+            pt[i].append(pti)
+            eta[i].append(etai)
+            phi[i].append(phii)
+    return (ak.Array(pt), ak.Array(eta), ak.Array(phi))
+
 def GetTopGenInfo(genpart_pid, genpart_status, genpart_pt, genpart_eta, genpart_phi, genpart_mass, gen_lep_4vec, gen_alep_4vec, gen_neu_4vec, gen_aneu_4vec, gen_top_index, gen_atop_index, gen_b_index, gen_ab_index, gen_lep_index, gen_alep_index, verbose):
 
     for j in range(len(genpart_pid) - 1) : 
@@ -93,54 +119,54 @@ def main():
     verbose = args.verbose    
     dostep0 = args.step0
 
-    fileptr = uproot.open(inputFile)['Delphes_Ntuples']
-    
+
+    fileptr = uproot.open(inputFile)['events']
+
     # Jet MET
-    jet_pt   = fileptr['jet_pt'].array()
-    jet_eta  = fileptr['jet_eta'].array()
-    jet_phi  = fileptr['jet_phi'].array()
-    jet_mass = fileptr['jet_mass'].array()
-    jet_btag = fileptr['jet_btag'].array()
-    
-    NEvents = len(jet_pt)
+    jet_px   = fileptr['pfjets04.core.p4.px'].array()
+    jet_py  = fileptr['pfjets04.core.p4.py'].array()
+    jet_pz  = fileptr['pfjets04.core.p4.pz'].array()
+    jet_mass = fileptr['pfjets04.core.p4.mass'].array()
+    jet_btag = fileptr['pfbTags04.tag'].array()
+
+    NEvents = len(jet_px)
     #NEvents = 100
 
-    met_pt    = fileptr['met_pt'].array()
-    met_phi   = fileptr['met_phi'].array()
-    weight    = fileptr['weight'].array()
-    scalar_ht = fileptr['scalar_ht'].array()
+    (jet_pt, jet_eta, jet_phi) = ptetaphiarray(jet_mass, jet_px, jet_py, jet_pz, NEvents)
+
+
+    met_pt    = fileptr['met.magnitude'].array()
+    met_phi   = fileptr['met.phi'].array()
+    weight    = fileptr['mcEventWeights.value'].array()
+    scalar_ht = fileptr['met.scalarSum'].array()
 
     # Electrons
-    elec_pt     = fileptr['elec_pt'].array()
-    elec_eta    = fileptr['elec_eta'].array()
-    elec_phi    = fileptr['elec_phi'].array()
-    elec_mass   = fileptr['elec_mass'].array()
-    elec_charge = fileptr['elec_charge'].array()
-    elec_reliso = fileptr['elec_reliso'].array()
+    elec_px     = fileptr['electrons.core.p4.px'].array()
+    elec_py    = fileptr['electrons.core.p4.py'].array()
+    elec_pz    = fileptr['electrons.core.p4.pz'].array()
+    elec_mass   = fileptr['electrons.core.p4.mass'].array()
+    elec_charge = fileptr['electrons.core.charge'].array()
+    #elec_reliso = fileptr['elec_reliso'].array()
+    (elec_pt, elec_eta, elec_phi) = ptetaphiarray(elec_mass, elec_px, elec_py, elec_pz, NEvents)
 
     # Muons
-    muon_pt     = fileptr['muon_pt'].array()
-    muon_eta    = fileptr['muon_eta'].array()
-    muon_phi    = fileptr['muon_phi'].array()
-    muon_mass   = fileptr['muon_mass'].array()
-    muon_charge = fileptr['muon_charge'].array()
-    muon_reliso = fileptr['muon_reliso'].array()
-
-    # Gen level jets
-    genjet_pt   = fileptr['genjet_pt'].array()
-    genjet_eta  = fileptr['genjet_eta'].array()
-    genjet_phi  = fileptr['genjet_phi'].array()
-    genjet_mass = fileptr['genjet_mass'].array()
-    #genjet_btag = fileptr['genjet_btag'].array()
+    muon_px = fileptr['muons.core.p4.px'].array()
+    muon_py = fileptr['muons.core.p4.py'].array()
+    muon_pz = fileptr['muons.core.p4.pz'].array()
+    muon_mass   = fileptr['muons.core.p4.mass'].array()
+    muon_charge = fileptr['muons.core.charge'].array()
+    (muon_pt, muon_eta, muon_phi) = ptetaphiarray(muon_mass, muon_px, muon_py, muon_pz, NEvents)
 
     # Gen level data
-    genpart_pt     = fileptr['genpart_pt'].array()
-    genpart_eta    = fileptr['genpart_eta'].array()
-    genpart_phi    = fileptr['genpart_phi'].array()
-    genpart_mass   = fileptr['genpart_mass'].array()
-    genpart_pid    = fileptr['genpart_pid'].array()
-    genpart_status = fileptr['genpart_status'].array()
-    genpart_charge = fileptr['genpart_charge'].array()
+    genpart_px     = fileptr['skimmedGenParticles.core.p4.px'].array()
+    genpart_py    = fileptr['skimmedGenParticles.core.p4.py'].array()
+    genpart_pz    = fileptr['skimmedGenParticles.core.p4.pz'].array()
+    genpart_mass   = fileptr['skimmedGenParticles.core.p4.mass'].array()
+    genpart_pid    = fileptr['skimmedGenParticles.core.pdgId'].array()
+    genpart_status = fileptr['skimmedGenParticles.core.status'].array()
+    genpart_charge = fileptr['skimmedGenParticles.core.charge'].array()
+    (genpart_pt, genpart_eta, genpart_phi) = ptetaphiarray(genpart_mass, genpart_px, genpart_py, genpart_pz, NEvents)
+
     
     # GEN, Step0 
 
