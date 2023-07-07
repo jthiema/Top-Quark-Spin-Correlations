@@ -43,10 +43,12 @@ def GetWeight(thetaMixingTarget, top_arr, lep_arr, chi0_arr, m_top, m_chi0) :
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-i', '--input', help='Input  Delphes Ntuple location')
+parser.add_argument('-v', '--verbose', action='count', default=0, help='Verbosity', required=False)
 
 args       = parser.parse_args()
 inputFile  = args.input
 outputFile = args.input
+verbose = args.verbose 
 
 fileptr = uproot.open(inputFile)['Step7']
 
@@ -90,17 +92,19 @@ step7_gen_alep_phi    = fileptr['gen_alep_phi'].array()
 step7_gen_alep_mass    = fileptr['gen_alep_mass'].array()
 step7_gen_alep_pdgid = fileptr['gen_alep_pdgid'].array()
 
-step7_gen_lep_nearest_pt     = fileptr['gen_lep_nearest_pt'].array()
-step7_gen_lep_nearest_eta    = fileptr['gen_lep_nearest_eta'].array()
-step7_gen_lep_nearest_phi    = fileptr['gen_lep_nearest_phi'].array()
-step7_gen_lep_nearest_mass    = fileptr['gen_lep_nearest_mass'].array()
-step7_gen_lep_nearest_pdgid = fileptr['gen_lep_nearest_pdgid'].array()
+if (verbose > 0):
 
-step7_gen_alep_nearest_pt     = fileptr['gen_alep_nearest_pt'].array()
-step7_gen_alep_nearest_eta    = fileptr['gen_alep_nearest_eta'].array()
-step7_gen_alep_nearest_phi    = fileptr['gen_alep_nearest_phi'].array()
-step7_gen_alep_nearest_mass    = fileptr['gen_alep_nearest_mass'].array()
-step7_gen_alep_nearest_pdgid = fileptr['gen_alep_nearest_pdgid'].array()
+    step7_gen_lep_nearest_pt     = fileptr['gen_lep_nearest_pt'].array()
+    step7_gen_lep_nearest_eta    = fileptr['gen_lep_nearest_eta'].array()
+    step7_gen_lep_nearest_phi    = fileptr['gen_lep_nearest_phi'].array()
+    step7_gen_lep_nearest_mass    = fileptr['gen_lep_nearest_mass'].array()
+    step7_gen_lep_nearest_pdgid = fileptr['gen_lep_nearest_pdgid'].array()
+
+    step7_gen_alep_nearest_pt     = fileptr['gen_alep_nearest_pt'].array()
+    step7_gen_alep_nearest_eta    = fileptr['gen_alep_nearest_eta'].array()
+    step7_gen_alep_nearest_phi    = fileptr['gen_alep_nearest_phi'].array()
+    step7_gen_alep_nearest_mass    = fileptr['gen_alep_nearest_mass'].array()
+    step7_gen_alep_nearest_pdgid = fileptr['gen_alep_nearest_pdgid'].array()
 
 step7_gen_neu_pt     = fileptr['gen_neu_pt'].array()
 step7_gen_neu_eta    = fileptr['gen_neu_eta'].array()
@@ -239,17 +243,19 @@ step8_gen_alep_phi= []
 step8_gen_alep_mass= []
 step8_gen_alep_pdgid = []
 
-step8_gen_lep_nearest_pt = []
-step8_gen_lep_nearest_eta= []
-step8_gen_lep_nearest_phi= []
-step8_gen_lep_nearest_mass= []
-step8_gen_lep_nearest_pdgid = []
+if (verbose > 0):
+    
+    step8_gen_lep_nearest_pt = []
+    step8_gen_lep_nearest_eta= []
+    step8_gen_lep_nearest_phi= []
+    step8_gen_lep_nearest_mass= []
+    step8_gen_lep_nearest_pdgid = []
 
-step8_gen_alep_nearest_pt = []
-step8_gen_alep_nearest_eta= []
-step8_gen_alep_nearest_phi= []
-step8_gen_alep_nearest_mass= []
-step8_gen_alep_nearest_pdgid = []
+    step8_gen_alep_nearest_pt = []
+    step8_gen_alep_nearest_eta= []
+    step8_gen_alep_nearest_phi= []
+    step8_gen_alep_nearest_mass= []
+    step8_gen_alep_nearest_pdgid = []
 
 step8_gen_neu_pt = []
 step8_gen_neu_eta= []
@@ -264,297 +270,300 @@ step8_gen_aneu_pdgid = []
 step8_gen_met_pt = []
 step8_gen_met_phi = []
 
-
 # Let's create a mask
 selection = np.zeros(len(step7_jet_pt))
 
 for i in range(len(step7_jet_pt)):
-
+    
     if (i % 500 == 0):
         print('Processing event :: ' + str(i))
         now = datetime.now()   # Time keeping
         current_time = now.strftime("%H:%M:%S")
         print("Current Time =", current_time)
 
-    lep  = ROOT.TLorentzVector()
-    alep = ROOT.TLorentzVector()
+    if (step7_lep_pt[i]>0 or step7_lep_pt[i]<0):
 
-    # lep charge -1 and alep charge +1
-
-    lep.SetPtEtaPhiM(step7_lep_pt[i], step7_lep_eta[i], step7_lep_phi[i], step7_lep_mass[i])
-    alep.SetPtEtaPhiM(step7_alep_pt[i], step7_alep_eta[i], step7_alep_phi[i], step7_alep_mass[i])
-
-    met_x = step7_MET[i] * np.cos(step7_MET_phi[i])
-    met_y = step7_MET[i] * np.sin(step7_MET_phi[i])
-
-    # Only consider 2 btagged jets is found, high_w is used for single b-tag case
-    n_btag = 0
-    high_w = 0
-    m_tt_final = 0
-
-    # Loop over jet permutations and find those with 2-btags or highest sum of weights
-
-    for j in range(len(step7_jet_pt[i])):     # First jet
-        for k in range(len(step7_jet_pt[i])):  # Second jet
-
-            if (j >= k):
-                continue
-            if (step7_jet_pt[i][j] < 30 or step7_jet_pt[i][k] < 30):
-                continue
-            if (abs(step7_jet_eta[i][j]) > 5.0 or abs(step7_jet_eta[i][k]) > 5.0):
-                continue
-            if (step7_jet_btag[i][j] == 0 and step7_jet_btag[i][k] == 0):
-                continue
-
-            jet1 = ROOT.TLorentzVector()
-            jet2 = ROOT.TLorentzVector()
-            jet1.SetPtEtaPhiM(step7_jet_pt[i][j], step7_jet_eta[i][j], step7_jet_phi[i][j], step7_jet_mass[i][j])
-            jet2.SetPtEtaPhiM(step7_jet_pt[i][k], step7_jet_eta[i][k], step7_jet_phi[i][k], step7_jet_mass[i][k])
-
-            if (lep.DeltaR(jet1) < 0.4 or lep.DeltaR(jet2) < 0.4 or alep.DeltaR(jet1) < 0.4 or alep.DeltaR(jet2) < 0.4):
-                continue
-
-            # 2-Btag scenario
-            if (step7_jet_btag[i][j] != 0 and step7_jet_btag[i][k] != 0):
-                m_tt_1, top_p4_1, atop_p4_1, nu_p4_1, nubar_p4_1, sw_1 = try_smear(jet1, jet2, alep, lep, met_x, met_y, i)
-                m_tt_2, top_p4_2, atop_p4_2, nu_p4_2, nubar_p4_2, sw_2 = try_smear(jet2, jet1, alep, lep, met_x, met_y, i)
-
-                if (m_tt_1 == -999 and m_tt_2 == -999):
+        lep  = ROOT.TLorentzVector()
+        alep = ROOT.TLorentzVector()
+    
+        # lep charge -1 and alep charge +1
+    
+        lep.SetPtEtaPhiM(step7_lep_pt[i], step7_lep_eta[i], step7_lep_phi[i], step7_lep_mass[i])
+        alep.SetPtEtaPhiM(step7_alep_pt[i], step7_alep_eta[i], step7_alep_phi[i], step7_alep_mass[i])
+    
+        met_x = step7_MET[i] * np.cos(step7_MET_phi[i])
+        met_y = step7_MET[i] * np.sin(step7_MET_phi[i])
+    
+        # Only consider 2 btagged jets is found, high_w is used for single b-tag case
+        n_btag = 0
+        high_w = 0
+        m_tt_final = 0
+    
+        # Loop over jet permutations and find those with 2-btags or highest sum of weights
+    
+        for j in range(len(step7_jet_pt[i])):     # First jet
+            for k in range(len(step7_jet_pt[i])):  # Second jet
+    
+                if (j >= k):
                     continue
-
-                n_btag = 2
-
-                if (m_tt_2 == -999):
-                    m_tt_final     = m_tt_1
-                    top_p4_final   = top_p4_1
-                    atop_p4_final  = atop_p4_1
-                    nu_p4_final    = nu_p4_1
-                    nubar_p4_final = nubar_p4_1
-                    b_p4_final     = jet1
-                    bbar_p4_final  = jet2  
-
-                if (m_tt_1 == -999):
-                    m_tt_final     = m_tt_2
-                    top_p4_final   = top_p4_2
-                    atop_p4_final  = atop_p4_2
-                    nu_p4_final    = nu_p4_2
-                    nubar_p4_final = nubar_p4_2
-                    b_p4_final     = jet2
-                    bbar_p4_final  = jet1  
-
-                if((m_tt_1 != -999 and m_tt_2 != -999) and sw_2 <= sw_1):
-                    m_tt_final     = m_tt_1
-                    top_p4_final   = top_p4_1
-                    atop_p4_final  = atop_p4_1
-                    nu_p4_final    = nu_p4_1
-                    nubar_p4_final = nubar_p4_1
-                    b_p4_final     = jet1
-                    bbar_p4_final  = jet2  
-
-                if((m_tt_1 != -999 and m_tt_2 != -999) and sw_1 <= sw_2):
-                    m_tt_final     = m_tt_2
-                    top_p4_final   = top_p4_2
-                    atop_p4_final  = atop_p4_2
-                    nu_p4_final    = nu_p4_2
-                    nubar_p4_final = nubar_p4_2
-                    b_p4_final     = jet2
-                    bbar_p4_final  = jet1  
-
-            if (n_btag == 2):
-                continue
-
-            # 1-Btag scenario
-            if ((step7_jet_btag[i][j] != 0 and step7_jet_btag[i][k] == 0) or (step7_jet_btag[i][j] == 0 and step7_jet_btag[i][k] != 0)):
-                m_tt_1, top_p4_1, atop_p4_1, nu_p4_1, nubar_p4_1, sw_1 = try_smear(jet1, jet2, alep, lep, met_x, met_y, i)
-                m_tt_2, top_p4_2, atop_p4_2, nu_p4_2, nubar_p4_2, sw_2 = try_smear(jet2, jet1, alep, lep, met_x, met_y, i)
-
-                if (m_tt_1 == -999 and m_tt_2 == -999):
+                if (step7_jet_pt[i][j] < 30 or step7_jet_pt[i][k] < 30):
                     continue
-
-                if (m_tt_2 == -999 and high_w <= sw_1):
-                    m_tt_final     = m_tt_1
-                    top_p4_final   = top_p4_1
-                    atop_p4_final  = atop_p4_1
-                    nu_p4_final    = nu_p4_1
-                    nubar_p4_final = nubar_p4_1
-                    high_w         = sw_1
-                    b_p4_final     = jet1
-                    bbar_p4_final  = jet2  
-
-                if (m_tt_1 == -999 and high_w <= sw_2):
-                    m_tt_final     = m_tt_2
-                    top_p4_final   = top_p4_2
-                    atop_p4_final  = atop_p4_2
-                    nu_p4_final    = nu_p4_2
-                    nubar_p4_final = nubar_p4_2
-                    high_w         = sw_2
-                    b_p4_final     = jet2
-                    bbar_p4_final  = jet1
-
-                if((m_tt_1 != -999 and m_tt_2 != -999) and sw_2 <= sw_1 and high_w <= sw_1):
-                    m_tt_final     = m_tt_1
-                    top_p4_final   = top_p4_1
-                    atop_p4_final  = atop_p4_1
-                    nu_p4_final    = nu_p4_1
-                    nubar_p4_final = nubar_p4_1
-                    high_w         = sw_1
-                    b_p4_final     = jet1
-                    bbar_p4_final  = jet2  
-
-                if((m_tt_1 != -999 and m_tt_2 != -999) and sw_1 <= sw_2 and high_w <= sw_2):
-                    m_tt_final     = m_tt_2
-                    top_p4_final   = top_p4_2
-                    atop_p4_final  = atop_p4_2
-                    nu_p4_final    = nu_p4_2
-                    nubar_p4_final = nubar_p4_2
-                    high_w         = sw_2
-                    b_p4_final     = jet2
-                    bbar_p4_final  = jet1 
-
-                else:
+                if (abs(step7_jet_eta[i][j]) > 5.0 or abs(step7_jet_eta[i][k]) > 5.0):
                     continue
+                if (step7_jet_btag[i][j] == 0 and step7_jet_btag[i][k] == 0):
+                    continue
+    
+                jet1 = ROOT.TLorentzVector()
+                jet2 = ROOT.TLorentzVector()
+                jet1.SetPtEtaPhiM(step7_jet_pt[i][j], step7_jet_eta[i][j], step7_jet_phi[i][j], step7_jet_mass[i][j])
+                jet2.SetPtEtaPhiM(step7_jet_pt[i][k], step7_jet_eta[i][k], step7_jet_phi[i][k], step7_jet_mass[i][k])
+    
+                if (lep.DeltaR(jet1) < 0.4 or lep.DeltaR(jet2) < 0.4 or alep.DeltaR(jet1) < 0.4 or alep.DeltaR(jet2) < 0.4):
+                    continue
+    
+                # 2-Btag scenario
+                if (step7_jet_btag[i][j] != 0 and step7_jet_btag[i][k] != 0):
+                    m_tt_1, top_p4_1, atop_p4_1, nu_p4_1, nubar_p4_1, sw_1 = try_smear(jet1, jet2, alep, lep, met_x, met_y, i)
+                    m_tt_2, top_p4_2, atop_p4_2, nu_p4_2, nubar_p4_2, sw_2 = try_smear(jet2, jet1, alep, lep, met_x, met_y, i)
+    
+                    if (m_tt_1 == -999 and m_tt_2 == -999):
+                        continue
+    
+                    n_btag = 2
+    
+                    if (m_tt_2 == -999):
+                        m_tt_final     = m_tt_1
+                        top_p4_final   = top_p4_1
+                        atop_p4_final  = atop_p4_1
+                        nu_p4_final    = nu_p4_1
+                        nubar_p4_final = nubar_p4_1
+                        b_p4_final     = jet1
+                        bbar_p4_final  = jet2  
+    
+                    if (m_tt_1 == -999):
+                        m_tt_final     = m_tt_2
+                        top_p4_final   = top_p4_2
+                        atop_p4_final  = atop_p4_2
+                        nu_p4_final    = nu_p4_2
+                        nubar_p4_final = nubar_p4_2
+                        b_p4_final     = jet2
+                        bbar_p4_final  = jet1  
+    
+                    if((m_tt_1 != -999 and m_tt_2 != -999) and sw_2 <= sw_1):
+                        m_tt_final     = m_tt_1
+                        top_p4_final   = top_p4_1
+                        atop_p4_final  = atop_p4_1
+                        nu_p4_final    = nu_p4_1
+                        nubar_p4_final = nubar_p4_1
+                        b_p4_final     = jet1
+                        bbar_p4_final  = jet2  
+    
+                    if((m_tt_1 != -999 and m_tt_2 != -999) and sw_1 <= sw_2):
+                        m_tt_final     = m_tt_2
+                        top_p4_final   = top_p4_2
+                        atop_p4_final  = atop_p4_2
+                        nu_p4_final    = nu_p4_2
+                        nubar_p4_final = nubar_p4_2
+                        b_p4_final     = jet2
+                        bbar_p4_final  = jet1  
+    
+                if (n_btag == 2):
+                    continue
+    
+                # 1-Btag scenario
+                if ((step7_jet_btag[i][j] != 0 and step7_jet_btag[i][k] == 0) or (step7_jet_btag[i][j] == 0 and step7_jet_btag[i][k] != 0)):
+                    m_tt_1, top_p4_1, atop_p4_1, nu_p4_1, nubar_p4_1, sw_1 = try_smear(jet1, jet2, alep, lep, met_x, met_y, i)
+                    m_tt_2, top_p4_2, atop_p4_2, nu_p4_2, nubar_p4_2, sw_2 = try_smear(jet2, jet1, alep, lep, met_x, met_y, i)
+    
+                    if (m_tt_1 == -999 and m_tt_2 == -999):
+                        continue
+    
+                    if (m_tt_2 == -999 and high_w <= sw_1):
+                        m_tt_final     = m_tt_1
+                        top_p4_final   = top_p4_1
+                        atop_p4_final  = atop_p4_1
+                        nu_p4_final    = nu_p4_1
+                        nubar_p4_final = nubar_p4_1
+                        high_w         = sw_1
+                        b_p4_final     = jet1
+                        bbar_p4_final  = jet2  
+    
+                    if (m_tt_1 == -999 and high_w <= sw_2):
+                        m_tt_final     = m_tt_2
+                        top_p4_final   = top_p4_2
+                        atop_p4_final  = atop_p4_2
+                        nu_p4_final    = nu_p4_2
+                        nubar_p4_final = nubar_p4_2
+                        high_w         = sw_2
+                        b_p4_final     = jet2
+                        bbar_p4_final  = jet1
+    
+                    if((m_tt_1 != -999 and m_tt_2 != -999) and sw_2 <= sw_1 and high_w <= sw_1):
+                        m_tt_final     = m_tt_1
+                        top_p4_final   = top_p4_1
+                        atop_p4_final  = atop_p4_1
+                        nu_p4_final    = nu_p4_1
+                        nubar_p4_final = nubar_p4_1
+                        high_w         = sw_1
+                        b_p4_final     = jet1
+                        bbar_p4_final  = jet2  
+    
+                    if((m_tt_1 != -999 and m_tt_2 != -999) and sw_1 <= sw_2 and high_w <= sw_2):
+                        m_tt_final     = m_tt_2
+                        top_p4_final   = top_p4_2
+                        atop_p4_final  = atop_p4_2
+                        nu_p4_final    = nu_p4_2
+                        nubar_p4_final = nubar_p4_2
+                        high_w         = sw_2
+                        b_p4_final     = jet2
+                        bbar_p4_final  = jet1 
+    
+                    else:
+                        continue
+    
+        if m_tt_final == 0:
+            continue
+    
+    
+        rcom = top_p4_final + atop_p4_final
+    
+        gen_top = ROOT.TLorentzVector()
+        gen_top.SetPtEtaPhiM(step7_gen_top_pt[i], step7_gen_top_eta[i], step7_gen_top_phi[i], step7_gen_top_mass[i])
+    
+        gen_atop = ROOT.TLorentzVector()
+        gen_atop.SetPtEtaPhiM(step7_gen_atop_pt[i], step7_gen_atop_eta[i], step7_gen_atop_phi[i], step7_gen_atop_mass[i])
+    
+        # COM 4-vec
+        com = gen_top + gen_atop  # Adding the 4 vectors
+    
+        step8_tt_mass.append(m_tt_final)
+        step8_tt_pt.append(rcom.Pt())
+        step8_tt_eta.append(rcom.Eta())
+        step8_tt_phi.append(rcom.Phi())
+        step8_tt_rap.append(rcom.Rapidity())
+    
+        step8_top_pt.append(top_p4_final.Pt())
+        step8_top_eta.append(top_p4_final.Eta())
+        step8_top_phi.append(top_p4_final.Phi())
+        step8_top_mass.append(top_p4_final.M())
+        step8_top_rap.append(top_p4_final.Rapidity())
+    
+        step8_atop_pt.append(atop_p4_final.Pt())
+        step8_atop_eta.append(atop_p4_final.Eta())
+        step8_atop_phi.append(atop_p4_final.Phi())
+        step8_atop_mass.append(atop_p4_final.M())
+        step8_atop_rap.append(atop_p4_final.Rapidity())
+    
+        step8_neu_pt.append(nu_p4_final.Pt())
+        step8_neu_eta.append(nu_p4_final.Eta())
+        step8_neu_phi.append(nu_p4_final.Phi())
+    
+        step8_aneu_pt.append(nubar_p4_final.Pt())
+        step8_aneu_eta.append(nubar_p4_final.Eta())
+        step8_aneu_phi.append(nubar_p4_final.Phi())
+    
+        step8_lep_pt.append(lep.Pt())
+        step8_lep_eta.append(lep.Eta())
+        step8_lep_phi.append(lep.Phi())
+        step8_lep_mass.append(lep.M())
+        step8_lep_pdgid.append(step7_lep_pdgid[i])
+    
+        step8_alep_pt.append(alep.Pt())
+        step8_alep_eta.append(alep.Eta())
+        step8_alep_phi.append(alep.Phi())
+        step8_alep_mass.append(alep.M())
+        step8_alep_pdgid.append(step7_alep_pdgid[i])
+    
+        step8_b_pt.append(b_p4_final.Pt())
+        step8_b_eta.append(b_p4_final.Eta())
+        step8_b_phi.append(b_p4_final.Phi())
+        step8_b_mass.append(b_p4_final.M())
+    
+        step8_ab_pt.append(bbar_p4_final.Pt())
+        step8_ab_eta.append(bbar_p4_final.Eta())
+        step8_ab_phi.append(bbar_p4_final.Phi())
+        step8_ab_mass.append(bbar_p4_final.M())
+    
+        step8_met_pt.append(step7_MET[i])
+        step8_met_phi.append(step7_MET_phi[i])
+    
+    
+        step8_gen_tt_mass.append(com.M())
+        step8_gen_tt_pt.append(com.Pt())
+        step8_gen_tt_eta.append(com.Eta())
+        step8_gen_tt_phi.append(com.Phi())
+        step8_gen_tt_rap.append(com.Rapidity())
+    
+        step8_gen_top_pt.append(gen_top.Pt())
+        step8_gen_top_eta.append(gen_top.Eta())
+        step8_gen_top_phi.append(gen_top.Phi())
+        step8_gen_top_mass.append(gen_top.M())
+        step8_gen_top_rap.append(gen_top.Rapidity())
+    
+        step8_gen_atop_pt.append(gen_atop.Pt())
+        step8_gen_atop_eta.append(gen_atop.Eta())
+        step8_gen_atop_phi.append(gen_atop.Phi())
+        step8_gen_atop_mass.append(gen_atop.M())
+        step8_gen_atop_rap.append(gen_atop.Rapidity())
+    
+        step8_gen_b_pt.append(step7_gen_b_pt[i])
+        step8_gen_b_eta.append(step7_gen_b_eta[i])
+        step8_gen_b_phi.append(step7_gen_b_phi[i])
+        step8_gen_b_mass.append(step7_gen_b_mass[i])
+    
+        step8_gen_ab_pt.append(step7_gen_ab_pt[i])
+        step8_gen_ab_eta.append(step7_gen_ab_eta[i])
+        step8_gen_ab_phi.append(step7_gen_ab_phi[i])
+        step8_gen_ab_mass.append(step7_gen_ab_mass[i])
+    
+        step8_gen_lep_pt.append(step7_gen_lep_pt[i])
+        step8_gen_lep_eta.append(step7_gen_lep_eta[i])
+        step8_gen_lep_phi.append(step7_gen_lep_phi[i])
+        step8_gen_lep_mass.append(step7_gen_lep_mass[i])
+        step8_gen_lep_pdgid.append(step7_gen_lep_pdgid[i])
+    
+        step8_gen_alep_pt.append(step7_gen_alep_pt[i])
+        step8_gen_alep_eta.append(step7_gen_alep_eta[i])
+        step8_gen_alep_phi.append(step7_gen_alep_phi[i])
+        step8_gen_alep_mass.append(step7_gen_alep_mass[i])
+        step8_gen_alep_pdgid.append(step7_gen_alep_pdgid[i])
 
-    if m_tt_final == 0:
-        continue
+        if (verbose > 0):
+    
+            step8_gen_lep_nearest_pt.append(step7_gen_lep_nearest_pt[i])
+            step8_gen_lep_nearest_eta.append(step7_gen_lep_nearest_eta[i])
+            step8_gen_lep_nearest_phi.append(step7_gen_lep_nearest_phi[i])
+            step8_gen_lep_nearest_mass.append(step7_gen_lep_nearest_mass[i])
+            step8_gen_lep_nearest_pdgid.append(step7_gen_lep_nearest_pdgid[i])
 
-
-    rcom = top_p4_final + atop_p4_final
-
-    gen_top = ROOT.TLorentzVector()
-    gen_top.SetPtEtaPhiM(step7_gen_top_pt[i], step7_gen_top_eta[i], step7_gen_top_phi[i], step7_gen_top_mass[i])
-
-    gen_atop = ROOT.TLorentzVector()
-    gen_atop.SetPtEtaPhiM(step7_gen_atop_pt[i], step7_gen_atop_eta[i], step7_gen_atop_phi[i], step7_gen_atop_mass[i])
-
-    # COM 4-vec
-    com = gen_top + gen_atop  # Adding the 4 vectors
-
-
-    step8_tt_mass.append(m_tt_final)
-    step8_tt_pt.append(rcom.Pt())
-    step8_tt_eta.append(rcom.Eta())
-    step8_tt_phi.append(rcom.Phi())
-    step8_tt_rap.append(rcom.Rapidity())
-
-    step8_top_pt.append(top_p4_final.Pt())
-    step8_top_eta.append(top_p4_final.Eta())
-    step8_top_phi.append(top_p4_final.Phi())
-    step8_top_mass.append(top_p4_final.M())
-    step8_top_rap.append(top_p4_final.Rapidity())
-
-    step8_atop_pt.append(atop_p4_final.Pt())
-    step8_atop_eta.append(atop_p4_final.Eta())
-    step8_atop_phi.append(atop_p4_final.Phi())
-    step8_atop_mass.append(atop_p4_final.M())
-    step8_atop_rap.append(atop_p4_final.Rapidity())
-
-    step8_neu_pt.append(nu_p4_final.Pt())
-    step8_neu_eta.append(nu_p4_final.Eta())
-    step8_neu_phi.append(nu_p4_final.Phi())
-
-    step8_aneu_pt.append(nubar_p4_final.Pt())
-    step8_aneu_eta.append(nubar_p4_final.Eta())
-    step8_aneu_phi.append(nubar_p4_final.Phi())
-
-    step8_lep_pt.append(lep.Pt())
-    step8_lep_eta.append(lep.Eta())
-    step8_lep_phi.append(lep.Phi())
-    step8_lep_mass.append(lep.M())
-    step8_lep_pdgid.append(step7_lep_pdgid[i])
-
-    step8_alep_pt.append(alep.Pt())
-    step8_alep_eta.append(alep.Eta())
-    step8_alep_phi.append(alep.Phi())
-    step8_alep_mass.append(alep.M())
-    step8_alep_pdgid.append(step7_alep_pdgid[i])
-
-    step8_b_pt.append(b_p4_final.Pt())
-    step8_b_eta.append(b_p4_final.Eta())
-    step8_b_phi.append(b_p4_final.Phi())
-    step8_b_mass.append(b_p4_final.M())
-
-    step8_ab_pt.append(bbar_p4_final.Pt())
-    step8_ab_eta.append(bbar_p4_final.Eta())
-    step8_ab_phi.append(bbar_p4_final.Phi())
-    step8_ab_mass.append(bbar_p4_final.M())
-
-    step8_met_pt.append(step7_MET[i])
-    step8_met_phi.append(step7_MET_phi[i])
-
-
-    step8_gen_tt_mass.append(com.M())
-    step8_gen_tt_pt.append(com.Pt())
-    step8_gen_tt_eta.append(com.Eta())
-    step8_gen_tt_phi.append(com.Phi())
-    step8_gen_tt_rap.append(com.Rapidity())
-
-    step8_gen_top_pt.append(gen_top.Pt())
-    step8_gen_top_eta.append(gen_top.Eta())
-    step8_gen_top_phi.append(gen_top.Phi())
-    step8_gen_top_mass.append(gen_top.M())
-    step8_gen_top_rap.append(gen_top.Rapidity())
-
-    step8_gen_atop_pt.append(gen_atop.Pt())
-    step8_gen_atop_eta.append(gen_atop.Eta())
-    step8_gen_atop_phi.append(gen_atop.Phi())
-    step8_gen_atop_mass.append(gen_atop.M())
-    step8_gen_atop_rap.append(gen_atop.Rapidity())
-
-    step8_gen_b_pt.append(step7_gen_b_pt[i])
-    step8_gen_b_eta.append(step7_gen_b_eta[i])
-    step8_gen_b_phi.append(step7_gen_b_phi[i])
-    step8_gen_b_mass.append(step7_gen_b_mass[i])
-
-    step8_gen_ab_pt.append(step7_gen_ab_pt[i])
-    step8_gen_ab_eta.append(step7_gen_ab_eta[i])
-    step8_gen_ab_phi.append(step7_gen_ab_phi[i])
-    step8_gen_ab_mass.append(step7_gen_ab_mass[i])
-
-    step8_gen_lep_pt.append(step7_gen_lep_pt[i])
-    step8_gen_lep_eta.append(step7_gen_lep_eta[i])
-    step8_gen_lep_phi.append(step7_gen_lep_phi[i])
-    step8_gen_lep_mass.append(step7_gen_lep_mass[i])
-    step8_gen_lep_pdgid.append(step7_gen_lep_pdgid[i])
-
-    step8_gen_alep_pt.append(step7_gen_alep_pt[i])
-    step8_gen_alep_eta.append(step7_gen_alep_eta[i])
-    step8_gen_alep_phi.append(step7_gen_alep_phi[i])
-    step8_gen_alep_mass.append(step7_gen_alep_mass[i])
-    step8_gen_alep_pdgid.append(step7_gen_alep_pdgid[i])
-
-    step8_gen_lep_nearest_pt.append(step7_gen_lep_nearest_pt[i])
-    step8_gen_lep_nearest_eta.append(step7_gen_lep_nearest_eta[i])
-    step8_gen_lep_nearest_phi.append(step7_gen_lep_nearest_phi[i])
-    step8_gen_lep_nearest_mass.append(step7_gen_lep_nearest_mass[i])
-    step8_gen_lep_nearest_pdgid.append(step7_gen_lep_nearest_pdgid[i])
-
-    step8_gen_alep_nearest_pt.append(step7_gen_alep_nearest_pt[i])
-    step8_gen_alep_nearest_eta.append(step7_gen_alep_nearest_eta[i])
-    step8_gen_alep_nearest_phi.append(step7_gen_alep_nearest_phi[i])
-    step8_gen_alep_nearest_mass.append(step7_gen_alep_nearest_mass[i])
-    step8_gen_alep_nearest_pdgid.append(step7_gen_alep_nearest_pdgid[i])
-
-    step8_gen_neu_pt.append(step7_gen_neu_pt[i])
-    step8_gen_neu_eta.append(step7_gen_neu_eta[i])
-    step8_gen_neu_phi.append(step7_gen_neu_phi[i])
-    step8_gen_neu_pdgid.append(step7_gen_neu_pdgid[i])
-
-    step8_gen_aneu_pt.append(step7_gen_aneu_pt[i])
-    step8_gen_aneu_eta.append(step7_gen_aneu_eta[i])
-    step8_gen_aneu_phi.append(step7_gen_aneu_phi[i])
-    step8_gen_aneu_pdgid.append(step7_gen_aneu_pdgid[i])
-
-    step8_gen_met_pt.append(step7_gen_met_pt[i])
-    step8_gen_met_phi.append(step7_gen_met_phi[i])
-
-
-    # Create a mask for selection
-    selection[i] = 1
+            step8_gen_alep_nearest_pt.append(step7_gen_alep_nearest_pt[i])
+            step8_gen_alep_nearest_eta.append(step7_gen_alep_nearest_eta[i])
+            step8_gen_alep_nearest_phi.append(step7_gen_alep_nearest_phi[i])
+            step8_gen_alep_nearest_mass.append(step7_gen_alep_nearest_mass[i])
+            step8_gen_alep_nearest_pdgid.append(step7_gen_alep_nearest_pdgid[i])
+    
+        step8_gen_neu_pt.append(step7_gen_neu_pt[i])
+        step8_gen_neu_eta.append(step7_gen_neu_eta[i])
+        step8_gen_neu_phi.append(step7_gen_neu_phi[i])
+        step8_gen_neu_pdgid.append(step7_gen_neu_pdgid[i])
+    
+        step8_gen_aneu_pt.append(step7_gen_aneu_pt[i])
+        step8_gen_aneu_eta.append(step7_gen_aneu_eta[i])
+        step8_gen_aneu_phi.append(step7_gen_aneu_phi[i])
+        step8_gen_aneu_pdgid.append(step7_gen_aneu_pdgid[i])
+    
+        step8_gen_met_pt.append(step7_gen_met_pt[i])
+        step8_gen_met_phi.append(step7_gen_met_phi[i])   
+    
+        # Create a mask for selection
+        selection[i] = 1
 
 step8_weight_sel = step7_weight[selection == 1]
+print(len(step8_top_pt))
 
 # Empty arrays that get mapped to histograms in a root file
 # Selected leptons and jets
+
 lep_pt_arr = array('f', [0.])
 lep_eta_arr = array('f', [0.])
 lep_phi_arr = array('f', [0.])
@@ -665,17 +674,19 @@ gen_alep_phi_arr= array('f', [0.])
 gen_alep_mass_arr= array('f', [0.])
 gen_alep_pdgid_arr = array('f', [0.])
 
-gen_lep_nearest_pt_arr  = array('f', [0.])
-gen_lep_nearest_eta_arr = array('f', [0.])
-gen_lep_nearest_phi_arr = array('f', [0.])
-gen_lep_nearest_mass_arr = array('f', [0.])
-gen_lep_nearest_pdgid_arr  = array('f', [0.])
+if (verbose > 0):
 
-gen_alep_nearest_pt_arr = array('f', [0.])
-gen_alep_nearest_eta_arr= array('f', [0.])
-gen_alep_nearest_phi_arr= array('f', [0.])
-gen_alep_nearest_mass_arr= array('f', [0.])
-gen_alep_nearest_pdgid_arr = array('f', [0.])
+    gen_lep_nearest_pt_arr  = array('f', [0.])
+    gen_lep_nearest_eta_arr = array('f', [0.])
+    gen_lep_nearest_phi_arr = array('f', [0.])
+    gen_lep_nearest_mass_arr = array('f', [0.])
+    gen_lep_nearest_pdgid_arr  = array('f', [0.])
+
+    gen_alep_nearest_pt_arr = array('f', [0.])
+    gen_alep_nearest_eta_arr= array('f', [0.])
+    gen_alep_nearest_phi_arr= array('f', [0.])
+    gen_alep_nearest_mass_arr= array('f', [0.])
+    gen_alep_nearest_pdgid_arr = array('f', [0.])
 
 gen_neu_pt_arr  = array('f', [0.])
 gen_neu_eta_arr = array('f', [0.])
@@ -695,6 +706,7 @@ opfile = ROOT.TFile(outputFile, 'update')
 tree   = ROOT.TTree("Step8", "Step8")
 
 # Leptons and jets
+
 tree.Branch("lep_pt", lep_pt_arr, 'lep_pt/F')
 tree.Branch("lep_eta", lep_eta_arr, 'lep_eta/F')
 tree.Branch("lep_phi", lep_phi_arr, 'lep_phi/F')
@@ -731,13 +743,13 @@ tree.Branch("top_pt", top_pt_arr, 'top_pt/F')
 tree.Branch("top_eta", top_eta_arr, 'top_eta/F')
 tree.Branch("top_phi", top_phi_arr, 'top_phi/F')
 tree.Branch("top_mass", top_mass_arr, 'top_mass/F')
-tree.Branch("top_rapidity", top_rap_arr, 'top_rapidity/F')
+tree.Branch("top_rap", top_rap_arr, 'top_rap/F')
 
 tree.Branch("atop_pt", atop_pt_arr, 'atop_pt/F')
 tree.Branch("atop_eta", atop_eta_arr, 'atop_eta/F')
 tree.Branch("atop_phi", atop_phi_arr, 'atop_phi/F')
 tree.Branch("atop_mass", atop_mass_arr, 'atop_mass/F')
-tree.Branch("atop_rapidity", atop_rap_arr, 'atop_rapidity/F')
+tree.Branch("atop_rap", atop_rap_arr, 'atop_rap/F')
 
 tree.Branch("tt_mass", m_ttbar_arr, 'tt_mass/F')
 tree.Branch("tt_pt", ttbar_pt_arr, 'tt_pt/F')
@@ -764,13 +776,13 @@ tree.Branch("gen_top_pt",  gen_top_pt_arr, 'gen_top_pt/F')
 tree.Branch("gen_top_eta", gen_top_eta_arr, 'gen_top_eta/F')
 tree.Branch("gen_top_phi", gen_top_phi_arr, 'gen_top_phi/F')
 tree.Branch("gen_top_mass"   , gen_top_mass_arr   , 'gen_top_mass/F')
-tree.Branch("gen_top_rapidity", gen_top_rap_arr, 'gen_top_rapidity/F')
+tree.Branch("gen_top_rap", gen_top_rap_arr, 'gen_top_rap/F')
 
 tree.Branch("gen_atop_pt", gen_atop_pt_arr, 'gen_atop_pt/F')
 tree.Branch("gen_atop_eta", gen_atop_eta_arr, 'gen_atop_eta/F')
 tree.Branch("gen_atop_phi", gen_atop_phi_arr, 'gen_atop_phi/F')
 tree.Branch("gen_atop_mass"   , gen_atop_mass_arr   , 'gen_atop_mass/F')
-tree.Branch("gen_atop_rapidity", gen_atop_rap_arr, 'gen_atop_rapidity/F')
+tree.Branch("gen_atop_rap", gen_atop_rap_arr, 'gen_atop_rap/F')
 
 tree.Branch("gen_b_pt"    , gen_b_pt_arr    , 'gen_b_pt/F')
 tree.Branch("gen_b_eta"   , gen_b_eta_arr   , 'gen_b_eta/F')
@@ -794,17 +806,19 @@ tree.Branch("gen_alep_phi"   , gen_alep_phi_arr   , 'gen_alep_phi/F')
 tree.Branch("gen_alep_mass"   , gen_alep_mass_arr   , 'gen_alep_mass/F')
 tree.Branch("gen_alep_pdgid", gen_alep_pdgid_arr, 'gen_alep_pdgid/F')
 
-tree.Branch("gen_lep_nearest_pt"    , gen_lep_nearest_pt_arr    , 'gen_lep_nearest_pt/F')
-tree.Branch("gen_lep_nearest_eta"   , gen_lep_nearest_eta_arr   , 'gen_lep_nearest_eta/F')
-tree.Branch("gen_lep_nearest_phi"   , gen_lep_nearest_phi_arr   , 'gen_lep_nearest_phi/F')
-tree.Branch("gen_lep_nearest_mass"   , gen_lep_nearest_mass_arr   , 'gen_lep_nearest_mass/F')
-tree.Branch("gen_lep_nearest_pdgid", gen_lep_nearest_pdgid_arr, 'gen_lep_nearest_pdgid/F')
+if (verbose > 0):
+    
+    tree.Branch("gen_lep_nearest_pt"    , gen_lep_nearest_pt_arr    , 'gen_lep_nearest_pt/F')
+    tree.Branch("gen_lep_nearest_eta"   , gen_lep_nearest_eta_arr   , 'gen_lep_nearest_eta/F')
+    tree.Branch("gen_lep_nearest_phi"   , gen_lep_nearest_phi_arr   , 'gen_lep_nearest_phi/F')
+    tree.Branch("gen_lep_nearest_mass"   , gen_lep_nearest_mass_arr   , 'gen_lep_nearest_mass/F')
+    tree.Branch("gen_lep_nearest_pdgid", gen_lep_nearest_pdgid_arr, 'gen_lep_nearest_pdgid/F')
 
-tree.Branch("gen_alep_nearest_pt"    , gen_alep_nearest_pt_arr    , 'gen_alep_nearest_pt/F')
-tree.Branch("gen_alep_nearest_eta"   , gen_alep_nearest_eta_arr   , 'gen_alep_nearest_eta/F')
-tree.Branch("gen_alep_nearest_phi"   , gen_alep_nearest_phi_arr   , 'gen_alep_nearest_phi/F')
-tree.Branch("gen_alep_nearest_mass"   , gen_alep_nearest_mass_arr   , 'gen_alep_nearest_mass/F')
-tree.Branch("gen_alep_nearest_pdgid", gen_alep_nearest_pdgid_arr, 'gen_alep_nearest_pdgid/F')
+    tree.Branch("gen_alep_nearest_pt"    , gen_alep_nearest_pt_arr    , 'gen_alep_nearest_pt/F')
+    tree.Branch("gen_alep_nearest_eta"   , gen_alep_nearest_eta_arr   , 'gen_alep_nearest_eta/F')
+    tree.Branch("gen_alep_nearest_phi"   , gen_alep_nearest_phi_arr   , 'gen_alep_nearest_phi/F')
+    tree.Branch("gen_alep_nearest_mass"   , gen_alep_nearest_mass_arr   , 'gen_alep_nearest_mass/F')
+    tree.Branch("gen_alep_nearest_pdgid", gen_alep_nearest_pdgid_arr, 'gen_alep_nearest_pdgid/F')
 
 tree.Branch("gen_neu_pt"    , gen_neu_pt_arr    , 'gen_neu_pt/F')
 tree.Branch("gen_neu_eta"   , gen_neu_eta_arr   , 'gen_neu_eta/F')
@@ -871,8 +885,7 @@ for i in range(len(step8_top_pt)):
     ttbar_rap_arr[0] = step8_tt_rap[i]
 
     met_pt_arr[0] = step8_met_pt[i]
-    met_phi_arr[0] =step8_met_phi[i]
-    
+    met_phi_arr[0] =step8_met_phi[i]    
 
     gen_m_ttbar_arr[0] = step8_gen_tt_mass[i]
     gen_ttbar_pt_arr[0] = step8_gen_tt_pt[i]
@@ -914,17 +927,19 @@ for i in range(len(step8_top_pt)):
     gen_alep_mass_arr[0]    = step8_gen_alep_mass[i]
     gen_alep_pdgid_arr[0] = step8_gen_alep_pdgid[i]
 
-    gen_lep_nearest_pt_arr[0]     = step8_gen_lep_nearest_pt[i]
-    gen_lep_nearest_eta_arr[0]    = step8_gen_lep_nearest_eta[i]
-    gen_lep_nearest_phi_arr[0]    = step8_gen_lep_nearest_phi[i]
-    gen_lep_nearest_mass_arr[0]    = step8_gen_lep_nearest_mass[i]
-    gen_lep_nearest_pdgid_arr[0] = step8_gen_lep_nearest_pdgid[i]
+    if (verbose > 0):
+        
+        gen_lep_nearest_pt_arr[0]     = step8_gen_lep_nearest_pt[i]
+        gen_lep_nearest_eta_arr[0]    = step8_gen_lep_nearest_eta[i]
+        gen_lep_nearest_phi_arr[0]    = step8_gen_lep_nearest_phi[i]
+        gen_lep_nearest_mass_arr[0]    = step8_gen_lep_nearest_mass[i]
+        gen_lep_nearest_pdgid_arr[0] = step8_gen_lep_nearest_pdgid[i]
 
-    gen_alep_nearest_pt_arr[0]     = step8_gen_alep_nearest_pt[i]
-    gen_alep_nearest_eta_arr[0]    = step8_gen_alep_nearest_eta[i]
-    gen_alep_nearest_phi_arr[0]    = step8_gen_alep_nearest_phi[i]
-    gen_alep_nearest_mass_arr[0]    = step8_gen_alep_nearest_mass[i]
-    gen_alep_nearest_pdgid_arr[0] = step8_gen_alep_nearest_pdgid[i]
+        gen_alep_nearest_pt_arr[0]     = step8_gen_alep_nearest_pt[i]
+        gen_alep_nearest_eta_arr[0]    = step8_gen_alep_nearest_eta[i]
+        gen_alep_nearest_phi_arr[0]    = step8_gen_alep_nearest_phi[i]
+        gen_alep_nearest_mass_arr[0]    = step8_gen_alep_nearest_mass[i]
+        gen_alep_nearest_pdgid_arr[0] = step8_gen_alep_nearest_pdgid[i]
 
     gen_neu_pt_arr[0]     = step8_gen_neu_pt[i]
     gen_neu_eta_arr[0]    = step8_gen_neu_eta[i]
@@ -939,7 +954,6 @@ for i in range(len(step8_top_pt)):
     gen_met_pt_arr[0]     = step8_gen_met_pt[i]
     gen_met_phi_arr[0]    = step8_gen_met_phi[i]
 
-    
     weight_size_arr[0]  = len(step8_weight_sel[i])
 
     for k in range(weight_size_arr[0]):

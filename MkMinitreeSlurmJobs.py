@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("commandlist")
 args = parser.parse_args()
 
-HLLHC_BASE = str(os.getenv("HLLHC_BASE"))
+BASE = str(os.getenv("BASE"))
 
 if not os.path.exists("MiniTreeOutput"): os.makedirs("MiniTreeOutput")
 if not os.path.exists("RecoOutput"): os.makedirs("RecoOutput")
@@ -30,6 +30,10 @@ runfile = open("RunSlurm_"+os.path.basename(commandlistfilepath).rsplit(".",1)[0
 
 runfile.write("#!/bin/sh")
 runfile.write("\n")
+runfile.write("export X509_USER_PROXY=~/x509up_u`id -u`")
+runfile.write("\n")
+runfile.write("voms-proxy-init -voms cms -valid 192:00:00")
+runfile.write("\n")
 
 # loop through every other line
 for j in range(0,len(lines),2) :
@@ -44,20 +48,23 @@ for j in range(0,len(lines),2) :
         cfg.write("\n")
         cfg.write("#SBATCH  -A cms")
         cfg.write("\n")
-        cfg.write("#SBATCH --nodes=1")
+        cfg.write("#SBATCH --ntasks=1")
         cfg.write("\n")
-        cfg.write("#SBATCH --time=0:19:00")
+        #cfg.write("#SBATCH --cpus-per-task=" + str(args.cpu))
+        cfg.write("#SBATCH --cpus-per-task=1")
         cfg.write("\n")
-        cfg.write("#SBATCH --mem=8000")
+        #cfg.write("#SBATCH --mem-per-cpu=" + str(args.mem))
+        cfg.write("#SBATCH --mem-per-cpu=8000")
         cfg.write("\n")
-        cfg.write("cd " + HLLHC_BASE )
+        cfg.write("#SBATCH --time=1:59:00")
         cfg.write("\n")
-        cfg.write("module load anaconda/5.3.1-py37")
+        cfg.write("export X509_USER_PROXY=~/x509up_u`id -u`")
         cfg.write("\n")
-        cfg.write("source activate venv")
+        cfg.write("cd " + BASE )
         cfg.write("\n")
-        cfg.write("source /cvmfs/fcc.cern.ch/sw/latest/setup.sh")
+        cfg.write("source " + BASE + "/init.sh")
         cfg.write("\n")
+
         if j+0 < len(lines):
             cfg.write(str(lines[j].strip("\n")))
             cfg.write("\n")

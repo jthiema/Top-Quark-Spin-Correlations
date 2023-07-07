@@ -360,11 +360,11 @@ def main():
     print("Processing: " + file)
 
 
-    HLLHC_BASE = os.environ['HLLHC_BASE'] + "/"
+    BASE = os.environ['BASE'] + "/"
 
-    if not os.path.exists(HLLHC_BASE + "HistogramOutput"): os.makedirs(HLLHC_BASE + "HistogramOutput")
+    if not os.path.exists(BASE + "HistogramOutput"): os.makedirs(BASE + "HistogramOutput")
 
-    outHistFile = TFile.Open ( HLLHC_BASE + file.replace("MiniTreeOutput/minitree","HistogramOutput/histogram") , "RECREATE" )
+    outHistFile = TFile.Open ( BASE + file.replace("MiniTreeOutput/minitree","HistogramOutput/histogram") , "RECREATE" )
     outHistFile.cd()
 
     step8tree = uproot.open(file+':Step8')
