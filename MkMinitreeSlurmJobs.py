@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("commandlist")
 args = parser.parse_args()
 
-HLLHC_BASE = str(os.getenv("HLLHC_BASE"))
+BASE = str(os.getenv("BASE"))
 
 if not os.path.exists("MiniTreeOutput"): os.makedirs("MiniTreeOutput")
 if not os.path.exists("RecoOutput"): os.makedirs("RecoOutput")
@@ -60,9 +60,9 @@ for j in range(0,len(lines),2) :
         cfg.write("\n")
         cfg.write("export X509_USER_PROXY=~/x509up_u`id -u`")
         cfg.write("\n")
-        cfg.write("cd " + HLLHC_BASE )
+        cfg.write("cd " + BASE )
         cfg.write("\n")
-        cfg.write("source " + HLLHC_BASE + "/init.sh")
+        cfg.write("source " + BASE + "/init.sh")
         cfg.write("\n")
 
         if j+0 < len(lines):
