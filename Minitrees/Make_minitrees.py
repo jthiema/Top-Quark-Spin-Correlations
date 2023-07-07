@@ -21,17 +21,77 @@ def dR(e_phi, e_eta, m_phi, m_eta):
     d_phi = deltaphi(e_phi, m_phi)
     return np.sqrt(d_phi**2 + d_eta**2)
 
+def GetTopGenInfo(genpart_pid, genpart_status, genpart_pt, genpart_eta, genpart_phi, genpart_mass, gen_lep_4vec, gen_alep_4vec, gen_neu_4vec, gen_aneu_4vec, gen_top_index, gen_atop_index, gen_b_index, gen_ab_index, gen_lep_index, gen_alep_index, verbose):
+
+    for j in range(len(genpart_pid) - 1) : 
+
+        # Look for the first gen lepton, neutrino pairs on the list 
+
+        if( ( (genpart_pid[j] == 11 and genpart_pid[j+1] == -12) or (genpart_pid[j] == 13 and genpart_pid[j+1] == -14) or (genpart_pid[j] == 15 and genpart_pid[j+1] == -16) ) and gen_lep_index == -1 ):
+
+            gen_lep_4vec.SetPtEtaPhiM(genpart_pt[j] , genpart_eta[j] , genpart_phi[j] , genpart_mass[j])
+            gen_aneu_4vec.SetPtEtaPhiM(genpart_pt[j+1] , genpart_eta[j+1] , genpart_phi[j+1] , 0)                
+
+            if (verbose > 0):
+
+                if( (gen_lep_4vec + gen_aneu_4vec).M() < 70.4 or (gen_lep_4vec + gen_aneu_4vec).M() > 90.4  ): #continue
+
+                    print("Event: " + str(i))
+                    print("Lepton + Anti-Neutrino Mass: " + str((gen_lep_4vec + gen_aneu_4vec).M()))                    
+
+            gen_lep_index = j # a flag to check for lepton 
+
+        if( ( (genpart_pid[j] == -11 and genpart_pid[j+1] == 12) or (genpart_pid[j] == -13 and genpart_pid[j+1] == 14) or (genpart_pid[j] == -15 and genpart_pid[j+1] == 16) ) and gen_alep_index == -1 ):
+
+            gen_alep_4vec.SetPtEtaPhiM(genpart_pt[j] , genpart_eta[j] , genpart_phi[j] , genpart_mass[j])
+            gen_neu_4vec.SetPtEtaPhiM(genpart_pt[j+1] , genpart_eta[j+1] , genpart_phi[j+1] , 0)                
+
+            if (verbose > 0):
+
+                if ( (gen_alep_4vec + gen_neu_4vec).M() < 70.4 or (gen_alep_4vec + gen_neu_4vec).M() > 90.4  ): #continue
+
+                    print("Event: " + str(i))
+                    print("Anti-Lepton + Neutrino Mass: " + str((gen_alep_4vec + gen_neu_4vec).M()))                   
+
+            gen_alep_index = j # a flag for anti-leptons 
+
+        # gen top quarks with status 62
+
+        if ( genpart_pid[j] == 6 and genpart_status[j] == 62):
+
+            gen_top_index = j
+
+        if ( genpart_pid[j] == -6 and genpart_status[j] == 62):
+
+            gen_atop_index = j
+
+        # gen b quarks with status 23
+
+        if ( genpart_pid[j] == 5 and genpart_status[j] == 23):
+
+            gen_b_index = j
+
+        if ( genpart_pid[j] == -5 and genpart_status[j] == 23):
+
+            gen_ab_index = j
+
+    return gen_lep_4vec, gen_alep_4vec, gen_neu_4vec, gen_aneu_4vec, gen_top_index, gen_atop_index, gen_b_index, gen_ab_index, gen_lep_index, gen_alep_index
+
+
+
 def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', help='Input  Delphes Ntuple location')
     parser.add_argument('-o', '--output', help='Output Delphes Minitree location')
     parser.add_argument('-v', '--verbose', action='count', default=0, help='Verbosity', required=False)
+    parser.add_argument('-0', '--step0', action='store_true', help='Include Step0 Tree', required=False)
 
     args = parser.parse_args()
     inputFile = args.input
     outputFile = args.output
     verbose = args.verbose    
+    dostep0 = args.step0
 
     fileptr = uproot.open(inputFile)['Delphes_Ntuples']
     
@@ -324,15 +384,15 @@ def main():
         e_4vec  = ROOT.TLorentzVector()
         mu_4vec = ROOT.TLorentzVector()
 
+        ###########  GEN  ###########
+
+        selection_step[i] = 0
+
         gen_lep_4vec  = ROOT.TLorentzVector()
         gen_alep_4vec = ROOT.TLorentzVector()
 
         gen_neu_4vec  = ROOT.TLorentzVector()
         gen_aneu_4vec = ROOT.TLorentzVector()
-
-        ###########  GEN  ###########
-
-        selection_step[i] = 0
         
         gen_top_index = -1
         gen_atop_index = -1
@@ -341,123 +401,75 @@ def main():
         gen_lep_index = -1
         gen_alep_index = -1
 
-        for j in range(len(genpart_pid[i]) - 1) : 
+        if(dostep0 == True):
 
-            # Look for the first gen lepton, neutrino pairs on the list 
+            gen_lep_4vec, gen_alep_4vec, gen_neu_4vec, gen_aneu_4vec, gen_top_index, gen_atop_index, gen_b_index, gen_ab_index, gen_lep_index, gen_alep_index = GetTopGenInfo(genpart_pid[i], genpart_status[i], genpart_pt[i] , genpart_eta[i] , genpart_phi[i], genpart_mass[i], gen_lep_4vec, gen_alep_4vec, gen_neu_4vec, gen_aneu_4vec, gen_top_index, gen_atop_index, gen_b_index, gen_ab_index, gen_lep_index, gen_alep_index, verbose)
 
-            if( ( (genpart_pid[i][j] == 11 and genpart_pid[i][j+1] == -12) or (genpart_pid[i][j] == 13 and genpart_pid[i][j+1] == -14) or (genpart_pid[i][j] == 15 and genpart_pid[i][j+1] == -16) ) and gen_lep_index == -1 ):
+            if ( gen_lep_index == -1 or gen_alep_index == -1 or gen_top_index == -1 or gen_atop_index == -1 or gen_b_index == -1 or gen_ab_index == -1):
 
-                gen_lep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
-                gen_aneu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)                
-                
                 if (verbose > 0):
 
-                    if( (gen_lep_4vec + gen_aneu_4vec).M() < 70.4 or (gen_lep_4vec + gen_aneu_4vec).M() > 90.4  ): #continue
+                    print("Event: " + str(i) + " is missing gen objects")
 
-                        print("Event: " + str(i))
-                        print("Lepton + Anti-Neutrino Mass: " + str((gen_lep_4vec + gen_aneu_4vec).M()))                    
-                    
-                gen_lep_index = j # a flag to check for lepton 
+                continue # ensures that there's at least one dilepton pair
 
-            if( ( (genpart_pid[i][j] == -11 and genpart_pid[i][j+1] == 12) or (genpart_pid[i][j] == -13 and genpart_pid[i][j+1] == 14) or (genpart_pid[i][j] == -15 and genpart_pid[i][j+1] == 16) ) and gen_alep_index == -1 ):
+            ####### Fill the GEN arrays ##########
 
-                gen_alep_4vec.SetPtEtaPhiM(genpart_pt[i][j] , genpart_eta[i][j] , genpart_phi[i][j] , genpart_mass[i][j])
-                gen_neu_4vec.SetPtEtaPhiM(genpart_pt[i][j+1] , genpart_eta[i][j+1] , genpart_phi[i][j+1] , 0)                
-                
-                if (verbose > 0):
+            gen_lep_pt_0[i]=genpart_pt[i][gen_lep_index]
+            gen_lep_eta_0[i]=genpart_eta[i][gen_lep_index]
+            gen_lep_phi_0[i]=genpart_phi[i][gen_lep_index]
+            gen_lep_mass_0[i]=genpart_mass[i][gen_lep_index]
+            gen_lep_pdgid_0[i]=genpart_pid[i][gen_lep_index]
+            gen_lep_status_0[i]=genpart_status[i][gen_lep_index]
 
-                    if ( (gen_alep_4vec + gen_neu_4vec).M() < 70.4 or (gen_alep_4vec + gen_neu_4vec).M() > 90.4  ): #continue
+            gen_aneu_pt_0[i]=genpart_pt[i][gen_lep_index+1]
+            gen_aneu_eta_0[i]=genpart_eta[i][gen_lep_index+1]
+            gen_aneu_phi_0[i]=genpart_phi[i][gen_lep_index+1]
+            gen_aneu_pdgid_0[i]=genpart_pid[i][gen_lep_index+1]
+            gen_aneu_status_0[i]=genpart_status[i][gen_lep_index+1]
 
-                        print("Event: " + str(i))
-                        print("Anti-Lepton + Neutrino Mass: " + str((gen_alep_4vec + gen_neu_4vec).M()))                   
-                    
-                gen_alep_index = j # a flag for anti-leptons 
+            gen_alep_pt_0[i]=genpart_pt[i][gen_alep_index]
+            gen_alep_eta_0[i]=genpart_eta[i][gen_alep_index]
+            gen_alep_phi_0[i]=genpart_phi[i][gen_alep_index]
+            gen_alep_mass_0[i]=genpart_mass[i][gen_alep_index]
+            gen_alep_pdgid_0[i]=genpart_pid[i][gen_alep_index]
+            gen_alep_status_0[i]=genpart_status[i][gen_alep_index]
 
-            # gen top quarks with status 62
+            gen_neu_pt_0[i]=genpart_pt[i][gen_alep_index+1]
+            gen_neu_eta_0[i]=genpart_eta[i][gen_alep_index+1]
+            gen_neu_phi_0[i]=genpart_phi[i][gen_alep_index+1]
+            gen_neu_pdgid_0[i]=genpart_pid[i][gen_alep_index+1]
+            gen_neu_status_0[i]=genpart_status[i][gen_alep_index+1]
 
-            if ( genpart_pid[i][j] == 6 and genpart_status[i][j] == 62):
+            gen_top_pt_0[i]=genpart_pt[i][gen_top_index]
+            gen_top_eta_0[i]=genpart_eta[i][gen_top_index]
+            gen_top_phi_0[i]=genpart_phi[i][gen_top_index]
+            gen_top_mass_0[i]=genpart_mass[i][gen_top_index]
+            gen_top_status_0[i]=genpart_status[i][gen_top_index]
 
-                gen_top_index = j
+            gen_atop_pt_0[i]=genpart_pt[i][gen_atop_index]
+            gen_atop_eta_0[i]=genpart_eta[i][gen_atop_index]
+            gen_atop_phi_0[i]=genpart_phi[i][gen_atop_index]
+            gen_atop_mass_0[i]=genpart_mass[i][gen_atop_index]
+            gen_atop_status_0[i]=genpart_status[i][gen_atop_index]
 
-            if ( genpart_pid[i][j] == -6 and genpart_status[i][j] == 62):
+            gen_b_pt_0[i]=genpart_pt[i][gen_b_index]
+            gen_b_eta_0[i]=genpart_eta[i][gen_b_index]
+            gen_b_phi_0[i]=genpart_phi[i][gen_b_index]
+            gen_b_mass_0[i]=genpart_mass[i][gen_b_index]
+            gen_b_status_0[i]=genpart_status[i][gen_b_index]
 
-                gen_atop_index = j
-                
-            # gen b quarks with status 23
+            gen_ab_pt_0[i]=genpart_pt[i][gen_ab_index]
+            gen_ab_eta_0[i]=genpart_eta[i][gen_ab_index]
+            gen_ab_phi_0[i]=genpart_phi[i][gen_ab_index]
+            gen_ab_mass_0[i]=genpart_mass[i][gen_ab_index]
+            gen_ab_status_0[i]=genpart_status[i][gen_ab_index]
 
-            if ( genpart_pid[i][j] == 5 and genpart_status[i][j] == 23):
+            # Calculate gen met from gen neutrino and anti-neutrino
 
-                gen_b_index = j
+            gen_met_pt_0[i]=(gen_neu_4vec + gen_aneu_4vec).Pt()
+            gen_met_phi_0[i]=(gen_neu_4vec + gen_aneu_4vec).Phi()   
 
-            if ( genpart_pid[i][j] == -5 and genpart_status[i][j] == 23):
-
-                gen_ab_index = j
-
-
-        if ( gen_lep_index == -1 or gen_alep_index == -1 or gen_top_index == -1 or gen_atop_index == -1 or gen_b_index == -1 or gen_ab_index == -1):
-
-            if (verbose > 0):
-
-                print("Event: " + str(i) + " is missing gen objects")
-
-            continue # ensures that there's at least one dilepton pair
-
-        ####### Fill the GEN arrays ##########
-
-        gen_lep_pt_0[i]=genpart_pt[i][gen_lep_index]
-        gen_lep_eta_0[i]=genpart_eta[i][gen_lep_index]
-        gen_lep_phi_0[i]=genpart_phi[i][gen_lep_index]
-        gen_lep_mass_0[i]=genpart_mass[i][gen_lep_index]
-        gen_lep_pdgid_0[i]=genpart_pid[i][gen_lep_index]
-        gen_lep_status_0[i]=genpart_status[i][gen_lep_index]
-        
-        gen_aneu_pt_0[i]=genpart_pt[i][gen_lep_index+1]
-        gen_aneu_eta_0[i]=genpart_eta[i][gen_lep_index+1]
-        gen_aneu_phi_0[i]=genpart_phi[i][gen_lep_index+1]
-        gen_aneu_pdgid_0[i]=genpart_pid[i][gen_lep_index+1]
-        gen_aneu_status_0[i]=genpart_status[i][gen_lep_index+1]
-
-        gen_alep_pt_0[i]=genpart_pt[i][gen_alep_index]
-        gen_alep_eta_0[i]=genpart_eta[i][gen_alep_index]
-        gen_alep_phi_0[i]=genpart_phi[i][gen_alep_index]
-        gen_alep_mass_0[i]=genpart_mass[i][gen_alep_index]
-        gen_alep_pdgid_0[i]=genpart_pid[i][gen_alep_index]
-        gen_alep_status_0[i]=genpart_status[i][gen_alep_index]
-        
-        gen_neu_pt_0[i]=genpart_pt[i][gen_alep_index+1]
-        gen_neu_eta_0[i]=genpart_eta[i][gen_alep_index+1]
-        gen_neu_phi_0[i]=genpart_phi[i][gen_alep_index+1]
-        gen_neu_pdgid_0[i]=genpart_pid[i][gen_alep_index+1]
-        gen_neu_status_0[i]=genpart_status[i][gen_alep_index+1]
-
-        gen_top_pt_0[i]=genpart_pt[i][gen_top_index]
-        gen_top_eta_0[i]=genpart_eta[i][gen_top_index]
-        gen_top_phi_0[i]=genpart_phi[i][gen_top_index]
-        gen_top_mass_0[i]=genpart_mass[i][gen_top_index]
-        gen_top_status_0[i]=genpart_status[i][gen_top_index]
-                
-        gen_atop_pt_0[i]=genpart_pt[i][gen_atop_index]
-        gen_atop_eta_0[i]=genpart_eta[i][gen_atop_index]
-        gen_atop_phi_0[i]=genpart_phi[i][gen_atop_index]
-        gen_atop_mass_0[i]=genpart_mass[i][gen_atop_index]
-        gen_atop_status_0[i]=genpart_status[i][gen_atop_index]
-
-        gen_b_pt_0[i]=genpart_pt[i][gen_b_index]
-        gen_b_eta_0[i]=genpart_eta[i][gen_b_index]
-        gen_b_phi_0[i]=genpart_phi[i][gen_b_index]
-        gen_b_mass_0[i]=genpart_mass[i][gen_b_index]
-        gen_b_status_0[i]=genpart_status[i][gen_b_index]
-                
-        gen_ab_pt_0[i]=genpart_pt[i][gen_ab_index]
-        gen_ab_eta_0[i]=genpart_eta[i][gen_ab_index]
-        gen_ab_phi_0[i]=genpart_phi[i][gen_ab_index]
-        gen_ab_mass_0[i]=genpart_mass[i][gen_ab_index]
-        gen_ab_status_0[i]=genpart_status[i][gen_ab_index]
-
-        # Calculate gen met from gen neutrino and anti-neutrino
-
-        gen_met_pt_0[i]=(gen_neu_4vec + gen_aneu_4vec).Pt()
-        gen_met_phi_0[i]=(gen_neu_4vec + gen_aneu_4vec).Phi()   
     
     ###########  RECO  ###########
         
@@ -556,6 +568,18 @@ def main():
         sljet_idx = jet_idx[1]
         
         ###########  GEN STEP 7  ###########
+
+        if(dostep0 == False):
+
+            gen_lep_4vec, gen_alep_4vec, gen_neu_4vec, gen_aneu_4vec, gen_top_index, gen_atop_index, gen_b_index, gen_ab_index, gen_lep_index, gen_alep_index = GetTopGenInfo(genpart_pid[i], genpart_status[i], genpart_pt[i] , genpart_eta[i] , genpart_phi[i], genpart_mass[i], gen_lep_4vec, gen_alep_4vec, gen_neu_4vec, gen_aneu_4vec, gen_top_index, gen_atop_index, gen_b_index, gen_ab_index, gen_lep_index, gen_alep_index, verbose)
+
+            if ( gen_lep_index == -1 or gen_alep_index == -1 or gen_top_index == -1 or gen_atop_index == -1 or gen_b_index == -1 or gen_ab_index == -1):
+
+                if (verbose > 0):
+
+                    print("Event: " + str(i) + " is missing gen objects")
+
+                continue # ensures that there's at least one dilepton pair
 
         ####### Fill the GEN STEP 7 arrays ##########_0        
 
@@ -941,84 +965,86 @@ def main():
     # Request arrays for branches
     maxn    = 9999
     
-    genpart_size_arr_0 = array('i', [0])
-    genpart_pt_arr_0 = array('f', maxn*[0.])
+    if(dostep0 == True):
 
-    genpart_eta_arr_0  = array('f', maxn*[0.])
-    genpart_phi_arr_0  = array('f', maxn*[0.])
-    genpart_pid_arr_0  = array('i', maxn*[0])
-    genpart_mass_arr_0 = array('f', maxn*[0.])
-    genpart_status_arr_0 = array('i', maxn*[0])
-    #genpart_charge_arr_0 = array('f', maxn*[0])    
-    
-    gen_top_pt_arr_0      = array('f', [0.])
-    gen_top_eta_arr_0     = array('f', [0.])
-    gen_top_phi_arr_0     = array('f', [0.])
-    gen_top_mass_arr_0     = array('f', [0.])
-    gen_top_status_arr_0  = array('f', [0.])
+        genpart_size_arr_0 = array('i', [0])
+        genpart_pt_arr_0 = array('f', maxn*[0.])
 
-    gen_atop_pt_arr_0     = array('f', [0.])
-    gen_atop_eta_arr_0    = array('f', [0.])
-    gen_atop_phi_arr_0    = array('f', [0.])
-    gen_atop_mass_arr_0    = array('f', [0.])
-    gen_atop_status_arr_0  = array('f', [0.])
+        genpart_eta_arr_0  = array('f', maxn*[0.])
+        genpart_phi_arr_0  = array('f', maxn*[0.])
+        genpart_pid_arr_0  = array('i', maxn*[0])
+        genpart_mass_arr_0 = array('f', maxn*[0.])
+        genpart_status_arr_0 = array('i', maxn*[0])
+        #genpart_charge_arr_0 = array('f', maxn*[0])    
 
-    gen_b_pt_arr_0      = array('f', [0.])
-    gen_b_eta_arr_0     = array('f', [0.])
-    gen_b_phi_arr_0     = array('f', [0.])
-    gen_b_mass_arr_0     = array('f', [0.])
-    gen_b_status_arr_0  = array('f', [0.])
+        gen_top_pt_arr_0      = array('f', [0.])
+        gen_top_eta_arr_0     = array('f', [0.])
+        gen_top_phi_arr_0     = array('f', [0.])
+        gen_top_mass_arr_0     = array('f', [0.])
+        gen_top_status_arr_0  = array('f', [0.])
 
-    gen_ab_pt_arr_0     = array('f', [0.])
-    gen_ab_eta_arr_0    = array('f', [0.])
-    gen_ab_phi_arr_0    = array('f', [0.])
-    gen_ab_mass_arr_0    = array('f', [0.])
-    gen_ab_status_arr_0  = array('f', [0.])
+        gen_atop_pt_arr_0     = array('f', [0.])
+        gen_atop_eta_arr_0    = array('f', [0.])
+        gen_atop_phi_arr_0    = array('f', [0.])
+        gen_atop_mass_arr_0    = array('f', [0.])
+        gen_atop_status_arr_0  = array('f', [0.])
 
-    gen_lep_pt_arr_0      = array('f', [0.])
-    gen_lep_eta_arr_0     = array('f', [0.])
-    gen_lep_phi_arr_0     = array('f', [0.])
-    gen_lep_mass_arr_0     = array('f', [0.])
-    gen_lep_pdgid_arr_0  = array('f', [0.])
-    gen_lep_status_arr_0  = array('f', [0.])
+        gen_b_pt_arr_0      = array('f', [0.])
+        gen_b_eta_arr_0     = array('f', [0.])
+        gen_b_phi_arr_0     = array('f', [0.])
+        gen_b_mass_arr_0     = array('f', [0.])
+        gen_b_status_arr_0  = array('f', [0.])
 
-    gen_alep_pt_arr_0     = array('f', [0.])
-    gen_alep_eta_arr_0    = array('f', [0.])
-    gen_alep_phi_arr_0    = array('f', [0.])
-    gen_alep_mass_arr_0    = array('f', [0.])
-    gen_alep_pdgid_arr_0 = array('f', [0.])
-    gen_alep_status_arr_0  = array('f', [0.])
+        gen_ab_pt_arr_0     = array('f', [0.])
+        gen_ab_eta_arr_0    = array('f', [0.])
+        gen_ab_phi_arr_0    = array('f', [0.])
+        gen_ab_mass_arr_0    = array('f', [0.])
+        gen_ab_status_arr_0  = array('f', [0.])
 
-    gen_lep_nearest_pt_arr_0      = array('f', [0.])
-    gen_lep_nearest_eta_arr_0     = array('f', [0.])
-    gen_lep_nearest_phi_arr_0     = array('f', [0.])
-    gen_lep_nearest_mass_arr_0     = array('f', [0.])
-    gen_lep_nearest_pdgid_arr_0  = array('f', [0.])
-    gen_lep_nearest_status_arr_0  = array('f', [0.])
+        gen_lep_pt_arr_0      = array('f', [0.])
+        gen_lep_eta_arr_0     = array('f', [0.])
+        gen_lep_phi_arr_0     = array('f', [0.])
+        gen_lep_mass_arr_0     = array('f', [0.])
+        gen_lep_pdgid_arr_0  = array('f', [0.])
+        gen_lep_status_arr_0  = array('f', [0.])
 
-    gen_alep_nearest_pt_arr_0     = array('f', [0.])
-    gen_alep_nearest_eta_arr_0    = array('f', [0.])
-    gen_alep_nearest_phi_arr_0    = array('f', [0.])
-    gen_alep_nearest_mass_arr_0    = array('f', [0.])
-    gen_alep_nearest_pdgid_arr_0 = array('f', [0.])
-    gen_alep_nearest_status_arr_0  = array('f', [0.])
+        gen_alep_pt_arr_0     = array('f', [0.])
+        gen_alep_eta_arr_0    = array('f', [0.])
+        gen_alep_phi_arr_0    = array('f', [0.])
+        gen_alep_mass_arr_0    = array('f', [0.])
+        gen_alep_pdgid_arr_0 = array('f', [0.])
+        gen_alep_status_arr_0  = array('f', [0.])
 
-    gen_neu_pt_arr_0      = array('f', [0.])
-    gen_neu_eta_arr_0     = array('f', [0.])
-    gen_neu_phi_arr_0     = array('f', [0.])
-    gen_neu_mass_arr_0     = array('f', [0.])
-    gen_neu_pdgid_arr_0  = array('f', [0.])
-    gen_neu_status_arr_0  = array('f', [0.])
+        gen_lep_nearest_pt_arr_0      = array('f', [0.])
+        gen_lep_nearest_eta_arr_0     = array('f', [0.])
+        gen_lep_nearest_phi_arr_0     = array('f', [0.])
+        gen_lep_nearest_mass_arr_0     = array('f', [0.])
+        gen_lep_nearest_pdgid_arr_0  = array('f', [0.])
+        gen_lep_nearest_status_arr_0  = array('f', [0.])
 
-    gen_aneu_pt_arr_0     = array('f', [0.])
-    gen_aneu_eta_arr_0    = array('f', [0.])
-    gen_aneu_phi_arr_0    = array('f', [0.])
-    gen_aneu_mass_arr_0    = array('f', [0.])
-    gen_aneu_pdgid_arr_0 = array('f', [0.])
-    gen_aneu_status_arr_0  = array('f', [0.])
+        gen_alep_nearest_pt_arr_0     = array('f', [0.])
+        gen_alep_nearest_eta_arr_0    = array('f', [0.])
+        gen_alep_nearest_phi_arr_0    = array('f', [0.])
+        gen_alep_nearest_mass_arr_0    = array('f', [0.])
+        gen_alep_nearest_pdgid_arr_0 = array('f', [0.])
+        gen_alep_nearest_status_arr_0  = array('f', [0.])
 
-    gen_met_pt_arr_0     = array('f', [0.])
-    gen_met_phi_arr_0    = array('f', [0.])    
+        gen_neu_pt_arr_0      = array('f', [0.])
+        gen_neu_eta_arr_0     = array('f', [0.])
+        gen_neu_phi_arr_0     = array('f', [0.])
+        gen_neu_mass_arr_0     = array('f', [0.])
+        gen_neu_pdgid_arr_0  = array('f', [0.])
+        gen_neu_status_arr_0  = array('f', [0.])
+
+        gen_aneu_pt_arr_0     = array('f', [0.])
+        gen_aneu_eta_arr_0    = array('f', [0.])
+        gen_aneu_phi_arr_0    = array('f', [0.])
+        gen_aneu_mass_arr_0    = array('f', [0.])
+        gen_aneu_pdgid_arr_0 = array('f', [0.])
+        gen_aneu_status_arr_0  = array('f', [0.])
+
+        gen_met_pt_arr_0     = array('f', [0.])
+        gen_met_phi_arr_0    = array('f', [0.])    
     
     HT_arr  = array('f', [0.])
     ST_arr  = array('f', [0.])
@@ -1188,9 +1214,11 @@ def main():
     
     opfile = ROOT.TFile(outputFile, 'recreate')
 
-    # Make Step 0 Tree
-    Step0tree = ROOT.TTree("Step0", "Step0")
-    hist_0   = ROOT.TH1F('Nevents_all', '', 1, 0.5, 1.5)    
+    if(dostep0 == True):
+
+        # Make Step 0 Tree
+        Step0tree = ROOT.TTree("Step0", "Step0")
+        hist_0   = ROOT.TH1F('Nevents_all', '', 1, 0.5, 1.5)    
 
     # Make Step 7 Tree
     Step7tree = ROOT.TTree("Step7", "Step7")
@@ -1206,153 +1234,154 @@ def main():
     #Step0tree.Branch("genjet_mass_0", genjet_mass_arr_0, "genjet_mass_0[genjet_size_0]/F")
 
     # Selection Mark
-    
+
     # Gen particles
-    Step0tree.Branch("genpart_size", genpart_size_arr_0, "genpart_size/I")
-    Step0tree.Branch("genpart_pid", genpart_pid_arr_0, "genpart_pid[genpart_size]/I")
-    Step0tree.Branch("genpart_status", genpart_status_arr_0,"genpart_status[genpart_size]/I")
 
-    Step0tree.Branch("genpart_pt", genpart_pt_arr_0, "genpart_pt[genpart_size]/F")
-    Step0tree.Branch("genpart_eta", genpart_eta_arr_0, "genpart_eta[genpart_size]/F")
-    Step0tree.Branch("genpart_phi", genpart_phi_arr_0, "genpart_phi[genpart_size]/F")
-    Step0tree.Branch("genpart_mass", genpart_mass_arr_0,"genpart_mass[genpart_size]/F")
-    #Step7tree.Branch("genpart_charge", genpart_charge_arr,"genpart_charge[genpart_size]/F")
-
-    #Gen particle branches
-    # By flavor
-    Step0tree.Branch("gen_top_pt"    , gen_top_pt_arr_0    , 'gen_top_pt/F')
-    Step0tree.Branch("gen_top_eta"   , gen_top_eta_arr_0   , 'gen_top_eta/F')
-    Step0tree.Branch("gen_top_phi"   , gen_top_phi_arr_0   , 'gen_top_phi/F')
-    Step0tree.Branch("gen_top_mass"   , gen_top_mass_arr_0   , 'gen_top_mass/F')
-    Step0tree.Branch("gen_top_status", gen_top_status_arr_0, 'gen_top_status/F')
-
-    Step0tree.Branch("gen_atop_pt"    , gen_atop_pt_arr_0    , 'gen_atop_pt/F')
-    Step0tree.Branch("gen_atop_eta"   , gen_atop_eta_arr_0   , 'gen_atop_eta/F')
-    Step0tree.Branch("gen_atop_phi"   , gen_atop_phi_arr_0   , 'gen_atop_phi/F')
-    Step0tree.Branch("gen_atop_mass"   , gen_atop_mass_arr_0   , 'gen_atop_mass/F')
-    Step0tree.Branch("gen_atop_status", gen_atop_status_arr_0, 'gen_atop_status/F')
+    if(dostep0 == True):
     
-    Step0tree.Branch("gen_b_pt"    , gen_b_pt_arr_0    , 'gen_b_pt/F')
-    Step0tree.Branch("gen_b_eta"   , gen_b_eta_arr_0   , 'gen_b_eta/F')
-    Step0tree.Branch("gen_b_phi"   , gen_b_phi_arr_0   , 'gen_b_phi/F')
-    Step0tree.Branch("gen_b_mass"   , gen_b_mass_arr_0   , 'gen_b_mass/F')
-    Step0tree.Branch("gen_b_status", gen_b_status_arr_0, 'gen_b_status/F')
+        Step0tree.Branch("genpart_size", genpart_size_arr_0, "genpart_size/I")
+        Step0tree.Branch("genpart_pid", genpart_pid_arr_0, "genpart_pid[genpart_size]/I")
+        Step0tree.Branch("genpart_status", genpart_status_arr_0,"genpart_status[genpart_size]/I")
 
-    Step0tree.Branch("gen_ab_pt"    , gen_ab_pt_arr_0    , 'gen_ab_pt/F')
-    Step0tree.Branch("gen_ab_eta"   , gen_ab_eta_arr_0   , 'gen_ab_eta/F')
-    Step0tree.Branch("gen_ab_phi"   , gen_ab_phi_arr_0   , 'gen_ab_phi/F')
-    Step0tree.Branch("gen_ab_mass"   , gen_ab_mass_arr_0   , 'gen_ab_mass/F')
-    Step0tree.Branch("gen_ab_status", gen_ab_status_arr_0, 'gen_ab_status/F')
-    
-    if (verbose > 0):    
+        Step0tree.Branch("genpart_pt", genpart_pt_arr_0, "genpart_pt[genpart_size]/F")
+        Step0tree.Branch("genpart_eta", genpart_eta_arr_0, "genpart_eta[genpart_size]/F")
+        Step0tree.Branch("genpart_phi", genpart_phi_arr_0, "genpart_phi[genpart_size]/F")
+        Step0tree.Branch("genpart_mass", genpart_mass_arr_0,"genpart_mass[genpart_size]/F")
+        #Step7tree.Branch("genpart_charge", genpart_charge_arr,"genpart_charge[genpart_size]/F")
 
-        Step0tree.Branch("gen_lep_nearest_pt"    , gen_lep_nearest_pt_arr_0    , 'gen_lep_nearest_pt/F')
-        Step0tree.Branch("gen_lep_nearest_eta"   , gen_lep_nearest_eta_arr_0   , 'gen_lep_nearest_eta/F')
-        Step0tree.Branch("gen_lep_nearest_phi"   , gen_lep_nearest_phi_arr_0   , 'gen_lep_nearest_phi/F')
-        Step0tree.Branch("gen_lep_nearest_mass"   , gen_lep_nearest_mass_arr_0   , 'gen_lep_nearest_mass/F')
-        Step0tree.Branch("gen_lep_nearest_pdgid", gen_lep_nearest_pdgid_arr_0, 'gen_lep_nearest_pdgid/F')
-        Step0tree.Branch("gen_lep_nearest_status", gen_lep_nearest_status_arr_0, 'gen_lep_nearest_status/F')
+        #Gen particle branches
+        # By flavor
+        Step0tree.Branch("gen_top_pt"    , gen_top_pt_arr_0    , 'gen_top_pt/F')
+        Step0tree.Branch("gen_top_eta"   , gen_top_eta_arr_0   , 'gen_top_eta/F')
+        Step0tree.Branch("gen_top_phi"   , gen_top_phi_arr_0   , 'gen_top_phi/F')
+        Step0tree.Branch("gen_top_mass"   , gen_top_mass_arr_0   , 'gen_top_mass/F')
+        Step0tree.Branch("gen_top_status", gen_top_status_arr_0, 'gen_top_status/F')
 
-        Step0tree.Branch("gen_alep_nearest_pt"    , gen_alep_nearest_pt_arr_0    , 'gen_alep_nearest_pt/F')
-        Step0tree.Branch("gen_alep_nearest_eta"   , gen_alep_nearest_eta_arr_0   , 'gen_alep_nearest_eta/F')
-        Step0tree.Branch("gen_alep_nearest_phi"   , gen_alep_nearest_phi_arr_0   , 'gen_alep_nearest_phi/F')
-        Step0tree.Branch("gen_alep_nearest_mass"   , gen_alep_nearest_mass_arr_0   , 'gen_alep_nearest_mass/F')
-        Step0tree.Branch("gen_alep_nearest_pdgid", gen_alep_nearest_pdgid_arr_0, 'gen_alep_nearest_pdgid/F')
-        Step0tree.Branch("gen_alep_nearest_status", gen_alep_nearest_status_arr_0, 'gen_alep_nearest_status/F')
+        Step0tree.Branch("gen_atop_pt"    , gen_atop_pt_arr_0    , 'gen_atop_pt/F')
+        Step0tree.Branch("gen_atop_eta"   , gen_atop_eta_arr_0   , 'gen_atop_eta/F')
+        Step0tree.Branch("gen_atop_phi"   , gen_atop_phi_arr_0   , 'gen_atop_phi/F')
+        Step0tree.Branch("gen_atop_mass"   , gen_atop_mass_arr_0   , 'gen_atop_mass/F')
+        Step0tree.Branch("gen_atop_status", gen_atop_status_arr_0, 'gen_atop_status/F')
 
-    Step0tree.Branch("gen_lep_pt"    , gen_lep_pt_arr_0    , 'gen_lep_pt/F')
-    Step0tree.Branch("gen_lep_eta"   , gen_lep_eta_arr_0   , 'gen_lep_eta/F')
-    Step0tree.Branch("gen_lep_phi"   , gen_lep_phi_arr_0   , 'gen_lep_phi/F')
-    Step0tree.Branch("gen_lep_mass"   , gen_lep_mass_arr_0   , 'gen_lep_mass/F')
-    Step0tree.Branch("gen_lep_pdgid", gen_lep_pdgid_arr_0, 'gen_lep_pdgid/F')
-    Step0tree.Branch("gen_lep_status", gen_lep_status_arr_0, 'gen_lep_status/F')
+        Step0tree.Branch("gen_b_pt"    , gen_b_pt_arr_0    , 'gen_b_pt/F')
+        Step0tree.Branch("gen_b_eta"   , gen_b_eta_arr_0   , 'gen_b_eta/F')
+        Step0tree.Branch("gen_b_phi"   , gen_b_phi_arr_0   , 'gen_b_phi/F')
+        Step0tree.Branch("gen_b_mass"   , gen_b_mass_arr_0   , 'gen_b_mass/F')
+        Step0tree.Branch("gen_b_status", gen_b_status_arr_0, 'gen_b_status/F')
 
-    Step0tree.Branch("gen_alep_pt"    , gen_alep_pt_arr_0    , 'gen_alep_pt/F')
-    Step0tree.Branch("gen_alep_eta"   , gen_alep_eta_arr_0   , 'gen_alep_eta/F')
-    Step0tree.Branch("gen_alep_phi"   , gen_alep_phi_arr_0   , 'gen_alep_phi/F')
-    Step0tree.Branch("gen_alep_mass"   , gen_alep_mass_arr_0   , 'gen_alep_mass/F')
-    Step0tree.Branch("gen_alep_pdgid", gen_alep_pdgid_arr_0, 'gen_alep_pdgid/F')
-    Step0tree.Branch("gen_alep_status", gen_alep_status_arr_0, 'gen_alep_status/F')
+        Step0tree.Branch("gen_ab_pt"    , gen_ab_pt_arr_0    , 'gen_ab_pt/F')
+        Step0tree.Branch("gen_ab_eta"   , gen_ab_eta_arr_0   , 'gen_ab_eta/F')
+        Step0tree.Branch("gen_ab_phi"   , gen_ab_phi_arr_0   , 'gen_ab_phi/F')
+        Step0tree.Branch("gen_ab_mass"   , gen_ab_mass_arr_0   , 'gen_ab_mass/F')
+        Step0tree.Branch("gen_ab_status", gen_ab_status_arr_0, 'gen_ab_status/F')
 
-    Step0tree.Branch("gen_neu_pt"    , gen_neu_pt_arr_0    , 'gen_neu_pt/F')
-    Step0tree.Branch("gen_neu_eta"   , gen_neu_eta_arr_0   , 'gen_neu_eta/F')
-    Step0tree.Branch("gen_neu_phi"   , gen_neu_phi_arr_0   , 'gen_neu_phi/F')
-    Step0tree.Branch("gen_neu_pdgid", gen_neu_pdgid_arr_0, 'gen_neu_pdgid/F')
-    Step0tree.Branch("gen_neu_status", gen_neu_status_arr_0, 'gen_neu_status/F')
+        if (verbose > 0):    
 
-    Step0tree.Branch("gen_aneu_pt"    , gen_aneu_pt_arr_0    , 'gen_aneu_pt/F')
-    Step0tree.Branch("gen_aneu_eta"   , gen_aneu_eta_arr_0   , 'gen_aneu_eta/F')
-    Step0tree.Branch("gen_aneu_phi"   , gen_aneu_phi_arr_0   , 'gen_aneu_phi/F')
-    Step0tree.Branch("gen_aneu_pdgid", gen_aneu_pdgid_arr_0, 'gen_aneu_pdgid/F')
-    Step0tree.Branch("gen_aneu_status", gen_aneu_status_arr_0, 'gen_aneu_status/F')
+            Step0tree.Branch("gen_lep_nearest_pt"    , gen_lep_nearest_pt_arr_0    , 'gen_lep_nearest_pt/F')
+            Step0tree.Branch("gen_lep_nearest_eta"   , gen_lep_nearest_eta_arr_0   , 'gen_lep_nearest_eta/F')
+            Step0tree.Branch("gen_lep_nearest_phi"   , gen_lep_nearest_phi_arr_0   , 'gen_lep_nearest_phi/F')
+            Step0tree.Branch("gen_lep_nearest_mass"   , gen_lep_nearest_mass_arr_0   , 'gen_lep_nearest_mass/F')
+            Step0tree.Branch("gen_lep_nearest_pdgid", gen_lep_nearest_pdgid_arr_0, 'gen_lep_nearest_pdgid/F')
+            Step0tree.Branch("gen_lep_nearest_status", gen_lep_nearest_status_arr_0, 'gen_lep_nearest_status/F')
 
-    Step0tree.Branch("gen_met_pt"    , gen_met_pt_arr_0    , 'gen_met_pt/F')
-    Step0tree.Branch("gen_met_phi"   , gen_met_phi_arr_0   , 'gen_met_phi/F')
+            Step0tree.Branch("gen_alep_nearest_pt"    , gen_alep_nearest_pt_arr_0    , 'gen_alep_nearest_pt/F')
+            Step0tree.Branch("gen_alep_nearest_eta"   , gen_alep_nearest_eta_arr_0   , 'gen_alep_nearest_eta/F')
+            Step0tree.Branch("gen_alep_nearest_phi"   , gen_alep_nearest_phi_arr_0   , 'gen_alep_nearest_phi/F')
+            Step0tree.Branch("gen_alep_nearest_mass"   , gen_alep_nearest_mass_arr_0   , 'gen_alep_nearest_mass/F')
+            Step0tree.Branch("gen_alep_nearest_pdgid", gen_alep_nearest_pdgid_arr_0, 'gen_alep_nearest_pdgid/F')
+            Step0tree.Branch("gen_alep_nearest_status", gen_alep_nearest_status_arr_0, 'gen_alep_nearest_status/F')
 
-    # s7 GEN branches 
-    
+        Step0tree.Branch("gen_lep_pt"    , gen_lep_pt_arr_0    , 'gen_lep_pt/F')
+        Step0tree.Branch("gen_lep_eta"   , gen_lep_eta_arr_0   , 'gen_lep_eta/F')
+        Step0tree.Branch("gen_lep_phi"   , gen_lep_phi_arr_0   , 'gen_lep_phi/F')
+        Step0tree.Branch("gen_lep_mass"   , gen_lep_mass_arr_0   , 'gen_lep_mass/F')
+        Step0tree.Branch("gen_lep_pdgid", gen_lep_pdgid_arr_0, 'gen_lep_pdgid/F')
+        Step0tree.Branch("gen_lep_status", gen_lep_status_arr_0, 'gen_lep_status/F')
+
+        Step0tree.Branch("gen_alep_pt"    , gen_alep_pt_arr_0    , 'gen_alep_pt/F')
+        Step0tree.Branch("gen_alep_eta"   , gen_alep_eta_arr_0   , 'gen_alep_eta/F')
+        Step0tree.Branch("gen_alep_phi"   , gen_alep_phi_arr_0   , 'gen_alep_phi/F')
+        Step0tree.Branch("gen_alep_mass"   , gen_alep_mass_arr_0   , 'gen_alep_mass/F')
+        Step0tree.Branch("gen_alep_pdgid", gen_alep_pdgid_arr_0, 'gen_alep_pdgid/F')
+        Step0tree.Branch("gen_alep_status", gen_alep_status_arr_0, 'gen_alep_status/F')
+
+        Step0tree.Branch("gen_neu_pt"    , gen_neu_pt_arr_0    , 'gen_neu_pt/F')
+        Step0tree.Branch("gen_neu_eta"   , gen_neu_eta_arr_0   , 'gen_neu_eta/F')
+        Step0tree.Branch("gen_neu_phi"   , gen_neu_phi_arr_0   , 'gen_neu_phi/F')
+        Step0tree.Branch("gen_neu_pdgid", gen_neu_pdgid_arr_0, 'gen_neu_pdgid/F')
+        Step0tree.Branch("gen_neu_status", gen_neu_status_arr_0, 'gen_neu_status/F')
+
+        Step0tree.Branch("gen_aneu_pt"    , gen_aneu_pt_arr_0    , 'gen_aneu_pt/F')
+        Step0tree.Branch("gen_aneu_eta"   , gen_aneu_eta_arr_0   , 'gen_aneu_eta/F')
+        Step0tree.Branch("gen_aneu_phi"   , gen_aneu_phi_arr_0   , 'gen_aneu_phi/F')
+        Step0tree.Branch("gen_aneu_pdgid", gen_aneu_pdgid_arr_0, 'gen_aneu_pdgid/F')
+        Step0tree.Branch("gen_aneu_status", gen_aneu_status_arr_0, 'gen_aneu_status/F')
+
+        Step0tree.Branch("gen_met_pt"    , gen_met_pt_arr_0    , 'gen_met_pt/F')
+        Step0tree.Branch("gen_met_phi"   , gen_met_phi_arr_0   , 'gen_met_phi/F')
+
         # Store all gen information into the Step0 tree
-    #Step0tree.Branch("gen_lep_pt_0", gen_lep_pt_arr_0, 'gen_lep_pt_0/F')
+        #Step0tree.Branch("gen_lep_pt_0", gen_lep_pt_arr_0, 'gen_lep_pt_0/F')
 
-    for i in range(len(gen_lep_pt_0)):
-        
-        gen_lep_pt_arr_0[0]     = gen_lep_pt_0[i]
-        gen_lep_eta_arr_0[0]     = gen_lep_eta_0[i]
-        gen_lep_phi_arr_0[0]     = gen_lep_phi_0[i]
-        gen_lep_mass_arr_0[0]     = gen_lep_mass_0[i]
-        gen_lep_pdgid_arr_0[0]     = gen_lep_pdgid_0[i]
-        gen_lep_status_arr_0[0]     = gen_lep_status_0[i]
+        for i in range(len(gen_lep_pt_0)):
 
-        gen_alep_pt_arr_0[0]     = gen_alep_pt_0[i]
-        gen_alep_eta_arr_0[0]     = gen_alep_eta_0[i]
-        gen_alep_phi_arr_0[0]     = gen_alep_phi_0[i]
-        gen_alep_mass_arr_0[0]     = gen_alep_mass_0[i]
-        gen_alep_pdgid_arr_0[0]     = gen_alep_pdgid_0[i]
-        gen_alep_status_arr_0[0]     = gen_alep_status_0[i]
-        
-        gen_top_pt_arr_0[0] = gen_top_pt_0[i]
-        gen_top_eta_arr_0[0] = gen_top_eta_0[i]
-        gen_top_phi_arr_0[0] = gen_top_phi_0[i]
-        gen_top_mass_arr_0[0] = gen_top_mass_0[i]
-        gen_top_status_arr_0[0] = gen_top_status_0[i]
-        
-        gen_atop_pt_arr_0[0] = gen_atop_pt_0[i]
-        gen_atop_eta_arr_0[0] = gen_atop_eta_0[i]
-        gen_atop_phi_arr_0[0] = gen_atop_phi_0[i]
-        gen_atop_mass_arr_0[0] = gen_atop_mass_0[i]
-        gen_atop_status_arr_0[0] = gen_atop_status_0[i]        
-        
-        gen_b_pt_arr_0[0] = gen_b_pt_0[i]
-        gen_b_eta_arr_0[0] = gen_b_eta_0[i]
-        gen_b_phi_arr_0[0] = gen_b_phi_0[i]
-        gen_b_mass_arr_0[0] = gen_b_mass_0[i]
-        gen_b_status_arr_0[0] = gen_b_status_0[i]
-        
-        gen_ab_pt_arr_0[0] = gen_ab_pt_0[i]
-        gen_ab_eta_arr_0[0] = gen_ab_eta_0[i]
-        gen_ab_phi_arr_0[0] = gen_ab_phi_0[i]
-        gen_ab_mass_arr_0[0] = gen_ab_mass_0[i]
-        gen_ab_status_arr_0[0] = gen_ab_status_0[i]        
-        
-        gen_neu_pt_arr_0[0]     = gen_neu_pt_0[i]
-        gen_neu_eta_arr_0[0]     = gen_neu_eta_0[i]
-        gen_neu_phi_arr_0[0]     = gen_neu_phi_0[i]
-        gen_neu_pdgid_arr_0[0]     = gen_neu_pdgid_0[i]
-        gen_neu_status_arr_0[0]     = gen_neu_status_0[i]
-        
-        gen_aneu_pt_arr_0[0]     = gen_aneu_pt_0[i]
-        gen_aneu_eta_arr_0[0]     = gen_aneu_eta_0[i]
-        gen_aneu_phi_arr_0[0]     = gen_aneu_phi_0[i]
-        gen_aneu_pdgid_arr_0[0]     = gen_aneu_pdgid_0[i]
-        gen_aneu_status_arr_0[0]     = gen_aneu_status_0[i]
-        
-        #print(gen_met_pt_0[i])
-        
-        gen_met_pt_arr_0[0] = gen_met_pt_0[i]
-        gen_met_phi_arr_0[0] = gen_met_phi_0[i]
-        
-        Step0tree.Fill()
-        hist_0.Fill(i)    
+            gen_lep_pt_arr_0[0]     = gen_lep_pt_0[i]
+            gen_lep_eta_arr_0[0]     = gen_lep_eta_0[i]
+            gen_lep_phi_arr_0[0]     = gen_lep_phi_0[i]
+            gen_lep_mass_arr_0[0]     = gen_lep_mass_0[i]
+            gen_lep_pdgid_arr_0[0]     = gen_lep_pdgid_0[i]
+            gen_lep_status_arr_0[0]     = gen_lep_status_0[i]
+
+            gen_alep_pt_arr_0[0]     = gen_alep_pt_0[i]
+            gen_alep_eta_arr_0[0]     = gen_alep_eta_0[i]
+            gen_alep_phi_arr_0[0]     = gen_alep_phi_0[i]
+            gen_alep_mass_arr_0[0]     = gen_alep_mass_0[i]
+            gen_alep_pdgid_arr_0[0]     = gen_alep_pdgid_0[i]
+            gen_alep_status_arr_0[0]     = gen_alep_status_0[i]
+
+            gen_top_pt_arr_0[0] = gen_top_pt_0[i]
+            gen_top_eta_arr_0[0] = gen_top_eta_0[i]
+            gen_top_phi_arr_0[0] = gen_top_phi_0[i]
+            gen_top_mass_arr_0[0] = gen_top_mass_0[i]
+            gen_top_status_arr_0[0] = gen_top_status_0[i]
+
+            gen_atop_pt_arr_0[0] = gen_atop_pt_0[i]
+            gen_atop_eta_arr_0[0] = gen_atop_eta_0[i]
+            gen_atop_phi_arr_0[0] = gen_atop_phi_0[i]
+            gen_atop_mass_arr_0[0] = gen_atop_mass_0[i]
+            gen_atop_status_arr_0[0] = gen_atop_status_0[i]        
+
+            gen_b_pt_arr_0[0] = gen_b_pt_0[i]
+            gen_b_eta_arr_0[0] = gen_b_eta_0[i]
+            gen_b_phi_arr_0[0] = gen_b_phi_0[i]
+            gen_b_mass_arr_0[0] = gen_b_mass_0[i]
+            gen_b_status_arr_0[0] = gen_b_status_0[i]
+
+            gen_ab_pt_arr_0[0] = gen_ab_pt_0[i]
+            gen_ab_eta_arr_0[0] = gen_ab_eta_0[i]
+            gen_ab_phi_arr_0[0] = gen_ab_phi_0[i]
+            gen_ab_mass_arr_0[0] = gen_ab_mass_0[i]
+            gen_ab_status_arr_0[0] = gen_ab_status_0[i]        
+
+            gen_neu_pt_arr_0[0]     = gen_neu_pt_0[i]
+            gen_neu_eta_arr_0[0]     = gen_neu_eta_0[i]
+            gen_neu_phi_arr_0[0]     = gen_neu_phi_0[i]
+            gen_neu_pdgid_arr_0[0]     = gen_neu_pdgid_0[i]
+            gen_neu_status_arr_0[0]     = gen_neu_status_0[i]
+
+            gen_aneu_pt_arr_0[0]     = gen_aneu_pt_0[i]
+            gen_aneu_eta_arr_0[0]     = gen_aneu_eta_0[i]
+            gen_aneu_phi_arr_0[0]     = gen_aneu_phi_0[i]
+            gen_aneu_pdgid_arr_0[0]     = gen_aneu_pdgid_0[i]
+            gen_aneu_status_arr_0[0]     = gen_aneu_status_0[i]
+
+            #print(gen_met_pt_0[i])
+
+            gen_met_pt_arr_0[0] = gen_met_pt_0[i]
+            gen_met_phi_arr_0[0] = gen_met_phi_0[i]
+
+            Step0tree.Fill()
+            hist_0.Fill(i)    
 
     # Create the branches and assign the fill-variables to them as floats (F)
 
